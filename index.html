@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WealthPilot - Autonomous Financial Advisor & Wealth Engine</title>
+  <title>WealthPilot Pro - Multi-Cadence Wealth & Budget Engine</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -22,10 +22,9 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
   <!-- ========================================== -->
-  <!-- 1. AUTH / LOGIN VIEW (Visible when logged out) -->
+  <!-- 1. AUTH SCREEN                             -->
   <!-- ========================================== -->
   <div id="authScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 relative overflow-hidden">
-    <!-- Background glow ornaments -->
     <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -35,25 +34,10 @@
       </div>
       <div>
         <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">WealthPilot</h1>
-        <p class="text-indigo-200 text-xs sm:text-sm mt-1">Autonomous Daily Financial Advisor & Multi-Year Ledger</p>
+        <p class="text-indigo-200 text-xs sm:text-sm mt-1">Multi-Cadence Financial Advisor (DoD, WoW, MoM, YoY)</p>
       </div>
 
-      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-left space-y-2.5 text-xs text-indigo-100">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-shield-halved text-emerald-400"></i>
-          <span>Multi-Year & YoY Net Worth Tracking</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-robot text-indigo-300"></i>
-          <span>Debt Avalanche & SIP Optimization Advisor</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-cloud text-amber-300"></i>
-          <span>Encrypted Cross-Device Firestore Sync</span>
-        </div>
-      </div>
-
-      <button id="googleLoginBtn" onclick="handleGoogleSignIn()" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
+      <button onclick="handleGoogleSignIn()" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all text-sm">
         <svg class="w-4 h-4" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
           <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
@@ -62,20 +46,19 @@
         </svg>
         <span>Sign In with Google</span>
       </button>
-
-      <p class="text-[11px] text-slate-400">Your financial data stays secured under your unique Firebase user account.</p>
+      <p class="text-[11px] text-slate-400">Encrypted personal vault saved to your account.</p>
     </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- 2. MAIN APPLICATION (Visible after login)  -->
+  <!-- 2. MAIN APPLICATION                        -->
   <!-- ========================================== -->
   <div id="appScreen" class="hidden">
-    <!-- Top Navbar -->
+    <!-- Navbar -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-indigo-100">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center text-white shadow-md">
             <i class="fa-solid fa-chart-line text-lg"></i>
           </div>
           <div>
@@ -84,7 +67,6 @@
           </div>
         </div>
         
-        <!-- Action Toolbar -->
         <div class="flex items-center space-x-2 sm:space-x-3">
           <select id="currencySelector" class="bg-slate-100 border border-slate-300 text-xs font-semibold rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-indigo-500">
             <option value="₹" selected>INR (₹)</option>
@@ -94,23 +76,20 @@
             <option value="A$">AUD (A$)</option>
           </select>
 
-          <!-- Backup Download / Restore -->
-          <button onclick="exportDataBackup()" title="Download Backup JSON" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg text-xs font-semibold transition-all">
+          <button onclick="exportDataBackup()" title="Download Backup JSON" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 rounded-lg text-xs">
             <i class="fa-solid fa-download"></i>
           </button>
-          <button onclick="document.getElementById('importFileInput').click()" title="Restore Backup JSON" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg text-xs font-semibold transition-all">
+          <button onclick="document.getElementById('importFileInput').click()" title="Restore Backup JSON" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 rounded-lg text-xs">
             <i class="fa-solid fa-upload"></i>
           </button>
           <input type="file" id="importFileInput" class="hidden" accept=".json" onchange="importDataBackup(event)">
 
-          <!-- Profile Trigger -->
-          <button onclick="openProfileModal()" class="flex items-center gap-2 p-1.5 pr-2.5 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all">
+          <button onclick="openProfileModal()" class="flex items-center gap-2 p-1.5 pr-2.5 bg-slate-100 hover:bg-slate-200 rounded-lg">
             <img id="navUserAvatar" src="https://ui-avatars.com/api/?name=User" class="w-6 h-6 rounded-full object-cover">
             <span id="navUserName" class="text-xs font-semibold text-slate-700 hidden sm:inline">Profile</span>
           </button>
 
-          <!-- Advisor Questionnaire -->
-          <button onclick="openAdvisorModal()" class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all shadow-sm">
+          <button onclick="openAdvisorModal()" class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-sm">
             <i class="fa-solid fa-sliders"></i>
             <span class="hidden sm:inline">Advisor Prefs</span>
           </button>
@@ -118,99 +97,116 @@
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      
-      <!-- Snapshot Logging Bar -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-            <i class="fa-solid fa-calendar-check"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-sm text-slate-900">Active Logging Snapshot</h3>
-            <p class="text-xs text-slate-500">Pick cadence, adjust figures below, and record to time-series history</p>
-          </div>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+      <!-- ========================================== -->
+      <!-- CADENCE CONTROLLER TABS (DoD, WoW, MoM, YoY)-->
+      <!-- ========================================== -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="inline-flex p-1 bg-slate-100 rounded-xl gap-1" id="cadenceTabs">
+          <button onclick="setCadence('daily')" data-cadence="daily" class="px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600">
+            <i class="fa-solid fa-clock mr-1"></i> Daily (DoD)
+          </button>
+          <button onclick="setCadence('weekly')" data-cadence="weekly" class="px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600">
+            <i class="fa-solid fa-calendar-week mr-1"></i> Weekly (WoW)
+          </button>
+          <button onclick="setCadence('monthly')" data-cadence="monthly" class="px-3.5 py-2 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm">
+            <i class="fa-solid fa-calendar mr-1"></i> Monthly (MoM)
+          </button>
+          <button onclick="setCadence('annual')" data-cadence="annual" class="px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600">
+            <i class="fa-solid fa-gem mr-1"></i> Annual (YoY)
+          </button>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2.5">
-          <select id="logPeriodType" class="text-xs font-medium border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
-            <option value="month" selected>Monthly Audit</option>
-            <option value="day">Daily Micro-log</option>
-            <option value="week">Weekly Review</option>
-            <option value="year">Annual Snapshot</option>
-          </select>
-          <input type="date" id="logDateInput" class="text-xs font-medium border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
-          
-          <button onclick="commitSnapshot()" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all shadow-sm">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Save & Sync Snapshot
+        <!-- Period Picker -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-400 font-medium">Selected Period:</span>
+          <input type="date" id="activePeriodPicker" onchange="onDatePickerChange()" class="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 bg-slate-50 focus:ring-2 focus:ring-indigo-500">
+          <button onclick="saveActivePeriod()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Save & Sync
           </button>
         </div>
       </div>
 
-      <!-- Daily Advisor Notice & YoY Intelligence Banner -->
-      <div id="advisorBanner" class="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 shadow-xl relative overflow-hidden">
-        <div class="absolute -right-6 -bottom-6 opacity-10 pointer-events-none text-9xl text-white">
-          <i class="fa-solid fa-compass"></i>
+      <!-- Cadence Context Banner & Velocity Indicator -->
+      <div id="cadenceContextBar" class="bg-indigo-50 border border-indigo-100 rounded-2xl px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2.5">
+          <div id="cadenceIcon" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">M</div>
+          <div>
+            <span class="font-bold text-slate-900" id="cadenceTitle">Monthly Audit Mode (MoM)</span>
+            <span class="text-slate-500 ml-2" id="cadenceSubtitle">Comparing current month performance vs last month</span>
+          </div>
         </div>
+        <div class="flex items-center gap-3 font-semibold" id="cadenceDeltaPill">
+          <span class="text-slate-500">Trajectory Velocity:</span>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold" id="cadenceDeltaVal">+0% MoM</span>
+        </div>
+      </div>
+
+      <!-- Daily Advisor Notice & Trajectory Banner -->
+      <div class="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 shadow-xl relative overflow-hidden">
         <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div class="space-y-2">
             <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 text-xs font-semibold">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Advisor Synthesis • <span id="advisorDateTag">Current Portfolio State</span>
+              Advisor Intelligence • <span id="advisorPeriodLabel">September 2026</span>
             </div>
-            <h2 class="text-xl sm:text-2xl font-bold" id="dailyAdvisorHeadline">Synthesizing portfolio trajectory...</h2>
+            <h2 class="text-xl sm:text-2xl font-bold" id="dailyAdvisorHeadline">Analyzing Cash Inflow & Commitments...</h2>
             <p class="text-indigo-200 text-xs sm:text-sm max-w-2xl leading-relaxed" id="dailyAdvisorBody">
-              Log snapshots across multiple periods to activate Year-over-Year (YoY) velocity checks and compound trajectory models.
+              Direct surplus towards highest rate debt first while maintaining adequate emergency reserves.
             </p>
           </div>
 
-          <div class="grid grid-cols-2 gap-3 sm:gap-4 bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 min-w-[280px]">
+          <div class="grid grid-cols-2 gap-3 bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 min-w-[280px]">
             <div>
               <div class="text-[11px] text-indigo-200 font-medium">Estimated Net Worth</div>
-              <div class="text-xl sm:text-2xl font-extrabold text-white" id="statNetWorthDisplay">--</div>
-              <div class="text-[10px] text-emerald-400 font-medium mt-0.5" id="yoyNetWorthGrowth">YoY: Calibrating...</div>
+              <div class="text-xl sm:text-2xl font-extrabold text-white" id="statNetWorthDisplay">₹0</div>
+              <div class="text-[10px] text-emerald-400 font-medium mt-0.5" id="statNetWorthDelta">-- vs prior</div>
             </div>
-            <div class="border-l border-white/10 pl-3 sm:pl-4">
-              <div class="text-[11px] text-indigo-200 font-medium">Financial Health</div>
+            <div class="border-l border-white/10 pl-3">
+              <div class="text-[11px] text-indigo-200 font-medium">Cadence Health</div>
               <div class="text-xl sm:text-2xl font-extrabold text-amber-300" id="healthScoreDisplay">-- / 100</div>
-              <div class="text-[10px] text-indigo-300 font-medium mt-0.5" id="healthScoreStatus">Calibrating</div>
+              <div class="text-[10px] text-indigo-300 font-medium mt-0.5" id="healthScoreStatus">Stable</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Timeline & YoY Trajectory Chart -->
+      <!-- Dedicated Cadence Trajectory Chart -->
       <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 class="text-base font-bold text-slate-900">Timeline & Year-over-Year (YoY) Wealth Trajectory</h3>
-            <p class="text-xs text-slate-500">Historical progression of Net Worth, Total Wealth/SIPs, and Outstanding Debt</p>
+            <h3 class="text-base font-bold text-slate-900" id="chartHeaderTitle">MoM Wealth & Cashflow Progression</h3>
+            <p class="text-xs text-slate-500" id="chartHeaderSubtitle">Progression across consecutive monthly audits</p>
           </div>
-          <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg w-fit">
-            <span id="snapshotCountText">0 Snapshots</span> Logged
+          <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg w-fit" id="chartPeriodCount">
+            0 Records
           </div>
         </div>
         <div class="h-64 sm:h-72 w-full">
-          <canvas id="timelineChart"></canvas>
+          <canvas id="trajectoryChart"></canvas>
         </div>
       </div>
 
-      <!-- Active Balance Metrics Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- Inflow & Outflow Overview Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
-            <span>Inflow / Income</span>
+            <span>Total Inflow (Salary + Other)</span>
             <i class="fa-solid fa-wallet text-emerald-600 bg-emerald-50 p-2 rounded-lg"></i>
           </div>
-          <div class="text-2xl font-bold text-slate-900" id="statIncomeDisplay">₹0</div>
-          <button onclick="promptEditIncome()" class="mt-2 text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
-            <i class="fa-solid fa-pen-to-square"></i> Modify Income
-          </button>
+          <div class="text-2xl font-bold text-slate-900" id="statTotalInflowDisplay">₹0</div>
+          <div class="flex items-center gap-2 mt-2">
+            <button onclick="openInflowModal()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+              <i class="fa-solid fa-pen-to-square"></i> Manage Inflow
+            </button>
+            <span class="text-[11px] text-slate-400" id="inflowBreakdownTag">(₹0 Primary + ₹0 Other)</span>
+          </div>
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
-            <span>Current Commitments</span>
+            <span>Committed Outflow</span>
             <i class="fa-solid fa-receipt text-rose-600 bg-rose-50 p-2 rounded-lg"></i>
           </div>
           <div class="text-2xl font-bold text-slate-900" id="statOutflowDisplay">₹0</div>
@@ -228,23 +224,23 @@
 
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
-            <span>Surplus / Unallocated</span>
+            <span>Remaining Surplus</span>
             <i class="fa-solid fa-coins text-amber-600 bg-amber-50 p-2 rounded-lg"></i>
           </div>
-          <div class="text-2xl font-bold" id="statRemainingDisplay">₹0</div>
-          <div class="text-xs text-slate-500 mt-2" id="statRemainingSubtext">Available buffer</div>
+          <div class="text-2xl font-bold" id="statSurplusDisplay">₹0</div>
+          <div class="text-xs text-slate-500 mt-2" id="surplusSubtext">Available buffer</div>
         </div>
       </div>
 
       <!-- Main Workspace -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-7 space-y-6">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-lg font-bold text-slate-900">Current Ledger Breakdown</h3>
-              <p class="text-xs text-slate-500">Edit entries for your active snapshot</p>
+              <h3 class="text-lg font-bold text-slate-900">Period Outflow Ledger</h3>
+              <p class="text-xs text-slate-500">Click any item to edit amounts, interest rates, or balances</p>
             </div>
-            <button onclick="promptNewItem()" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all">
+            <button onclick="openExpenseModal(null)" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm">
               <i class="fa-solid fa-plus"></i> Add Item
             </button>
           </div>
@@ -253,13 +249,9 @@
 
           <!-- 50/30/20 Rule Analysis -->
           <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-            <div class="flex items-center justify-between mb-3">
-              <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <i class="fa-solid fa-scale-balanced text-indigo-600"></i> 50 / 30 / 20 Rule Analysis
-              </h4>
-              <span class="text-xs text-slate-400 font-medium">Standard Benchmark</span>
-            </div>
-
+            <h4 class="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-scale-balanced text-indigo-600"></i> 50 / 30 / 20 Budget Distribution
+            </h4>
             <div class="space-y-3 text-xs">
               <div>
                 <div class="flex justify-between mb-1 text-slate-600 font-medium">
@@ -270,7 +262,6 @@
                   <div id="needsProgressBar" class="h-2 rounded-full bg-indigo-600" style="width: 0%"></div>
                 </div>
               </div>
-
               <div>
                 <div class="flex justify-between mb-1 text-slate-600 font-medium">
                   <span>Wants / Entertainment (Target: ≤30%)</span>
@@ -280,7 +271,6 @@
                   <div id="wantsProgressBar" class="h-2 rounded-full bg-amber-500" style="width: 0%"></div>
                 </div>
               </div>
-
               <div>
                 <div class="flex justify-between mb-1 text-slate-600 font-medium">
                   <span>Investments & Wealth (Target: ≥20%)</span>
@@ -296,43 +286,23 @@
 
         <div class="lg:col-span-5 space-y-6">
           <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h3 class="text-base font-bold text-slate-900 mb-4">Outflow Allocation</h3>
-            <div class="relative h-60 flex items-center justify-center">
+            <h3 class="text-base font-bold text-slate-900 mb-4">Outflow Allocation Split</h3>
+            <div class="relative h-56 flex items-center justify-center">
               <canvas id="allocationChart"></canvas>
             </div>
           </div>
 
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center">
                 <i class="fa-solid fa-lightbulb"></i>
               </div>
               <div>
                 <h4 class="font-bold text-sm text-slate-900">Advisor Directives</h4>
-                <p class="text-xs text-slate-500">Continuous suggestions based on history</p>
+                <p class="text-xs text-slate-500">Targeted actions for this period</p>
               </div>
             </div>
             <div id="advisorActionList" class="space-y-2.5"></div>
-          </div>
-
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
-            <div class="flex items-center justify-between">
-              <h4 class="font-bold text-sm text-slate-900">Recorded Timeline History</h4>
-              <button onclick="clearHistory()" class="text-[11px] text-rose-600 hover:underline">Reset All</button>
-            </div>
-            <div class="max-h-48 overflow-y-auto custom-scrollbar">
-              <table class="w-full text-left text-xs">
-                <thead class="text-slate-400 border-b border-slate-100">
-                  <tr>
-                    <th class="py-1.5 font-medium">Date</th>
-                    <th class="py-1.5 font-medium">Inflow</th>
-                    <th class="py-1.5 font-medium">Surplus</th>
-                    <th class="py-1.5 font-medium text-right">Net Worth</th>
-                  </tr>
-                </thead>
-                <tbody id="historyTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
-              </table>
-            </div>
           </div>
         </div>
       </div>
@@ -340,21 +310,117 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- 3. USER PROFILE MODAL                      -->
+  <!-- 3. INFLOW MODAL (Salary + Other Sources)   -->
+  <!-- ========================================== -->
+  <div id="inflowModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5 border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="font-bold text-slate-900 text-base">Manage Inflow for Period</h3>
+          <p class="text-xs text-slate-500" id="inflowModalPeriodSubtitle"></p>
+        </div>
+        <button onclick="closeInflowModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Primary Salary / Inflow</label>
+          <input type="number" id="inputPrimaryIncome" step="any" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500">
+          <p class="text-slate-400 mt-1">Changes here will only affect this selected period.</p>
+        </div>
+
+        <div class="border-t border-slate-100 pt-3">
+          <div class="flex items-center justify-between mb-2">
+            <label class="font-semibold text-slate-700">Inflow From Other Sources</label>
+            <button onclick="addOtherInflowRow('', 0)" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">+ Add Source</button>
+          </div>
+          <div id="otherInflowsContainer" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+        <button onclick="closeInflowModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-100">Cancel</button>
+        <button onclick="saveInflowModal()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md">Apply Inflow</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. EXPENSE / ITEM POPUP MODAL              -->
+  <!-- ========================================== -->
+  <div id="expenseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base" id="expenseModalTitle">Edit Outflow Item</h3>
+        <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <input type="hidden" id="editItemId">
+      
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Item Description / Name</label>
+          <input type="text" id="editItemName" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Target Category</label>
+          <select id="editItemCategory" onchange="toggleCategorySpecificFields()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold bg-slate-50">
+            <option value="loans">Mortgages & Loans (Debt)</option>
+            <option value="savings">Savings & Investments (Assets/SIPs)</option>
+            <option value="home">Cost for Home & Living (Needs)</option>
+            <option value="entertainment">Entertainment & Wants (Lifestyle)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Outflow Amount for Period</label>
+          <input type="number" id="editItemAmount" step="any" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-900">
+        </div>
+
+        <div id="loanSpecificFields" class="p-3 bg-rose-50/70 border border-rose-100 rounded-xl space-y-2">
+          <div>
+            <label class="block font-semibold text-rose-800 mb-1">Interest Rate % p.a. (for Debt Avalanche)</label>
+            <input type="number" id="editItemInterest" step="0.1" class="w-full border border-rose-200 rounded-lg px-3 py-1.5 text-xs font-semibold">
+          </div>
+          <div>
+            <label class="block font-semibold text-rose-800 mb-1">Total Principal Outstanding Balance</label>
+            <input type="number" id="editItemLoanBalance" step="any" class="w-full border border-rose-200 rounded-lg px-3 py-1.5 text-xs font-semibold">
+          </div>
+        </div>
+
+        <div id="savingsSpecificFields" class="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl space-y-2 hidden">
+          <div>
+            <label class="block font-semibold text-emerald-800 mb-1">Total Accumulated Asset Value</label>
+            <input type="number" id="editItemPortfolioVal" step="any" class="w-full border border-emerald-200 rounded-lg px-3 py-1.5 text-xs font-semibold">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <button id="deleteExpenseBtn" onclick="deleteActiveExpenseItem()" class="text-xs font-semibold text-rose-600 hover:text-rose-700">Delete Item</button>
+        <div class="flex gap-2">
+          <button onclick="closeExpenseModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-100">Cancel</button>
+          <button onclick="saveExpenseModal()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 5. USER PROFILE MODAL                      -->
   <!-- ========================================== -->
   <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 border border-slate-100">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <h3 class="font-bold text-slate-900 text-base">User Profile & Preferences</h3>
-        <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
       <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-xl">
         <img id="profileAvatar" src="" class="w-14 h-14 rounded-full object-cover border-2 border-indigo-500 shadow">
         <div>
-          <h4 id="profileName" class="font-bold text-slate-900 text-sm">Venkatesh</h4>
+          <h4 id="profileName" class="font-bold text-slate-900 text-sm">User</h4>
           <p id="profileEmail" class="text-xs text-slate-500">user@email.com</p>
           <span class="inline-block mt-1 text-[10px] font-semibold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Cloud Synchronized</span>
         </div>
@@ -363,14 +429,7 @@
       <div class="space-y-4 text-xs">
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Target Emergency Cushion (Months)</label>
-          <input type="number" id="prefEmergencyMonths" min="3" max="24" value="6" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
-          <p class="text-slate-400 mt-1">Recommended is 6 to 12 months of mandatory needs.</p>
-        </div>
-
-        <div>
-          <label class="block font-semibold text-slate-700 mb-1">Expected Equity SIP Return Rate (% p.a.)</label>
-          <input type="number" id="prefExpectedReturn" min="5" max="20" step="0.5" value="12.0" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
-          <p class="text-slate-400 mt-1">Used by the advisor to prioritize debt vs equity prepayments.</p>
+          <input type="number" id="prefEmergencyMonths" min="3" max="24" value="6" class="w-full border border-slate-300 rounded-lg px-3 py-2">
         </div>
       </div>
 
@@ -378,15 +437,13 @@
         <button onclick="handleSignOut()" class="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1.5">
           <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
         </button>
-        <button onclick="saveProfilePreferences()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">
-          Save Preferences
-        </button>
+        <button onclick="closeProfileModal()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">Done</button>
       </div>
     </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- 4. QUESTIONNAIRE MODAL                     -->
+  <!-- 6. ADVISOR QUESTIONNAIRE MODAL             -->
   <!-- ========================================== -->
   <div id="advisorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-100">
@@ -400,20 +457,18 @@
             <p class="text-xs text-slate-500">Step <span id="currentStepIdx">1</span> of <span id="totalStepCount">5</span></p>
           </div>
         </div>
-        <button onclick="closeAdvisorModal()" class="text-slate-400 hover:text-slate-600 text-sm p-1">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <button onclick="closeAdvisorModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
       <div id="questionContainer"></div>
       <div class="flex items-center justify-between pt-4 border-t border-slate-100">
         <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-100">Previous</button>
-        <button id="nextBtn" onclick="nextQuestion()" class="px-5 py-2.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100">Save & Next</button>
+        <button id="nextBtn" onclick="nextQuestion()" class="px-5 py-2.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">Save & Next</button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- FIREBASE CONFIGURATION (Pre-filled with your project parameters) ---
+    // --- FIREBASE INITIALIZATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyA95USzCZOhGgUOke4ok1tF8Fn-VVaL5QM",
       authDomain: "wealthpilot-app-2097.firebaseapp.com",
@@ -424,7 +479,6 @@
       measurementId: "G-B4BE5FL07S"
     };
 
-    // Initialize Firebase Compat
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -432,57 +486,14 @@
 
     let currentUser = null;
     let unsubscribeFirestore = null;
-    const STORAGE_KEY = "wealthpilot_v2_history";
+    const STORAGE_KEY = "wealthpilot_v3_multicadence";
+    const OLD_STORAGE_KEY = "wealthpilot_v2_history";
 
-    const DEFAULT_DATA = {
+    let currentCadence = 'monthly';
+    let currentPeriodKey = '';
+
+    const DEFAULT_STORE = {
       currency: "₹",
-      income: 120000,
-      profilePrefs: {
-        emergencyMonths: 6,
-        expectedReturnRate: 12.0
-      },
-      categories: [
-        {
-          id: "loans",
-          name: "Mortgages & Loans",
-          type: "needs",
-          icon: "fa-building-columns",
-          items: [
-            { id: "l1", name: "Home Loan / Mortgage", amount: 35000, interestRate: 8.5, totalPrincipalOutstanding: 2800000 },
-            { id: "l2", name: "Car Loan EMI", amount: 12000, interestRate: 9.2, totalPrincipalOutstanding: 320000 }
-          ]
-        },
-        {
-          id: "savings",
-          name: "Savings & Investments",
-          type: "savings",
-          icon: "fa-arrow-trend-up",
-          items: [
-            { id: "s1", name: "Index & Mutual Funds SIP", amount: 20000, interestRate: 12.0, totalPortfolioValue: 420000 },
-            { id: "s2", name: "Term & Health Insurance", amount: 5000, interestRate: 0, totalPortfolioValue: 0 }
-          ]
-        },
-        {
-          id: "home",
-          name: "Cost for Home & Living",
-          type: "needs",
-          icon: "fa-house",
-          items: [
-            { id: "h1", name: "Groceries & Provisions", amount: 14000, interestRate: 0 },
-            { id: "h2", name: "Utilities, Fuel & Bills", amount: 5500, interestRate: 0 }
-          ]
-        },
-        {
-          id: "entertainment",
-          name: "Entertainment & Wants",
-          type: "wants",
-          icon: "fa-ticket",
-          items: [
-            { id: "e1", name: "Dining Out & Ordering", amount: 6000, interestRate: 0 },
-            { id: "e2", name: "Subscriptions & Cinema", amount: 2500, interestRate: 0 }
-          ]
-        }
-      ],
       surveyAnswers: {
         goalPriority: "Minimize Loans",
         riskAppetite: "Moderate (Index/Flexicap)",
@@ -490,33 +501,127 @@
         entertainmentTolerance: "Cut by 20%",
         otherGoalText: ""
       },
-      snapshots: [
-        {
-          date: "2025-09-30",
-          periodType: "year",
-          income: 105000,
-          totalOutflow: 78000,
-          savings: 15000,
-          surplus: 27000,
-          investedNetWorth: 280000,
-          debtOutstanding: 3450000,
-          netWorth: -3170000
+      profilePrefs: { emergencyMonths: 6 },
+      periods: {
+        daily: {},
+        weekly: {},
+        monthly: {
+          "2026-09": {
+            periodKey: "2026-09",
+            date: "2026-09-30",
+            primaryIncome: 173000,
+            otherInflows: [],
+            categories: [
+              {
+                id: "loans",
+                name: "Mortgages & Loans",
+                type: "needs",
+                icon: "fa-building-columns",
+                items: [
+                  { id: "l1", name: "Housing Loan", amount: 45000, interestRate: 7.6, totalPrincipalOutstanding: 2800000 },
+                  { id: "l2", name: "Personal Loan 1", amount: 12950, interestRate: 11.5, totalPrincipalOutstanding: 320000 },
+                  { id: "l3", name: "Personal Loan 2", amount: 11284, interestRate: 12.0, totalPrincipalOutstanding: 280000 },
+                  { id: "l4", name: "Education Loan", amount: 6686, interestRate: 8.5, totalPrincipalOutstanding: 190000 },
+                  { id: "l5", name: "Personal Loan 3", amount: 6000, interestRate: 13.0, totalPrincipalOutstanding: 140000 }
+                ]
+              },
+              {
+                id: "savings",
+                name: "Savings & Investments",
+                type: "savings",
+                icon: "fa-arrow-trend-up",
+                items: [
+                  { id: "s1", name: "Index & Mutual Funds SIP", amount: 30000, interestRate: 12.0, totalPortfolioValue: 450000 }
+                ]
+              },
+              {
+                id: "home",
+                name: "Cost for Home & Living",
+                type: "needs",
+                icon: "fa-house",
+                items: [
+                  { id: "h1", name: "Home Maintenance & Provisions", amount: 4192.04, interestRate: 0 }
+                ]
+              },
+              {
+                id: "entertainment",
+                name: "Entertainment & Wants",
+                type: "wants",
+                icon: "fa-ticket",
+                items: []
+              }
+            ]
+          }
         },
-        {
-          date: "2026-03-31",
-          periodType: "month",
-          income: 120000,
-          totalOutflow: 83000,
-          savings: 22000,
-          surplus: 37000,
-          investedNetWorth: 360000,
-          debtOutstanding: 3260000,
-          netWorth: -2900000
-        }
-      ]
+        annual: {}
+      }
     };
 
-    let appData = loadLocalState();
+    // --- AUTO-MIGRATION LOGIC ---
+    function migrateOldDataToStore(oldAppData) {
+      if (!oldAppData) return null;
+      console.log("Migrating older appData schema to multi-cadence appStore...");
+
+      const newStore = JSON.parse(JSON.stringify(DEFAULT_STORE));
+      newStore.currency = oldAppData.currency || "₹";
+      if (oldAppData.surveyAnswers) newStore.surveyAnswers = oldAppData.surveyAnswers;
+      if (oldAppData.profilePrefs) newStore.profilePrefs = oldAppData.profilePrefs;
+
+      const workingMonthKey = "2026-09";
+      newStore.periods.monthly[workingMonthKey] = {
+        periodKey: workingMonthKey,
+        date: "2026-09-30",
+        primaryIncome: oldAppData.income || 173000,
+        otherInflows: [],
+        categories: oldAppData.categories && oldAppData.categories.length > 0
+          ? oldAppData.categories
+          : DEFAULT_STORE.periods.monthly["2026-09"].categories
+      };
+
+      // Migrate past snapshots
+      if (Array.isArray(oldAppData.snapshots)) {
+        oldAppData.snapshots.forEach(s => {
+          const dateStr = s.date || "2026-09-30";
+          const mKey = dateStr.substring(0, 7);
+          if (!newStore.periods.monthly[mKey]) {
+            newStore.periods.monthly[mKey] = {
+              periodKey: mKey,
+              date: dateStr,
+              primaryIncome: s.income || oldAppData.income || 173000,
+              otherInflows: [],
+              categories: JSON.parse(JSON.stringify(newStore.periods.monthly[workingMonthKey].categories))
+            };
+          }
+        });
+      }
+
+      return newStore;
+    }
+
+    function loadStore() {
+      // Check current storage key
+      const currentSaved = localStorage.getItem(STORAGE_KEY);
+      if (currentSaved) {
+        try { return JSON.parse(currentSaved); } catch (e) { console.error(e); }
+      }
+
+      // Check for older localStorage version
+      const oldSaved = localStorage.getItem(OLD_STORAGE_KEY);
+      if (oldSaved) {
+        try {
+          const oldData = JSON.parse(oldSaved);
+          const migrated = migrateOldDataToStore(oldData);
+          if (migrated) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+            return migrated;
+          }
+        } catch (e) { console.error(e); }
+      }
+
+      return DEFAULT_STORE;
+    }
+
+    let appStore = loadStore();
 
     const QUESTIONS = [
       {
@@ -578,9 +683,9 @@
 
     let currentQuestionIdx = 0;
     let allocationChartInstance = null;
-    let timelineChartInstance = null;
+    let trajectoryChartInstance = null;
 
-    // --- Authentication & Screen Routing ---
+    // --- AUTH FLOW WITH CLOUD AUTO-MIGRATION ---
     auth.onAuthStateChanged((user) => {
       currentUser = user;
       const authScreen = document.getElementById("authScreen");
@@ -590,7 +695,6 @@
         authScreen.classList.add("hidden");
         appScreen.classList.remove("hidden");
 
-        // Set User Profile headers
         const photo = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || "User")}`;
         document.getElementById("navUserAvatar").src = photo;
         document.getElementById("navUserName").textContent = user.displayName ? user.displayName.split(' ')[0] : "Account";
@@ -598,25 +702,40 @@
         document.getElementById("profileName").textContent = user.displayName || "WealthPilot Member";
         document.getElementById("profileEmail").textContent = user.email || "";
 
-        // Attach Firestore Realtime Listener
         const userDoc = db.collection("users").doc(user.uid);
         if (unsubscribeFirestore) unsubscribeFirestore();
 
         unsubscribeFirestore = userDoc.onSnapshot((docSnap) => {
-          if (docSnap.exists && docSnap.data().appData) {
-            appData = docSnap.data().appData;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-            render();
-            document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
-          } else {
-            // First time login for this user: initialize Firestore doc
-            saveState();
+          if (docSnap.exists) {
+            const cloudData = docSnap.data();
+
+            // 1. If cloud already has the multi-cadence format
+            if (cloudData.appStore && cloudData.appStore.periods) {
+              appStore = cloudData.appStore;
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(appStore));
+              render();
+              document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
+              return;
+            }
+
+            // 2. BACKWARD COMPATIBILITY: Migrate older appData found on Cloud Firestore
+            if (cloudData.appData) {
+              const migrated = migrateOldDataToStore(cloudData.appData);
+              if (migrated) {
+                appStore = migrated;
+                saveStore();
+                document.getElementById("syncStatus").textContent = "Data Migrated & Synced ☁️";
+                return;
+              }
+            }
           }
+
+          // 3. If doc does not exist or empty, upload current store
+          saveStore();
         }, (err) => {
-          console.error("Firestore error:", err);
+          console.error(err);
           document.getElementById("syncStatus").textContent = "Sync Offline";
         });
-
       } else {
         authScreen.classList.remove("hidden");
         appScreen.classList.add("hidden");
@@ -628,338 +747,300 @@
       try {
         await auth.signInWithPopup(provider);
       } catch (err) {
-        if (err.code === 'auth/popup-blocked') {
-          await auth.signInWithRedirect(provider);
-        } else {
-          alert("Login error: " + err.message);
-        }
+        if (err.code === 'auth/popup-blocked') await auth.signInWithRedirect(provider);
+        else alert("Login error: " + err.message);
       }
     }
 
     async function handleSignOut() {
-      if (confirm("Are you sure you want to sign out?")) {
+      if (confirm("Sign out of WealthPilot?")) {
         closeProfileModal();
         await auth.signOut();
       }
     }
 
-    // --- Profile Modal & Preferences ---
-    function openProfileModal() {
-      if (!appData.profilePrefs) appData.profilePrefs = { emergencyMonths: 6, expectedReturnRate: 12.0 };
-      document.getElementById("prefEmergencyMonths").value = appData.profilePrefs.emergencyMonths || 6;
-      document.getElementById("prefExpectedReturn").value = appData.profilePrefs.expectedReturnRate || 12.0;
-      document.getElementById("profileModal").classList.remove("hidden");
-    }
-
-    function closeProfileModal() {
-      document.getElementById("profileModal").classList.add("hidden");
-    }
-
-    function saveProfilePreferences() {
-      if (!appData.profilePrefs) appData.profilePrefs = {};
-      appData.profilePrefs.emergencyMonths = Number(document.getElementById("prefEmergencyMonths").value) || 6;
-      appData.profilePrefs.expectedReturnRate = Number(document.getElementById("prefExpectedReturn").value) || 12.0;
-      closeProfileModal();
-      saveState();
-      alert("Preferences updated!");
-    }
-
-    // --- State Persistence (Local + Cloud) ---
-    function loadLocalState() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try { return JSON.parse(saved); } catch (e) { console.error(e); }
-      }
-      return DEFAULT_DATA;
-    }
-
-    async function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    async function saveStore() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appStore));
       render();
 
       if (currentUser) {
         try {
           await db.collection("users").doc(currentUser.uid).set({
-            appData: appData,
+            appStore: appStore,
             updatedAt: new Date().toISOString()
           });
           document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
-        } catch (err) {
-          console.error("Firestore save error:", err);
-          document.getElementById("syncStatus").textContent = "Sync failed (check rules)";
+        } catch (e) {
+          console.error(e);
+          document.getElementById("syncStatus").textContent = "Sync Pending";
         }
       }
     }
 
     function formatMoney(amount) {
-      return `${appData.currency} ${Number(amount).toLocaleString()}`;
+      return `${appStore.currency} ${Number(amount || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
     }
 
-    function calculateTotals() {
-      let totalOutflow = 0, totalSavings = 0, totalNeeds = 0, totalWants = 0;
-      let totalDebtOutstanding = 0, totalInvestedAssets = 0;
+    // --- CADENCE CONTROLLER ---
+    function setCadence(cadence) {
+      currentCadence = cadence;
+      
+      document.querySelectorAll("#cadenceTabs button").forEach(btn => {
+        if (btn.getAttribute("data-cadence") === cadence) {
+          btn.className = "px-3.5 py-2 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm";
+        } else {
+          btn.className = "px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900";
+        }
+      });
 
-      appData.categories.forEach(cat => {
-        cat.items.forEach(it => {
-          const val = Number(it.amount || 0);
-          totalOutflow += val;
-          if (cat.type === "savings") {
-            totalSavings += val;
+      const titles = {
+        daily: { title: "Daily Burn Mode (DoD)", sub: "Day-over-day tracking of micro-expenses and daily cash allowance", icon: "D" },
+        weekly: { title: "Weekly Review Mode (WoW)", sub: "Week-over-week run-rate velocity and weekly discipline audit", icon: "W" },
+        monthly: { title: "Monthly Audit Mode (MoM)", sub: "Month-over-month salary inflows, debt EMIs, and SIP compounding", icon: "M" },
+        annual: { title: "Annual Snapshot Mode (YoY)", sub: "Year-over-year asset expansion, liability reduction, and net worth milestone trajectory", icon: "Y" }
+      };
+
+      document.getElementById("cadenceTitle").textContent = titles[cadence].title;
+      document.getElementById("cadenceSubtitle").textContent = titles[cadence].sub;
+      document.getElementById("cadenceIcon").textContent = titles[cadence].icon;
+
+      initPeriodForCurrentCadence();
+      render();
+    }
+
+    function initPeriodForCurrentCadence() {
+      const picker = document.getElementById("activePeriodPicker");
+      const today = new Date().toISOString().split('T')[0];
+
+      if (!picker.value) picker.value = today;
+      const d = new Date(picker.value);
+
+      if (currentCadence === 'daily') {
+        currentPeriodKey = picker.value;
+      } else if (currentCadence === 'weekly') {
+        const onejan = new Date(d.getFullYear(), 0, 1);
+        const week = Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+        currentPeriodKey = `${d.getFullYear()}-W${week}`;
+      } else if (currentCadence === 'monthly') {
+        currentPeriodKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      } else if (currentCadence === 'annual') {
+        currentPeriodKey = `${d.getFullYear()}`;
+      }
+
+      if (!appStore.periods[currentCadence]) appStore.periods[currentCadence] = {};
+      if (!appStore.periods[currentCadence][currentPeriodKey]) {
+        const keys = Object.keys(appStore.periods[currentCadence]);
+        if (keys.length > 0) {
+          const lastPeriod = appStore.periods[currentCadence][keys[keys.length - 1]];
+          appStore.periods[currentCadence][currentPeriodKey] = JSON.parse(JSON.stringify(lastPeriod));
+          appStore.periods[currentCadence][currentPeriodKey].periodKey = currentPeriodKey;
+          appStore.periods[currentCadence][currentPeriodKey].date = picker.value;
+        } else {
+          appStore.periods[currentCadence][currentPeriodKey] = {
+            periodKey: currentPeriodKey,
+            date: picker.value,
+            primaryIncome: currentCadence === 'daily' ? 5000 : 173000,
+            otherInflows: [],
+            categories: JSON.parse(JSON.stringify(DEFAULT_STORE.periods.monthly["2026-09"].categories))
+          };
+        }
+      }
+    }
+
+    function onDatePickerChange() {
+      initPeriodForCurrentCadence();
+      render();
+    }
+
+    function getActivePeriod() {
+      if (!appStore.periods[currentCadence]) appStore.periods[currentCadence] = {};
+      if (!appStore.periods[currentCadence][currentPeriodKey]) initPeriodForCurrentCadence();
+      return appStore.periods[currentCadence][currentPeriodKey];
+    }
+
+    function saveActivePeriod() {
+      saveStore();
+      alert(`Period ${currentPeriodKey} synced successfully!`);
+    }
+
+    // --- FINANCIAL MATH ENGINE ---
+    function calculatePeriodTotals(period) {
+      const primaryInflow = Number(period.primaryIncome || 0);
+      const otherInflowTotal = (period.otherInflows || []).reduce((acc, it) => acc + Number(it.amount || 0), 0);
+      const totalInflow = primaryInflow + otherInflowTotal;
+
+      let totalOutflow = 0;
+      let totalSavings = 0;
+      let totalNeeds = 0;
+      let totalWants = 0;
+      let totalDebtBalance = 0;
+      let totalInvestedAssets = 0;
+
+      (period.categories || []).forEach(cat => {
+        (cat.items || []).forEach(it => {
+          const amt = Number(it.amount || 0);
+          totalOutflow += amt;
+          if (cat.type === 'savings') {
+            totalSavings += amt;
             totalInvestedAssets += Number(it.totalPortfolioValue || 0);
           }
-          if (cat.type === "needs") {
-            totalNeeds += val;
-            if (it.totalPrincipalOutstanding) totalDebtOutstanding += Number(it.totalPrincipalOutstanding || 0);
+          if (cat.type === 'needs') {
+            totalNeeds += amt;
+            if (it.totalPrincipalOutstanding) totalDebtBalance += Number(it.totalPrincipalOutstanding || 0);
           }
-          if (cat.type === "wants") totalWants += val;
+          if (cat.type === 'wants') totalWants += amt;
         });
       });
 
-      const remainingBalance = appData.income - totalOutflow;
-      const currentNetWorth = totalInvestedAssets - totalDebtOutstanding;
-      return { totalOutflow, totalSavings, totalNeeds, totalWants, remainingBalance, totalDebtOutstanding, totalInvestedAssets, currentNetWorth };
-    }
-
-    function evaluateIntelligence(totals) {
-      const income = appData.income || 1;
-      const savingsRate = (totals.totalSavings / income) * 100;
-      const needsRate = (totals.totalNeeds / income) * 100;
-      const wantsRate = (totals.totalWants / income) * 100;
-      const surplus = totals.remainingBalance;
-
-      let score = 55;
-      if (savingsRate >= 20) score += 20;
-      else if (savingsRate >= 10) score += 10;
-      else score -= 15;
-
-      if (needsRate <= 50) score += 15;
-      else if (needsRate > 65) score -= 10;
-      if (surplus < 0) score -= 25;
-      score = Math.max(10, Math.min(99, Math.round(score)));
-
-      let yoyNetWorthText = "No previous record";
-      let yoyAdvice = "";
-
-      const history = [...(appData.snapshots || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
-      if (history.length > 0) {
-        const oldest = history[0];
-        const diff = totals.currentNetWorth - oldest.netWorth;
-        const sign = diff >= 0 ? "+" : "";
-        yoyNetWorthText = `Net Change: ${sign}${formatMoney(diff)} vs ${oldest.date}`;
-
-        if (diff > 0) {
-          yoyAdvice = `Your wealth trajectory is positive! Net balance shifted up by ${formatMoney(diff)} since ${oldest.date}.`;
-        } else {
-          yoyAdvice = `Liabilities are outpacing growth compared to ${oldest.date}. Prioritize closing loans > 8% interest.`;
-        }
-      }
-
-      const actionItems = [];
-      const goal = appData.surveyAnswers.goalPriority || "Minimize Loans";
-      const targetMonths = (appData.profilePrefs && appData.profilePrefs.emergencyMonths) || 6;
-
-      if (surplus < 0) {
-        actionItems.push("Urgent: Cash deficit detected. Freeze discretionary wants and review recurring subscriptions.");
-      } else if (goal.includes("Loans")) {
-        actionItems.push(`Debt Avalanche Active: Direct ${formatMoney(surplus * 0.75)} surplus to your highest-rate loan.`);
-        actionItems.push(`Retain remaining ${formatMoney(surplus * 0.25)} in emergency buffer.`);
-      } else if (goal.includes("Investments")) {
-        actionItems.push(`Compounding Directive: Channel ${formatMoney(surplus * 0.8)} into broad-market index/flexicap mutual fund SIPs.`);
-        actionItems.push("Automate your transfers directly on salary credit day.");
-      } else {
-        actionItems.push(`Resilience Directive: Keep ${formatMoney(totals.totalNeeds * targetMonths)} in liquid funds (${targetMonths} months cover).`);
-      }
-
-      if (yoyAdvice) actionItems.push(yoyAdvice);
-      if (appData.surveyAnswers.otherGoalText) {
-        actionItems.push(`Custom Milestone: "${appData.surveyAnswers.otherGoalText}" — reserve ${formatMoney(Math.max(0, surplus * 0.2))} monthly.`);
-      }
+      const surplus = totalInflow - totalOutflow;
+      const netWorth = totalInvestedAssets - totalDebtBalance;
 
       return {
-        score,
-        yoyNetWorthText,
-        actionItems,
-        savingsRate,
-        needsRate,
-        wantsRate,
-        headline: surplus < 0 ? "Deficit Warning: Action Required" : `Surplus Available: ${formatMoney(surplus)}`,
-        body: `Based on your goal to '${goal}', you are directing ${savingsRate.toFixed(1)}% to savings and ${needsRate.toFixed(1)}% to needs. Keep prepaying loans that charge higher than your safe investment return threshold.`
+        primaryInflow,
+        otherInflowTotal,
+        totalInflow,
+        totalOutflow,
+        totalSavings,
+        totalNeeds,
+        totalWants,
+        surplus,
+        totalDebtBalance,
+        totalInvestedAssets,
+        netWorth
       };
     }
 
-    function commitSnapshot() {
-      const dateVal = document.getElementById("logDateInput").value;
-      const periodType = document.getElementById("logPeriodType").value;
+    function computeCadenceVelocity() {
+      const periodsObj = appStore.periods[currentCadence] || {};
+      const sortedKeys = Object.keys(periodsObj).sort();
+      const currentIdx = sortedKeys.indexOf(currentPeriodKey);
 
-      if (!dateVal) {
-        alert("Please pick a date for this snapshot.");
-        return;
+      let deltaText = "First Period Logged";
+
+      if (currentIdx > 0) {
+        const prevKey = sortedKeys[currentIdx - 1];
+        const prevTotals = calculatePeriodTotals(periodsObj[prevKey]);
+        const curTotals = calculatePeriodTotals(periodsObj[currentPeriodKey]);
+
+        const diff = curTotals.netWorth - prevTotals.netWorth;
+        const sign = diff >= 0 ? "+" : "";
+        const labelMap = { daily: "DoD", weekly: "WoW", monthly: "MoM", annual: "YoY" };
+        
+        deltaText = `${sign}${formatMoney(diff)} vs ${prevKey} (${labelMap[currentCadence]})`;
       }
 
-      const totals = calculateTotals();
-      const newSnapshot = {
-        date: dateVal,
-        periodType: periodType,
-        income: appData.income,
-        totalOutflow: totals.totalOutflow,
-        savings: totals.totalSavings,
-        surplus: totals.remainingBalance,
-        investedNetWorth: totals.totalInvestedAssets,
-        debtOutstanding: totals.totalDebtOutstanding,
-        netWorth: totals.currentNetWorth
-      };
-
-      if (!appData.snapshots) appData.snapshots = [];
-      const existingIdx = appData.snapshots.findIndex(s => s.date === dateVal);
-      if (existingIdx >= 0) {
-        appData.snapshots[existingIdx] = newSnapshot;
-      } else {
-        appData.snapshots.push(newSnapshot);
-      }
-
-      saveState();
-      alert(`Snapshot saved and synced for ${dateVal}!`);
+      return { deltaText };
     }
 
-    function clearHistory() {
-      if (confirm("Reset all recorded snapshot history? Your current ledger items will remain.")) {
-        appData.snapshots = [];
-        saveState();
-      }
-    }
-
-    function exportDataBackup() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
-      const downloadAnchor = document.createElement("a");
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `wealthpilot_backup_${new Date().toISOString().split('T')[0]}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    }
-
-    function importDataBackup(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (imported.categories && imported.income !== undefined) {
-            appData = imported;
-            saveState();
-            alert("Backup successfully restored and synced!");
-          } else {
-            alert("Invalid WealthPilot JSON structure.");
-          }
-        } catch (err) {
-          alert("Could not parse file: " + err.message);
-        }
-      };
-      reader.readAsText(file);
-    }
-
+    // --- RENDER FUNCTION ---
     function render() {
-      const totals = calculateTotals();
-      const intelligence = evaluateIntelligence(totals);
+      const period = getActivePeriod();
+      const totals = calculatePeriodTotals(period);
+      const velocity = computeCadenceVelocity();
 
-      document.getElementById("currencySelector").value = appData.currency;
-      document.getElementById("statIncomeDisplay").textContent = formatMoney(appData.income);
-      document.getElementById("statOutflowDisplay").textContent = formatMoney(totals.totalOutflow);
-      document.getElementById("statSavingsDisplay").textContent = formatMoney(totals.totalSavings);
+      document.getElementById("currencySelector").value = appStore.currency;
+      document.getElementById("advisorPeriodLabel").textContent = `${currentPeriodKey} (${currentCadence.toUpperCase()})`;
 
-      const remEl = document.getElementById("statRemainingDisplay");
-      remEl.textContent = formatMoney(totals.remainingBalance);
-      remEl.className = totals.remainingBalance < 0 ? "text-2xl font-bold text-rose-600" : "text-2xl font-bold text-emerald-600";
+      document.getElementById("statTotalInflowDisplay").textContent = formatMoney(totals.totalInflow);
+      document.getElementById("inflowBreakdownTag").textContent = `(${formatMoney(totals.primaryInflow)} Primary + ${formatMoney(totals.otherInflowTotal)} Other)`;
       
-      document.getElementById("statNetWorthDisplay").textContent = formatMoney(totals.currentNetWorth);
-      document.getElementById("yoyNetWorthGrowth").textContent = intelligence.yoyNetWorthText;
+      document.getElementById("statOutflowDisplay").textContent = formatMoney(totals.totalOutflow);
+      const outflowPercent = totals.totalInflow > 0 ? ((totals.totalOutflow / totals.totalInflow) * 100).toFixed(0) : 0;
+      document.getElementById("outflowRatioDisplay").textContent = `${outflowPercent}% of inflow`;
 
-      document.getElementById("outflowRatioDisplay").textContent = `${((totals.totalOutflow / (appData.income || 1)) * 100).toFixed(0)}% of inflow`;
-      document.getElementById("savingsRatioDisplay").textContent = `Currently ${intelligence.savingsRate.toFixed(1)}% (Target: ≥20%)`;
+      document.getElementById("statSavingsDisplay").textContent = formatMoney(totals.totalSavings);
+      const savRate = totals.totalInflow > 0 ? ((totals.totalSavings / totals.totalInflow) * 100).toFixed(1) : 0;
+      document.getElementById("savingsRatioDisplay").textContent = `Currently ${savRate}% (Target: ≥ 20%)`;
 
-      document.getElementById("healthScoreDisplay").textContent = `${intelligence.score} / 100`;
-      document.getElementById("healthScoreStatus").textContent = intelligence.score >= 75 ? "Optimal Growth" : "Attention Required";
+      const surplusEl = document.getElementById("statSurplusDisplay");
+      surplusEl.textContent = formatMoney(totals.surplus);
+      surplusEl.className = totals.surplus < 0 ? "text-2xl font-bold text-rose-600" : "text-2xl font-bold text-emerald-600";
 
-      document.getElementById("dailyAdvisorHeadline").textContent = intelligence.headline;
-      document.getElementById("dailyAdvisorBody").textContent = intelligence.body;
+      document.getElementById("statNetWorthDisplay").textContent = formatMoney(totals.netWorth);
+      document.getElementById("statNetWorthDelta").textContent = velocity.deltaText;
+      document.getElementById("cadenceDeltaVal").textContent = velocity.deltaText;
 
-      document.getElementById("needsPercentText").textContent = `${intelligence.needsRate.toFixed(1)}%`;
-      document.getElementById("needsProgressBar").style.width = `${Math.min(100, intelligence.needsRate)}%`;
+      const needsRate = totals.totalInflow > 0 ? ((totals.totalNeeds / totals.totalInflow) * 100).toFixed(1) : 0;
+      const wantsRate = totals.totalInflow > 0 ? ((totals.totalWants / totals.totalInflow) * 100).toFixed(1) : 0;
 
-      document.getElementById("wantsPercentText").textContent = `${intelligence.wantsRate.toFixed(1)}%`;
-      document.getElementById("wantsProgressBar").style.width = `${Math.min(100, intelligence.wantsRate)}%`;
+      document.getElementById("needsPercentText").textContent = `${needsRate}%`;
+      document.getElementById("needsProgressBar").style.width = `${Math.min(100, needsRate)}%`;
+      document.getElementById("wantsPercentText").textContent = `${wantsRate}%`;
+      document.getElementById("wantsProgressBar").style.width = `${Math.min(100, wantsRate)}%`;
+      document.getElementById("savingsProgressBarText").textContent = `${savRate}%`;
+      document.getElementById("savingsProgressBar").style.width = `${Math.min(100, savRate)}%`;
 
-      document.getElementById("savingsProgressBarText").textContent = `${intelligence.savingsRate.toFixed(1)}%`;
-      document.getElementById("savingsProgressBar").style.width = `${Math.min(100, intelligence.savingsRate)}%`;
+      let score = 55;
+      if (savRate >= 20) score += 20;
+      if (needsRate <= 50) score += 15;
+      if (totals.surplus < 0) score -= 25;
+      score = Math.max(10, Math.min(99, Math.round(score)));
 
-      document.getElementById("advisorActionList").innerHTML = intelligence.actionItems.map(item => `
+      document.getElementById("healthScoreDisplay").textContent = `${score} / 100`;
+      document.getElementById("healthScoreStatus").textContent = score >= 75 ? "Optimal Growth" : "Attention Required";
+
+      let headline = totals.surplus < 0 ? "Deficit Warning: Action Required" : `Surplus Available: ${formatMoney(totals.surplus)}`;
+      let body = `Based on your goal, you are directing ${savRate}% to investments and ${needsRate}% to commitments.`;
+      document.getElementById("dailyAdvisorHeadline").textContent = headline;
+      document.getElementById("dailyAdvisorBody").textContent = body;
+
+      const actionList = [];
+      if (totals.surplus < 0) {
+        actionList.push("Cash flow is running at a deficit. Trim discretionary wants or evaluate loan refinancing.");
+      } else {
+        actionList.push(`Debt Avalanche: Direct ${formatMoney(totals.surplus * 0.75)} surplus to your loan with the highest interest % first.`);
+        actionList.push(`Retain remaining ${formatMoney(totals.surplus * 0.25)} in liquid emergency funds.`);
+      }
+      if (totals.otherInflowTotal > 0) {
+        actionList.push(`Other Inflow Advantage: You generated ${formatMoney(totals.otherInflowTotal)} in non-primary income this period.`);
+      }
+      document.getElementById("advisorActionList").innerHTML = actionList.map(item => `
         <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
           <i class="fa-solid fa-circle-check text-indigo-600 mt-0.5"></i>
           <span class="text-slate-700 font-medium leading-relaxed">${item}</span>
         </div>
       `).join("");
 
-      const sortedHistory = [...(appData.snapshots || [])].sort((a, b) => new Date(b.date) - new Date(a.date));
-      document.getElementById("snapshotCountText").textContent = `${sortedHistory.length} Snapshots`;
-      document.getElementById("historyTableBody").innerHTML = sortedHistory.map(s => `
-        <tr class="hover:bg-slate-50">
-          <td class="py-2 font-medium">${s.date} <span class="text-[10px] text-slate-400 capitalize">(${s.periodType})</span></td>
-          <td class="py-2">${formatMoney(s.income)}</td>
-          <td class="py-2 ${s.surplus < 0 ? 'text-rose-500' : 'text-emerald-600'} font-semibold">${formatMoney(s.surplus)}</td>
-          <td class="py-2 text-right font-bold">${formatMoney(s.netWorth)}</td>
-        </tr>
-      `).join("");
-
-      renderCategories();
-      renderAllocationChart();
-      renderTimelineChart();
+      renderCategoriesLedger(period);
+      renderAllocationChart(period);
+      renderTrajectoryChart();
     }
 
-    function renderCategories() {
+    function renderCategoriesLedger(period) {
       const container = document.getElementById("categoriesContainer");
       container.innerHTML = "";
 
-      appData.categories.forEach(cat => {
-        const catTotal = cat.items.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      (period.categories || []).forEach(cat => {
+        const catTotal = (cat.items || []).reduce((acc, it) => acc + Number(it.amount || 0), 0);
         const card = document.createElement("div");
-        card.className = "bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4";
+        card.className = "bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3";
         card.innerHTML = `
-          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700">
                 <i class="fa-solid ${cat.icon}"></i>
               </div>
-              <div>
-                <h4 class="font-bold text-slate-900 text-sm">${cat.name}</h4>
-                <p class="text-xs text-slate-400 capitalize">${cat.type} Category</p>
-              </div>
+              <h4 class="font-bold text-slate-900 text-sm">${cat.name}</h4>
             </div>
-            <div class="text-right">
-              <span class="font-bold text-slate-900 text-base">${formatMoney(catTotal)}</span>
-            </div>
+            <span class="font-bold text-slate-900 text-base">${formatMoney(catTotal)}</span>
           </div>
 
-          <div class="space-y-2">
-            ${cat.items.map(item => `
-              <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors text-xs">
+          <div class="space-y-1.5">
+            ${(cat.items || []).map(it => `
+              <div onclick="openExpenseModal('${it.id}')" class="flex items-center justify-between p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors text-xs cursor-pointer border border-transparent hover:border-indigo-200">
                 <div>
-                  <span class="font-semibold text-slate-800">${item.name}</span>${item.interestRate ? `<span class="ml-1.5 text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-semibold">${item.interestRate}% Int.</span>` : ''}
-                  ${item.totalPrincipalOutstanding ? `<span class="ml-1 text-[10px] text-slate-500 font-medium">Bal: ${formatMoney(item.totalPrincipalOutstanding)}</span>` : ''}
-                  ${item.totalPortfolioValue ? `<span class="ml-1 text-[10px] text-emerald-600 font-semibold">Portfolio: ${formatMoney(item.totalPortfolioValue)}</span>` : ''}
+                  <span class="font-semibold text-slate-800">${it.name}</span>${it.interestRate ? `<span class="ml-1 text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-semibold">${it.interestRate}% Int.</span>` : ''}
+                  ${it.totalPrincipalOutstanding ? `<span class="ml-1 text-[10px] text-slate-500 font-medium">Bal: ${formatMoney(it.totalPrincipalOutstanding)}</span>` : ''}
                 </div>
-                <div class="flex items-center gap-3">
-                  <span class="font-semibold text-slate-900">${formatMoney(item.amount)}</span>
-                  <button onclick="deleteItem('${cat.id}', '${item.id}')" class="text-slate-400 hover:text-rose-600 transition-colors">
-                    <i class="fa-solid fa-trash-can text-xs"></i>
-                  </button>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900">${formatMoney(it.amount)}</span>
+                  <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                 </div>
               </div>
             `).join('')}
           </div>
 
-          <button onclick="promptAddItemToCat('${cat.id}')" class="w-full py-2 border border-dashed border-slate-300 rounded-lg text-xs font-semibold text-slate-500 hover:border-indigo-500 hover:text-indigo-600 transition-all flex items-center justify-center gap-1.5">
+          <button onclick="openExpenseModal(null, '${cat.id}')" class="w-full py-1.5 border border-dashed border-slate-300 rounded-lg text-xs font-semibold text-slate-500 hover:border-indigo-500 hover:text-indigo-600 transition-all flex items-center justify-center gap-1.5">
             <i class="fa-solid fa-plus text-[10px]"></i> Add ${cat.name} Item
           </button>
         `;
@@ -967,13 +1048,12 @@
       });
     }
 
-    function renderAllocationChart() {
+    function renderAllocationChart(period) {
       const ctx = document.getElementById("allocationChart").getContext("2d");
-      const labels = appData.categories.map(c => c.name);
-      const dataValues = appData.categories.map(c => c.items.reduce((s, it) => s + Number(it.amount || 0), 0));
+      const labels = (period.categories || []).map(c => c.name);
+      const dataValues = (period.categories || []).map(c => (c.items || []).reduce((s, it) => s + Number(it.amount || 0), 0));
 
       if (allocationChartInstance) allocationChartInstance.destroy();
-
       allocationChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -988,26 +1068,34 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
-          },
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
           cutout: '70%'
         }
       });
     }
 
-    function renderTimelineChart() {
-      const ctx = document.getElementById("timelineChart").getContext("2d");
-      const sorted = [...(appData.snapshots || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+    function renderTrajectoryChart() {
+      const ctx = document.getElementById("trajectoryChart").getContext("2d");
+      const periodsObj = appStore.periods[currentCadence] || {};
+      const sortedKeys = Object.keys(periodsObj).sort();
 
-      const labels = sorted.map(s => s.date);
-      const netWorthData = sorted.map(s => s.netWorth);
-      const savingsData = sorted.map(s => s.investedNetWorth || s.savings);
-      const debtData = sorted.map(s => s.debtOutstanding || 0);
+      document.getElementById("chartPeriodCount").textContent = `${sortedKeys.length} ${currentCadence.toUpperCase()} Records`;
+      document.getElementById("chartHeaderTitle").textContent = `${currentCadence.toUpperCase()} Wealth & Balance Trajectory`;
 
-      if (timelineChartInstance) timelineChartInstance.destroy();
+      const labels = sortedKeys;
+      const netWorthData = [];
+      const inflowData = [];
+      const outflowData = [];
 
-      timelineChartInstance = new Chart(ctx, {
+      sortedKeys.forEach(k => {
+        const t = calculatePeriodTotals(periodsObj[k]);
+        netWorthData.push(t.netWorth);
+        inflowData.push(t.totalInflow);
+        outflowData.push(t.totalOutflow);
+      });
+
+      if (trajectoryChartInstance) trajectoryChartInstance.destroy();
+      trajectoryChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
@@ -1016,23 +1104,23 @@
               label: 'Net Worth',
               data: netWorthData,
               borderColor: '#4f46e5',
-              backgroundColor: 'rgba(79, 70, 229, 0.1)',
+              backgroundColor: 'rgba(79, 70, 229, 0.08)',
               fill: true,
               tension: 0.3,
-              borderWidth: 3
+              borderWidth: 2.5
             },
             {
-              label: 'Investments / Assets',
-              data: savingsData,
+              label: 'Total Inflow',
+              data: inflowData,
               borderColor: '#10b981',
               tension: 0.3,
               borderWidth: 2
             },
             {
-              label: 'Outstanding Debt',
-              data: debtData,
+              label: 'Total Outflow',
+              data: outflowData,
               borderColor: '#f43f5e',
-              borderDash: [5, 5],
+              borderDash: [4, 4],
               tension: 0.3,
               borderWidth: 2
             }
@@ -1045,7 +1133,7 @@
             legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
             tooltip: {
               callbacks: {
-                label: (ctx) => ` ${ctx.dataset.label}: ${appData.currency} ${ctx.parsed.y.toLocaleString()}`
+                label: (c) => ` ${c.dataset.label}: ${appStore.currency} ${Number(c.parsed.y).toLocaleString()}`
               }
             }
           },
@@ -1057,6 +1145,215 @@
       });
     }
 
+    // --- INFLOW MODAL LOGIC ---
+    function openInflowModal() {
+      const period = getActivePeriod();
+      document.getElementById("inflowModalPeriodSubtitle").textContent = `Targeting Period: ${currentPeriodKey}`;
+      document.getElementById("inputPrimaryIncome").value = period.primaryIncome || 0;
+
+      const container = document.getElementById("otherInflowsContainer");
+      container.innerHTML = "";
+      (period.otherInflows || []).forEach(it => addOtherInflowRow(it.name, it.amount));
+
+      document.getElementById("inflowModal").classList.remove("hidden");
+    }
+
+    function closeInflowModal() {
+      document.getElementById("inflowModal").classList.add("hidden");
+    }
+
+    function addOtherInflowRow(name = "", amount = 0) {
+      const container = document.getElementById("otherInflowsContainer");
+      const row = document.createElement("div");
+      row.className = "flex items-center gap-2 other-inflow-row";
+      row.innerHTML = `
+        <input type="text" placeholder="Source (e.g. Bonus, Consulting)" value="${name}" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs other-inflow-name">
+        <input type="number" placeholder="Amount" value="${amount}" step="any" class="w-1/2 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs other-inflow-amount font-semibold">
+        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-trash-can"></i></button>
+      `;
+      container.appendChild(row);
+    }
+
+    function saveInflowModal() {
+      const period = getActivePeriod();
+      period.primaryIncome = Number(document.getElementById("inputPrimaryIncome").value) || 0;
+
+      const otherRows = document.querySelectorAll(".other-inflow-row");
+      const otherList = [];
+      otherRows.forEach(r => {
+        const name = r.querySelector(".other-inflow-name").value.trim();
+        const amt = Number(r.querySelector(".other-inflow-amount").value) || 0;
+        if (name && amt > 0) otherList.push({ name, amount: amt });
+      });
+      period.otherInflows = otherList;
+
+      closeInflowModal();
+      saveStore();
+    }
+
+    // --- EXPENSE / ITEM MODAL LOGIC ---
+    let currentEditingItemId = null;
+    let fallbackCatId = 'loans';
+
+    function openExpenseModal(itemId, targetCatId = 'loans') {
+      const period = getActivePeriod();
+      currentEditingItemId = itemId;
+      fallbackCatId = targetCatId;
+
+      document.getElementById("loanSpecificFields").classList.remove("hidden");
+      document.getElementById("savingsSpecificFields").classList.add("hidden");
+
+      if (itemId) {
+        document.getElementById("expenseModalTitle").textContent = "Edit Outflow Item";
+        document.getElementById("deleteExpenseBtn").classList.remove("hidden");
+
+        let found = null, foundCat = null;
+        period.categories.forEach(cat => {
+          (cat.items || []).forEach(it => {
+            if (it.id === itemId) { found = it; foundCat = cat; }
+          });
+        });
+
+        if (found) {
+          document.getElementById("editItemId").value = found.id;
+          document.getElementById("editItemName").value = found.name;
+          document.getElementById("editItemCategory").value = foundCat.id;
+          document.getElementById("editItemAmount").value = found.amount;
+          document.getElementById("editItemInterest").value = found.interestRate || "";
+          document.getElementById("editItemLoanBalance").value = found.totalPrincipalOutstanding || "";
+          document.getElementById("editItemPortfolioVal").value = found.totalPortfolioValue || "";
+        }
+      } else {
+        document.getElementById("expenseModalTitle").textContent = "Add Outflow Item";
+        document.getElementById("deleteExpenseBtn").classList.add("hidden");
+        document.getElementById("editItemId").value = "";
+        document.getElementById("editItemName").value = "";
+        document.getElementById("editItemCategory").value = targetCatId;
+        document.getElementById("editItemAmount").value = "";
+        document.getElementById("editItemInterest").value = "";
+        document.getElementById("editItemLoanBalance").value = "";
+        document.getElementById("editItemPortfolioVal").value = "";
+      }
+
+      toggleCategorySpecificFields();
+      document.getElementById("expenseModal").classList.remove("hidden");
+    }
+
+    function closeExpenseModal() {
+      document.getElementById("expenseModal").classList.add("hidden");
+    }
+
+    function toggleCategorySpecificFields() {
+      const cat = document.getElementById("editItemCategory").value;
+      if (cat === 'loans') {
+        document.getElementById("loanSpecificFields").classList.remove("hidden");
+        document.getElementById("savingsSpecificFields").classList.add("hidden");
+      } else if (cat === 'savings') {
+        document.getElementById("loanSpecificFields").classList.add("hidden");
+        document.getElementById("savingsSpecificFields").classList.remove("hidden");
+      } else {
+        document.getElementById("loanSpecificFields").classList.add("hidden");
+        document.getElementById("savingsSpecificFields").classList.add("hidden");
+      }
+    }
+
+    function saveExpenseModal() {
+      const period = getActivePeriod();
+      const itemId = document.getElementById("editItemId").value;
+      const name = document.getElementById("editItemName").value.trim();
+      const catId = document.getElementById("editItemCategory").value;
+      const amount = Number(document.getElementById("editItemAmount").value) || 0;
+      const interestRate = Number(document.getElementById("editItemInterest").value) || 0;
+      const principalBal = Number(document.getElementById("editItemLoanBalance").value) || 0;
+      const portVal = Number(document.getElementById("editItemPortfolioVal").value) || 0;
+
+      if (!name) { alert("Please provide an item description."); return; }
+
+      if (itemId) {
+        period.categories.forEach(c => {
+          c.items = (c.items || []).filter(i => i.id !== itemId);
+        });
+      }
+
+      let targetCat = period.categories.find(c => c.id === catId);
+      if (!targetCat) {
+        targetCat = { id: catId, name: catId, items: [] };
+        period.categories.push(targetCat);
+      }
+
+      targetCat.items.push({
+        id: itemId || "it_" + Date.now(),
+        name: name,
+        amount: amount,
+        interestRate: catId === 'loans' ? interestRate : 0,
+        totalPrincipalOutstanding: catId === 'loans' ? principalBal : 0,
+        totalPortfolioValue: catId === 'savings' ? portVal : 0
+      });
+
+      closeExpenseModal();
+      saveStore();
+    }
+
+    function deleteActiveExpenseItem() {
+      if (confirm("Delete this expense item?")) {
+        const period = getActivePeriod();
+        const itemId = document.getElementById("editItemId").value;
+        period.categories.forEach(c => {
+          c.items = (c.items || []).filter(i => i.id !== itemId);
+        });
+        closeExpenseModal();
+        saveStore();
+      }
+    }
+
+    // --- USER PROFILE & BACKUP HELPERS ---
+    function openProfileModal() { document.getElementById("profileModal").classList.remove("hidden"); }
+    function closeProfileModal() { document.getElementById("profileModal").classList.add("hidden"); }
+
+    function exportDataBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appStore, null, 2));
+      const a = document.createElement("a");
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `wealthpilot_multicadence_backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function importDataBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          
+          // 1. If it's the new multi-cadence format
+          if (imported.periods) {
+            appStore = imported;
+            saveStore();
+            alert("Multi-cadence history successfully restored!");
+            return;
+          }
+
+          // 2. If it's your previously downloaded JSON backup (old format)
+          if (imported.categories || imported.income !== undefined) {
+            const migrated = migrateOldDataToStore(imported);
+            if (migrated) {
+              appStore = migrated;
+              saveStore();
+              alert("Old format backup successfully migrated & restored!");
+              return;
+            }
+          }
+
+          alert("Invalid WealthPilot JSON file structure.");
+        } catch (err) { alert("Parse error: " + err.message); }
+      };
+      reader.readAsText(file);
+    }
+
+    // --- QUESTIONNAIRE FLOW ---
     function openAdvisorModal() {
       currentQuestionIdx = 0;
       document.getElementById("totalStepCount").textContent = QUESTIONS.length;
@@ -1066,15 +1363,14 @@
 
     function closeAdvisorModal() {
       document.getElementById("advisorModal").classList.add("hidden");
-      saveState();
+      saveStore();
     }
 
     function renderQuestionStep() {
       const q = QUESTIONS[currentQuestionIdx];
       document.getElementById("currentStepIdx").textContent = currentQuestionIdx + 1;
       const container = document.getElementById("questionContainer");
-
-      const savedAnswer = appData.surveyAnswers[q.key] || "";
+      const savedAnswer = appStore.surveyAnswers[q.key] || "";
       const isOtherChosen = savedAnswer === "Other" || (!q.options.some(o => o.value === savedAnswer && !o.isCustom) && savedAnswer !== "");
 
       container.innerHTML = `
@@ -1083,7 +1379,6 @@
             <h4 class="font-bold text-slate-900 text-base">${q.title}</h4>
             <p class="text-xs text-slate-500 mt-1">${q.description}</p>
           </div>
-
           <div class="space-y-2.5">
             ${q.options.map(opt => {
               const isChecked = (opt.isCustom && isOtherChosen) || (!opt.isCustom && savedAnswer === opt.value);
@@ -1095,10 +1390,9 @@
               `;
             }).join('')}
           </div>
-
           <div id="otherTextInputContainer" class="${isOtherChosen ? '' : 'hidden'} mt-3">
-            <label class="block text-xs font-semibold text-indigo-700 mb-1">Specify your custom answer:</label>
-            <input type="text" id="customOtherInput" value="${appData.surveyAnswers.otherGoalText || ''}" placeholder="e.g. Prepay car loan completely by December 2026..." class="w-full text-xs px-3 py-2 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+            <label class="block text-xs font-semibold text-indigo-700 mb-1">Specify custom target:</label>
+            <input type="text" id="customOtherInput" value="${appStore.surveyAnswers.otherGoalText || ''}" placeholder="e.g. Prepay Housing Loan by December 2028..." class="w-full text-xs px-3 py-2 border border-indigo-300 rounded-lg">
           </div>
         </div>
       `;
@@ -1108,7 +1402,7 @@
     }
 
     function onOptionSelect(key, val, isCustom) {
-      appData.surveyAnswers[key] = val;
+      appStore.surveyAnswers[key] = val;
       const otherContainer = document.getElementById("otherTextInputContainer");
       if (isCustom) otherContainer.classList.remove("hidden");
       else otherContainer.classList.add("hidden");
@@ -1118,12 +1412,11 @@
       const q = QUESTIONS[currentQuestionIdx];
       const selected = document.querySelector('input[name="advisor_mcq"]:checked');
       if (selected) {
-        appData.surveyAnswers[q.key] = selected.value;
+        appStore.surveyAnswers[q.key] = selected.value;
         if (selected.value === "Other") {
-          appData.surveyAnswers.otherGoalText = document.getElementById("customOtherInput").value;
+          appStore.surveyAnswers.otherGoalText = document.getElementById("customOtherInput").value;
         }
       }
-
       if (currentQuestionIdx < QUESTIONS.length - 1) {
         currentQuestionIdx++;
         renderQuestionStep();
@@ -1139,73 +1432,14 @@
       }
     }
 
-    function promptEditIncome() {
-      const val = prompt("Enter your monthly Net Inflow / Income:", appData.income);
-      if (val !== null && !isNaN(val) && Number(val) >= 0) {
-        appData.income = Number(val);
-        saveState();
-      }
-    }
-
-    function promptAddItemToCat(catId) {
-      const cat = appData.categories.find(c => c.id === catId);
-      if (!cat) return;
-
-      const name = prompt(`Item name for ${cat.name}:`);
-      if (!name) return;
-
-      const amountStr = prompt(`Monthly commitment / outflow for "${name}":`);
-      if (!amountStr || isNaN(amountStr)) return;
-
-      let interest = 0;
-      let principalBal = 0;
-      let portfolioVal = 0;
-
-      if (catId === "loans") {
-        const intStr = prompt("Interest rate % p.a. (e.g. 8.5):", "8.5");
-        if (intStr && !isNaN(intStr)) interest = Number(intStr);
-        const balStr = prompt("Total outstanding loan principal balance:", "2000000");
-        if (balStr && !isNaN(balStr)) principalBal = Number(balStr);
-      } else if (catId === "savings") {
-        const portStr = prompt("Total accumulated portfolio value for this asset:", "150000");
-        if (portStr && !isNaN(portStr)) portfolioVal = Number(portStr);
-      }
-
-      cat.items.push({
-        id: "item_" + Date.now(),
-        name: name,
-        amount: Number(amountStr),
-        interestRate: interest,
-        totalPrincipalOutstanding: principalBal,
-        totalPortfolioValue: portfolioVal
-      });
-
-      saveState();
-    }
-
-    function promptNewItem() {
-      const options = appData.categories.map((c, i) => `${i + 1}. ${c.name}`).join("\n");
-      const choice = prompt(`Select category by number:\n${options}`);
-      const index = parseInt(choice) - 1;
-      if (!isNaN(index) && appData.categories[index]) {
-        promptAddItemToCat(appData.categories[index].id);
-      }
-    }
-
-    function deleteItem(catId, itemId) {
-      const cat = appData.categories.find(c => c.id === catId);
-      if (cat) {
-        cat.items = cat.items.filter(i => i.id !== itemId);
-        saveState();
-      }
-    }
-
-    document.getElementById("logDateInput").value = new Date().toISOString().split('T')[0];
-
+    // Default Currency Listener
     document.getElementById("currencySelector").addEventListener("change", (e) => {
-      appData.currency = e.target.value;
-      saveState();
+      appStore.currency = e.target.value;
+      saveStore();
     });
+
+    // Boot the Multi-Cadence Engine
+    setCadence('monthly');
   </script>
 </body>
 </html>
