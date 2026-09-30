@@ -3,153 +3,208 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WealthPilot - Daily Financial Advisor & Budget Planner</title>
+  <title>WealthPilot Pro - Multi-Period Wealth & Budget Journal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-16">
+
   <!-- Top Navbar -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-indigo-100">
-          <i class="fa-solid fa-chart-pie text-lg"></i>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-indigo-100">
+          <i class="fa-solid fa-chart-line text-lg"></i>
         </div>
         <div>
-          <h1 class="font-bold text-lg text-slate-900 leading-tight">WealthPilot</h1>
-          <p class="text-xs text-slate-500">Autonomous Financial Advisor & Budget Engine</p>
+          <h1 class="font-bold text-lg text-slate-900 leading-tight">WealthPilot <span class="text-xs bg-indigo-100 text-indigo-700 font-semibold px-2 py-0.5 rounded-full ml-1">Timeline</span></h1>
+          <p class="text-xs text-slate-500">Autonomous Financial Advisor & Multi-Year Ledger</p>
         </div>
       </div>
-      <div class="flex items-center space-x-3">
+      
+      <!-- Action Toolbar -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
         <!-- Currency Selector -->
-        <select id="currencySelector" class="bg-slate-100 border border-slate-300 text-xs font-semibold rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="$">USD ($)</option>
+        <select id="currencySelector" class="bg-slate-100 border border-slate-300 text-xs font-semibold rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-indigo-500">
           <option value="₹" selected>INR (₹)</option>
+          <option value="$">USD ($)</option>
           <option value="€">EUR (€)</option>
           <option value="£">GBP (£)</option>
           <option value="A$">AUD (A$)</option>
         </select>
 
-        <button onclick="openAdvisorModal()" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all shadow-sm">
-          <i class="fa-solid fa-user-tie"></i>
-          <span>Advisor Questionnaire</span>
+        <!-- Backup & Restore -->
+        <button onclick="exportDataBackup()" title="Download Backup" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg text-xs font-semibold transition-all">
+          <i class="fa-solid fa-download"></i>
+        </button>
+        <button onclick="document.getElementById('importFileInput').click()" title="Restore Backup" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg text-xs font-semibold transition-all">
+          <i class="fa-solid fa-upload"></i>
+        </button>
+        <input type="file" id="importFileInput" class="hidden" accept=".json" onchange="importDataBackup(event)">
+
+        <!-- Advisor Questionnaire -->
+        <button onclick="openAdvisorModal()" class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all shadow-sm">
+          <i class="fa-solid fa-sliders"></i>
+          <span class="hidden sm:inline">Preferences</span>
         </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Daily Advisor Notice / Action Alert -->
-    <div id="advisorBanner" class="mb-8 rounded-2xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white p-6 shadow-xl relative overflow-hidden">
-      <div class="absolute -right-8 -bottom-8 opacity-10 pointer-events-none text-9xl text-white">
-        <i class="fa-solid fa-brain"></i>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    
+    <!-- Snapshot Time Controls & Quick Log Bar -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-sm text-slate-900">Active Logging Snapshot</h3>
+          <p class="text-xs text-slate-500">Pick cadence, adjust figures below, and record to time-series history</p>
+        </div>
       </div>
-      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+      <div class="flex flex-wrap items-center gap-2.5">
+        <select id="logPeriodType" class="text-xs font-medium border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
+          <option value="month" selected>Monthly Audit</option>
+          <option value="day">Daily Micro-log</option>
+          <option value="week">Weekly Review</option>
+          <option value="year">Annual Snapshot</option>
+        </select>
+        <input type="date" id="logDateInput" class="text-xs font-medium border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
+        
+        <button onclick="commitSnapshot()" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all shadow-sm">
+          <i class="fa-solid fa-bookmark"></i> Save Snapshot
+        </button>
+      </div>
+    </div>
+
+    <!-- Daily Advisor Notice & YoY Intelligence Banner -->
+    <div id="advisorBanner" class="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 shadow-xl relative overflow-hidden">
+      <div class="absolute -right-6 -bottom-6 opacity-10 pointer-events-none text-9xl text-white">
+        <i class="fa-solid fa-compass"></i>
+      </div>
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div class="space-y-2">
-          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-500/30 border border-indigo-400/30 text-indigo-200 text-xs font-semibold">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            Daily Advisor Directive • <span id="currentDateStr">Today</span>
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 text-xs font-semibold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Advisor Synthesis • <span id="advisorDateTag">Current Portfolio State</span>
           </div>
-          <h2 class="text-xl md:text-2xl font-bold" id="dailyAdvisorHeadline">Analyzing your balance sheets...</h2>
-          <p class="text-indigo-200 text-sm max-w-2xl leading-relaxed" id="dailyAdvisorBody">
-            Complete the interactive questionnaire to give me a realistic picture of your goals, debt interest rates, and risk appetite.
+          <h2 class="text-xl sm:text-2xl font-bold" id="dailyAdvisorHeadline">Synthesizing time-series balance...</h2>
+          <p class="text-indigo-200 text-xs sm:text-sm max-w-2xl leading-relaxed" id="dailyAdvisorBody">
+            Log snapshots across multiple periods to activate Year-over-Year (YoY) velocity checks and compound trajectory models.
           </p>
         </div>
-        <div class="flex items-center gap-4 bg-white/10 backdrop-blur-sm px-5 py-4 rounded-xl border border-white/10">
+
+        <!-- Calculated Net Worth Display -->
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 min-w-[280px]">
           <div>
-            <div class="text-xs text-indigo-200">Financial Health Score</div>
-            <div class="text-3xl font-extrabold text-white" id="healthScoreDisplay">-- / 100</div>
+            <div class="text-[11px] text-indigo-200 font-medium">Estimated Net Worth</div>
+            <div class="text-xl sm:text-2xl font-extrabold text-white" id="statNetWorthDisplay">--</div>
+            <div class="text-[10px] text-emerald-400 font-medium mt-0.5" id="yoyNetWorthGrowth">YoY: Calibrating...</div>
           </div>
-          <div class="h-10 w-px bg-white/20"></div>
-          <div id="healthBadge" class="text-xs font-bold px-2.5 py-1 rounded bg-amber-500/20 text-amber-300">
-            Pending Survey
+          <div class="border-l border-white/10 pl-3 sm:pl-4">
+            <div class="text-[11px] text-indigo-200 font-medium">Financial Health</div>
+            <div class="text-xl sm:text-2xl font-extrabold text-amber-300" id="healthScoreDisplay">-- / 100</div>
+            <div class="text-[10px] text-indigo-300 font-medium mt-0.5" id="healthScoreStatus">Calibrating</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Overview Stat Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-      <!-- Inflow Card -->
+    <!-- Time-Series Chart (YoY & Trend View) -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Timeline & Year-over-Year (YoY) Wealth Trajectory</h3>
+          <p class="text-xs text-slate-500">Historical progression of Net Worth, Total Wealth/SIPs, and Outstanding Debt</p>
+        </div>
+        <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg w-fit">
+          <span id="snapshotCountText">0 Snapshots</span> Logged
+        </div>
+      </div>
+      <div class="h-64 sm:h-72 w-full">
+        <canvas id="timelineChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Active Balance Metrics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- Income -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <div class="flex items-center justify-between text-slate-500 text-sm mb-2">
-          <span>Net Monthly Income</span>
+        <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
+          <span>Inflow / Income</span>
           <i class="fa-solid fa-wallet text-emerald-600 bg-emerald-50 p-2 rounded-lg"></i>
         </div>
-        <div class="flex items-baseline gap-1">
-          <span class="text-2xl font-bold text-slate-900" id="statIncomeDisplay">₹0</span>
-        </div>
+        <div class="text-2xl font-bold text-slate-900" id="statIncomeDisplay">₹0</div>
         <button onclick="promptEditIncome()" class="mt-2 text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
-          <i class="fa-solid fa-pen-to-square"></i> Change Income
+          <i class="fa-solid fa-pen-to-square"></i> Modify Income
         </button>
       </div>
 
-      <!-- Total Outflow -->
+      <!-- Outflow -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <div class="flex items-center justify-between text-slate-500 text-sm mb-2">
-          <span>Total Committed Outflow</span>
-          <i class="fa-solid fa-arrow-trend-down text-rose-600 bg-rose-50 p-2 rounded-lg"></i>
+        <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
+          <span>Current Commitments</span>
+          <i class="fa-solid fa-receipt text-rose-600 bg-rose-50 p-2 rounded-lg"></i>
         </div>
-        <div class="flex items-baseline gap-1">
-          <span class="text-2xl font-bold text-slate-900" id="statOutflowDisplay">₹0</span>
-        </div>
-        <div class="text-xs text-slate-500 mt-2" id="outflowRatioDisplay">0% of income</div>
+        <div class="text-2xl font-bold text-slate-900" id="statOutflowDisplay">₹0</div>
+        <div class="text-xs text-slate-500 mt-2" id="outflowRatioDisplay">0% of inflow</div>
       </div>
 
-      <!-- Savings & Investments -->
+      <!-- Monthly Savings & SIPs -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <div class="flex items-center justify-between text-slate-500 text-sm mb-2">
-          <span>Wealth & Savings (Mutual Funds)</span>
-          <i class="fa-solid fa-seedling text-indigo-600 bg-indigo-50 p-2 rounded-lg"></i>
+        <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
+          <span>Investments & Mutual Funds</span>
+          <i class="fa-solid fa-piggy-bank text-indigo-600 bg-indigo-50 p-2 rounded-lg"></i>
         </div>
-        <div class="flex items-baseline gap-1">
-          <span class="text-2xl font-bold text-slate-900" id="statSavingsDisplay">₹0</span>
-        </div>
-        <div class="text-xs text-slate-500 mt-2" id="savingsRatioDisplay">Target: >= 20%</div>
+        <div class="text-2xl font-bold text-slate-900" id="statSavingsDisplay">₹0</div>
+        <div class="text-xs text-slate-500 mt-2" id="savingsRatioDisplay">Target: ≥ 20%</div>
       </div>
 
-      <!-- Unallocated / Remaining Balance -->
+      <!-- Remaining Unassigned Surplus -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <div class="flex items-center justify-between text-slate-500 text-sm mb-2">
-          <span>Remaining Cash Balance</span>
-          <i class="fa-solid fa-piggy-bank text-amber-600 bg-amber-50 p-2 rounded-lg"></i>
+        <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
+          <span>Surplus / Unallocated</span>
+          <i class="fa-solid fa-coins text-amber-600 bg-amber-50 p-2 rounded-lg"></i>
         </div>
-        <div class="flex items-baseline gap-1">
-          <span class="text-2xl font-bold" id="statRemainingDisplay">₹0</span>
-        </div>
-        <div class="text-xs text-slate-500 mt-2" id="statRemainingSubtext">Unassigned surplus</div>
+        <div class="text-2xl font-bold" id="statRemainingDisplay">₹0</div>
+        <div class="text-xs text-slate-500 mt-2" id="statRemainingSubtext">Available buffer</div>
       </div>
     </div>
 
-    <!-- Main Grid: Categories Management & Visual Analytics -->
+    <!-- Main Workspace: Categories, 50/30/20 & Advisor Insights -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      <!-- Left Column: Categories List -->
+      
+      <!-- Left Column: Categories List & Ledger Editor -->
       <div class="lg:col-span-7 space-y-6">
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-bold text-slate-900">Expenses & Commitments</h3>
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Current Ledger Breakdown</h3>
+            <p class="text-xs text-slate-500">Edit entries for your active snapshot</p>
+          </div>
           <button onclick="promptNewItem()" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all">
             <i class="fa-solid fa-plus"></i> Add Item
           </button>
         </div>
 
-        <div id="categoriesContainer" class="space-y-4">
-          <!-- Dynamically populated categories -->
-        </div>
+        <div id="categoriesContainer" class="space-y-4"></div>
 
-        <!-- 50/30/20 Rule Benchmark Card -->
+        <!-- 50/30/20 Rule Analysis -->
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <div class="flex items-center justify-between mb-3">
             <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
               <i class="fa-solid fa-scale-balanced text-indigo-600"></i> 50 / 30 / 20 Rule Analysis
             </h4>
-            <span class="text-xs text-slate-400 font-medium">Gold Standard Rule</span>
+            <span class="text-xs text-slate-400 font-medium">Standard Benchmark</span>
           </div>
 
           <div class="space-y-3 text-xs">
@@ -186,37 +241,56 @@
         </div>
       </div>
 
-      <!-- Right Column: Graphs & Recommendations -->
+      <!-- Right Column: Pie Split & Advisor Directive -->
       <div class="lg:col-span-5 space-y-6">
-        <!-- Visual Allocation Donut -->
+        <!-- Donut Split -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <h3 class="text-base font-bold text-slate-900 mb-4">Cash Outflow Distribution</h3>
-          <div class="relative h-64 flex items-center justify-center">
+          <h3 class="text-base font-bold text-slate-900 mb-4">Outflow Allocation</h3>
+          <div class="relative h-60 flex items-center justify-center">
             <canvas id="allocationChart"></canvas>
           </div>
         </div>
 
-        <!-- Custom Advisor Insights Box -->
+        <!-- Advisor Action Checklist -->
         <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
           <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center">
               <i class="fa-solid fa-lightbulb"></i>
             </div>
             <div>
-              <h4 class="font-bold text-sm text-slate-900">Custom Advisor Action Items</h4>
-              <p class="text-xs text-slate-500">Based on your survey & balance status</p>
+              <h4 class="font-bold text-sm text-slate-900">Advisor Directives</h4>
+              <p class="text-xs text-slate-500">Continuous suggestions based on history</p>
             </div>
           </div>
 
-          <div id="advisorActionList" class="space-y-3">
-            <!-- Dynamically populated advisor points -->
+          <div id="advisorActionList" class="space-y-2.5"></div>
+        </div>
+
+        <!-- Snapshot History Log Table -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-sm text-slate-900">Recorded Timeline History</h4>
+            <button onclick="clearHistory()" class="text-[11px] text-rose-600 hover:underline">Reset All</button>
+          </div>
+          <div class="max-h-48 overflow-y-auto custom-scrollbar">
+            <table class="w-full text-left text-xs">
+              <thead class="text-slate-400 border-b border-slate-100">
+                <tr>
+                  <th class="py-1.5 font-medium">Date</th>
+                  <th class="py-1.5 font-medium">Inflow</th>
+                  <th class="py-1.5 font-medium">Surplus</th>
+                  <th class="py-1.5 font-medium text-right">Net Worth</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- Interactive Questionnaire Modal -->
+  <!-- Interactive Questionnaire Modal (MCQ + Other Text) -->
   <div id="advisorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-100">
       <div class="flex items-center justify-between pb-4 border-b border-slate-100">
@@ -234,12 +308,8 @@
         </button>
       </div>
 
-      <!-- Question Content -->
-      <div id="questionContainer">
-        <!-- Dynamically injected MCQ question -->
-      </div>
+      <div id="questionContainer"></div>
 
-      <!-- Modal Footer -->
       <div class="flex items-center justify-between pt-4 border-t border-slate-100">
         <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-100">
           Previous
@@ -252,7 +322,9 @@
   </div>
 
   <script>
-    // --- Initial State and Data Models ---
+    // --- Data Model with Multi-Period History ---
+    const STORAGE_KEY = "wealthpilot_v2_history";
+
     const DEFAULT_DATA = {
       currency: "₹",
       income: 120000,
@@ -262,10 +334,9 @@
           name: "Mortgages & Loans",
           type: "needs",
           icon: "fa-building-columns",
-          color: "rose",
           items: [
-            { id: "l1", name: "Home Loan / Mortgage", amount: 35000, interestRate: 8.5 },
-            { id: "l2", name: "Car Loan EMI", amount: 12000, interestRate: 9.2 }
+            { id: "l1", name: "Home Loan / Mortgage", amount: 35000, interestRate: 8.5, totalPrincipalOutstanding: 2800000 },
+            { id: "l2", name: "Car Loan EMI", amount: 12000, interestRate: 9.2, totalPrincipalOutstanding: 320000 }
           ]
         },
         {
@@ -273,10 +344,9 @@
           name: "Savings & Investments",
           type: "savings",
           icon: "fa-arrow-trend-up",
-          color: "emerald",
           items: [
-            { id: "s1", name: "Index & Mutual Funds SIP", amount: 20000, interestRate: 12.0 },
-            { id: "s2", name: "Term & Health Insurance", amount: 5000, interestRate: 0 }
+            { id: "s1", name: "Index & Mutual Funds SIP", amount: 20000, interestRate: 12.0, totalPortfolioValue: 420000 },
+            { id: "s2", name: "Term & Health Insurance", amount: 5000, interestRate: 0, totalPortfolioValue: 0 }
           ]
         },
         {
@@ -284,10 +354,9 @@
           name: "Cost for Home & Living",
           type: "needs",
           icon: "fa-house",
-          color: "indigo",
           items: [
-            { id: "h1", name: "Groceries & Kitchen", amount: 14000, interestRate: 0 },
-            { id: "h2", name: "Utilities, Electricity & Gas", amount: 4500, interestRate: 0 }
+            { id: "h1", name: "Groceries & Provisions", amount: 14000, interestRate: 0 },
+            { id: "h2", name: "Utilities, Fuel & Bills", amount: 5500, interestRate: 0 }
           ]
         },
         {
@@ -295,10 +364,9 @@
           name: "Entertainment & Wants",
           type: "wants",
           icon: "fa-ticket",
-          color: "amber",
           items: [
             { id: "e1", name: "Dining Out & Ordering", amount: 6000, interestRate: 0 },
-            { id: "e2", name: "Subscriptions & Cinema", amount: 2000, interestRate: 0 }
+            { id: "e2", name: "Subscriptions & Cinema", amount: 2500, interestRate: 0 }
           ]
         }
       ],
@@ -308,17 +376,42 @@
         prepayPhilosophy: "Avalanche (Highest Interest First)",
         entertainmentTolerance: "Cut by 20%",
         otherGoalText: ""
-      }
+      },
+      // Time-series snapshots
+      snapshots: [
+        {
+          date: "2025-09-30",
+          periodType: "year",
+          income: 105000,
+          totalOutflow: 78000,
+          savings: 15000,
+          surplus: 27000,
+          investedNetWorth: 280000,
+          debtOutstanding: 3450000,
+          netWorth: -3170000
+        },
+        {
+          date: "2026-03-31",
+          periodType: "month",
+          income: 120000,
+          totalOutflow: 83000,
+          savings: 22000,
+          surplus: 37000,
+          investedNetWorth: 360000,
+          debtOutstanding: 3260000,
+          netWorth: -2900000
+        }
+      ]
     };
 
     let appData = loadState();
 
-    // Questionnaire Structure (MCQ + Other with dynamic text)
+    // Questionnaire Structure (MCQ + Other)
     const QUESTIONS = [
       {
         key: "goalPriority",
         title: "What is your primary financial objective right now?",
-        description: "This helps me direct your remaining monthly surplus with precision.",
+        description: "Helps me direct your remaining monthly surplus with precision.",
         options: [
           { label: "Aggressively reduce high-interest debt & mortgage", value: "Minimize Loans" },
           { label: "Maximize long-term compounding in Mutual Funds & Stocks", value: "Maximize Investments" },
@@ -373,11 +466,12 @@
     ];
 
     let currentQuestionIdx = 0;
-    let chartInstance = null;
+    let allocationChartInstance = null;
+    let timelineChartInstance = null;
 
     // --- State Persistence ---
     function loadState() {
-      const saved = localStorage.getItem("wealthpilot_state");
+      const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         try { return JSON.parse(saved); } catch (e) { console.error(e); }
       }
@@ -385,173 +479,258 @@
     }
 
     function saveState() {
-      localStorage.setItem("wealthpilot_state", JSON.stringify(appData));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
       render();
     }
 
-    // --- Formatters ---
     function formatMoney(amount) {
       return `${appData.currency} ${Number(amount).toLocaleString()}`;
     }
 
-    // --- Calculation Engine ---
+    // --- Calculations ---
     function calculateTotals() {
       let totalOutflow = 0;
       let totalSavings = 0;
       let totalNeeds = 0;
       let totalWants = 0;
+      let totalDebtOutstanding = 0;
+      let totalInvestedAssets = 0;
 
       appData.categories.forEach(cat => {
-        const catSum = cat.items.reduce((acc, it) => acc + Number(it.amount || 0), 0);
-        totalOutflow += catSum;
-        if (cat.type === "savings") totalSavings += catSum;
-        if (cat.type === "needs") totalNeeds += catSum;
-        if (cat.type === "wants") totalWants += catSum;
+        cat.items.forEach(it => {
+          const val = Number(it.amount || 0);
+          totalOutflow += val;
+          if (cat.type === "savings") {
+            totalSavings += val;
+            totalInvestedAssets += Number(it.totalPortfolioValue || 0);
+          }
+          if (cat.type === "needs") {
+            totalNeeds += val;
+            if (it.totalPrincipalOutstanding) {
+              totalDebtOutstanding += Number(it.totalPrincipalOutstanding || 0);
+            }
+          }
+          if (cat.type === "wants") totalWants += val;
+        });
       });
 
       const remainingBalance = appData.income - totalOutflow;
-      return { totalOutflow, totalSavings, totalNeeds, totalWants, remainingBalance };
+      const currentNetWorth = totalInvestedAssets - totalDebtOutstanding;
+
+      return { totalOutflow, totalSavings, totalNeeds, totalWants, remainingBalance, totalDebtOutstanding, totalInvestedAssets, currentNetWorth };
     }
 
-    // --- Financial Health & Daily Advisor Algorithm ---
-    function evaluateHealthAndAdvice(totals) {
+    // --- Advisor & YoY Intelligence ---
+    function evaluateIntelligence(totals) {
       const income = appData.income || 1;
       const savingsRate = (totals.totalSavings / income) * 100;
       const needsRate = (totals.totalNeeds / income) * 100;
       const wantsRate = (totals.totalWants / income) * 100;
       const surplus = totals.remainingBalance;
 
-      let score = 50;
+      let score = 55;
+      if (savingsRate >= 20) score += 20;
+      else if (savingsRate >= 10) score += 10;
+      else score -= 15;
 
-      // Savings evaluation
-      if (savingsRate >= 20) score += 25;
-      else if (savingsRate >= 10) score += 15;
-      else score -= 10;
-
-      // Needs evaluation (Mortgage + Home)
       if (needsRate <= 50) score += 15;
-      else if (needsRate > 65) score -= 15;
+      else if (needsRate > 65) score -= 10;
 
-      // Wants evaluation
-      if (wantsRate <= 30) score += 10;
-      else score -= 10;
+      if (surplus < 0) score -= 25;
+      score = Math.max(10, Math.min(99, Math.round(score)));
 
-      // Negative surplus penalty
-      if (surplus < 0) score -= 30;
+      // YoY Calculation
+      let yoyNetWorthText = "No previous year record";
+      let yoyAdvice = "";
 
-      score = Math.max(10, Math.min(98, Math.round(score)));
+      const history = [...(appData.snapshots || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (history.length > 0) {
+        const oldest = history[0];
+        const currentNW = totals.currentNetWorth;
+        const diff = currentNW - oldest.netWorth;
+        const sign = diff >= 0 ? "+" : "";
+        yoyNetWorthText = `Net Change: ${sign}${formatMoney(diff)} vs ${oldest.date}`;
 
-      // Advisor daily narrative
-      let headline = "";
-      let body = "";
+        if (diff > 0) {
+          yoyAdvice = `Your wealth trajectory is positive! Net balance has shifted upward by ${formatMoney(diff)} since ${oldest.date}.`;
+        } else {
+          yoyAdvice = `Liabilities are outpacing portfolio growth compared to ${oldest.date}. Focus on eliminating loans above 8% interest.`;
+        }
+      }
+
+      // Action items
       const actionItems = [];
-
       const goal = appData.surveyAnswers.goalPriority || "Minimize Loans";
-      const customGoal = appData.surveyAnswers.otherGoalText ? ` (Focus: ${appData.surveyAnswers.otherGoalText})` : "";
 
       if (surplus < 0) {
-        headline = "⚠️️ Warning: You are operating at a cash deficit!";
-        body = `Your monthly spending exceeds your net income by ${formatMoney(Math.abs(surplus))}. We must cut discretionary entertainment items and evaluate loan refinancing immediately.`;
-        actionItems.push("Trim entertainment & subscriptions to restore balance.");
-        actionItems.push("Check high-interest personal loans to consolidate or prepay.");
+        actionItems.push("Urgent: Cash deficit detected. Freeze discretionary wants and evaluate recurring subscriptions.");
       } else if (goal.includes("Loans")) {
-        headline = "🎯 Priority: Accelerated Debt Avalanche";
-        body = `You have a free cash surplus of ${formatMoney(surplus)} this month. My advice: Apply at least 70% (${formatMoney(surplus * 0.7)}) toward your highest interest loan EMI to trim future interest burden.`;
-        actionItems.push(`Direct ${formatMoney(surplus * 0.7)} to your top loan with the steepest rate.`);
-        actionItems.push(`Keep remaining ${formatMoney(surplus * 0.3)} in liquid funds for buffer.`);
+        actionItems.push(`Debt Avalanche Active: Direct ${formatMoney(surplus * 0.75)} of your free surplus toward your highest-interest loan EMI.`);
+        actionItems.push(`Retain remaining ${formatMoney(surplus * 0.25)} in a liquid emergency buffer.`);
       } else if (goal.includes("Investments")) {
-        headline = "🚀 Priority: Long-Term Wealth Compounding";
-        body = `Your balance allows an additional investment of ${formatMoney(surplus)}. With your risk stance of '${appData.surveyAnswers.riskAppetite}', automate an additional SIP in diversified equity index funds.`;
-        actionItems.push(`Set up an automatic SIP of ${formatMoney(surplus * 0.8)} right after salary credit.`);
-        actionItems.push("Rebalance portfolio semi-annually across large & midcap indices.");
+        actionItems.push(`Compounding Directive: Channel ${formatMoney(surplus * 0.8)} into broad-market index/flexicap mutual fund SIPs.`);
+        actionItems.push("Automate investments on the 1st of every month to beat behavioral friction.");
       } else {
-        headline = "🛡️ Priority: Fortifying Financial Resilience" + customGoal;
-        body = `You have an unallocated balance of ${formatMoney(surplus)}. Ensure your emergency fund has at least 6 months of essential living expenses (${formatMoney(totals.totalNeeds * 6)}) before taking risks.`;
-        actionItems.push("Park surplus cash into high-yield liquid mutual funds or sweep-in accounts.");
-        actionItems.push("Review health and term insurance covers to avoid unexpected capital drain.");
+        actionItems.push(`Resilience Directive: Ensure you have ${formatMoney(totals.totalNeeds * 6)} in liquid funds (6 months essential cover).`);
       }
 
-      // Add a customized item based on survey questions
+      if (yoyAdvice) actionItems.push(yoyAdvice);
       if (appData.surveyAnswers.otherGoalText) {
-        actionItems.push(`Custom goal tracker: "${appData.surveyAnswers.otherGoalText}" - earmark ${formatMoney(Math.max(0, surplus * 0.25))} monthly.`);
+        actionItems.push(`Custom Milestone: "${appData.surveyAnswers.otherGoalText}" — reserve ${formatMoney(Math.max(0, surplus * 0.2))} monthly.`);
       }
 
-      return { score, headline, body, actionItems, savingsRate, needsRate, wantsRate };
+      return {
+        score,
+        yoyNetWorthText,
+        actionItems,
+        savingsRate,
+        needsRate,
+        wantsRate,
+        headline: surplus < 0 ? "Deficit Warning: Action Required" : `Surplus Available: ${formatMoney(surplus)}`,
+        body: `Based on your goal to '${goal}', you are directing ${savingsRate.toFixed(1)}% of income to savings and ${needsRate.toFixed(1)}% to needs. Keep loans with rates higher than expected investment returns prioritized for early closure.`
+      };
     }
 
-    // --- UI Renderers ---
+    // --- Time-Series Snapshot Commit ---
+    function commitSnapshot() {
+      const dateVal = document.getElementById("logDateInput").value;
+      const periodType = document.getElementById("logPeriodType").value;
+
+      if (!dateVal) {
+        alert("Please select a date for this snapshot.");
+        return;
+      }
+
+      const totals = calculateTotals();
+      const newSnapshot = {
+        date: dateVal,
+        periodType: periodType,
+        income: appData.income,
+        totalOutflow: totals.totalOutflow,
+        savings: totals.totalSavings,
+        surplus: totals.remainingBalance,
+        investedNetWorth: totals.totalInvestedAssets,
+        debtOutstanding: totals.totalDebtOutstanding,
+        netWorth: totals.currentNetWorth
+      };
+
+      if (!appData.snapshots) appData.snapshots = [];
+      
+      // Update existing date or insert new
+      const existingIdx = appData.snapshots.findIndex(s => s.date === dateVal);
+      if (existingIdx >= 0) {
+        appData.snapshots[existingIdx] = newSnapshot;
+      } else {
+        appData.snapshots.push(newSnapshot);
+      }
+
+      saveState();
+      alert(`Snapshot saved successfully for ${dateVal}!`);
+    }
+
+    function clearHistory() {
+      if (confirm("Reset all recorded snapshot history? Your current ledger items will remain.")) {
+        appData.snapshots = [];
+        saveState();
+      }
+    }
+
+    // --- JSON Backup Export / Import ---
+    function exportDataBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `wealthpilot_backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importDataBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.categories && imported.income !== undefined) {
+            appData = imported;
+            saveState();
+            alert("Backup successfully restored!");
+          } else {
+            alert("Invalid WealthPilot JSON format.");
+          }
+        } catch (err) {
+          alert("Could not parse file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // --- Renderers ---
     function render() {
       const totals = calculateTotals();
-      const analysis = evaluateHealthAndAdvice(totals);
+      const intelligence = evaluateIntelligence(totals);
 
-      // Top Currency
       document.getElementById("currencySelector").value = appData.currency;
-      document.getElementById("currentDateStr").textContent = new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-
-      // Stat Cards
+      
+      // Top Cards
       document.getElementById("statIncomeDisplay").textContent = formatMoney(appData.income);
       document.getElementById("statOutflowDisplay").textContent = formatMoney(totals.totalOutflow);
       document.getElementById("statSavingsDisplay").textContent = formatMoney(totals.totalSavings);
 
       const remEl = document.getElementById("statRemainingDisplay");
       remEl.textContent = formatMoney(totals.remainingBalance);
-      if (totals.remainingBalance < 0) {
-        remEl.className = "text-2xl font-bold text-rose-600";
-        document.getElementById("statRemainingSubtext").textContent = "Deficit! Review expenses";
-        document.getElementById("statRemainingSubtext").className = "text-xs text-rose-500 font-medium mt-2";
-      } else {
-        remEl.className = "text-2xl font-bold text-emerald-600";
-        document.getElementById("statRemainingSubtext").textContent = "Surplus available for allocation";
-        document.getElementById("statRemainingSubtext").className = "text-xs text-slate-500 mt-2";
-      }
+      remEl.className = totals.remainingBalance < 0 ? "text-2xl font-bold text-rose-600" : "text-2xl font-bold text-emerald-600";
+      
+      document.getElementById("statNetWorthDisplay").textContent = formatMoney(totals.currentNetWorth);
+      document.getElementById("yoyNetWorthGrowth").textContent = intelligence.yoyNetWorthText;
 
-      const outflowPercent = appData.income > 0 ? ((totals.totalOutflow / appData.income) * 100).toFixed(0) : 0;
-      document.getElementById("outflowRatioDisplay").textContent = `${outflowPercent}% of your income`;
+      document.getElementById("outflowRatioDisplay").textContent = `${((totals.totalOutflow / (appData.income || 1)) * 100).toFixed(0)}% of inflow`;
+      document.getElementById("savingsRatioDisplay").textContent = `Currently ${intelligence.savingsRate.toFixed(1)}% (Target: ≥20%)`;
 
-      const savPercent = appData.income > 0 ? ((totals.totalSavings / appData.income) * 100).toFixed(0) : 0;
-      document.getElementById("savingsRatioDisplay").textContent = `Currently ${savPercent}% (Target: ≥ 20%)`;
+      // Health
+      document.getElementById("healthScoreDisplay").textContent = `${intelligence.score} / 100`;
+      document.getElementById("healthScoreStatus").textContent = intelligence.score >= 75 ? "Optimal Growth" : "Attention Required";
 
       // Advisor Banner
-      document.getElementById("dailyAdvisorHeadline").textContent = analysis.headline;
-      document.getElementById("dailyAdvisorBody").textContent = analysis.body;
-      document.getElementById("healthScoreDisplay").textContent = `${analysis.score} / 100`;
-
-      const badge = document.getElementById("healthBadge");
-      if (analysis.score >= 80) {
-        badge.className = "text-xs font-bold px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300";
-        badge.textContent = "Excellent";
-      } else if (analysis.score >= 60) {
-        badge.className = "text-xs font-bold px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300";
-        badge.textContent = "Stable";
-      } else {
-        badge.className = "text-xs font-bold px-2.5 py-1 rounded bg-rose-500/20 text-rose-300";
-        badge.textContent = "Needs Attention";
-      }
+      document.getElementById("dailyAdvisorHeadline").textContent = intelligence.headline;
+      document.getElementById("dailyAdvisorBody").textContent = intelligence.body;
 
       // 50/30/20 Bars
-      document.getElementById("needsPercentText").textContent = `${analysis.needsRate.toFixed(1)}%`;
-      document.getElementById("needsProgressBar").style.width = `${Math.min(100, analysis.needsRate)}%`;
+      document.getElementById("needsPercentText").textContent = `${intelligence.needsRate.toFixed(1)}%`;
+      document.getElementById("needsProgressBar").style.width = `${Math.min(100, intelligence.needsRate)}%`;
 
-      document.getElementById("wantsPercentText").textContent = `${analysis.wantsRate.toFixed(1)}%`;
-      document.getElementById("wantsProgressBar").style.width = `${Math.min(100, analysis.wantsRate)}%`;
+      document.getElementById("wantsPercentText").textContent = `${intelligence.wantsRate.toFixed(1)}%`;
+      document.getElementById("wantsProgressBar").style.width = `${Math.min(100, intelligence.wantsRate)}%`;
 
-      document.getElementById("savingsProgressBarText").textContent = `${analysis.savingsRate.toFixed(1)}%`;
-      document.getElementById("savingsProgressBar").style.width = `${Math.min(100, analysis.savingsRate)}%`;
+      document.getElementById("savingsProgressBarText").textContent = `${intelligence.savingsRate.toFixed(1)}%`;
+      document.getElementById("savingsProgressBar").style.width = `${Math.min(100, intelligence.savingsRate)}%`;
 
-      // Render Categories
-      renderCategories();
-
-      // Render Advisor Action List
-      const actionContainer = document.getElementById("advisorActionList");
-      actionContainer.innerHTML = analysis.actionItems.map(item => `
+      // Advisor Action list
+      document.getElementById("advisorActionList").innerHTML = intelligence.actionItems.map(item => `
         <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
           <i class="fa-solid fa-circle-check text-indigo-600 mt-0.5"></i>
-          <span class="text-slate-700 leading-relaxed font-medium">${item}</span>
+          <span class="text-slate-700 font-medium leading-relaxed">${item}</span>
         </div>
       `).join("");
 
-      // Render Chart
-      renderChart();
+      // Render History Table
+      const sortedHistory = [...(appData.snapshots || [])].sort((a, b) => new Date(b.date) - new Date(a.date));
+      document.getElementById("snapshotCountText").textContent = `${sortedHistory.length} Snapshots`;
+      document.getElementById("historyTableBody").innerHTML = sortedHistory.map(s => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 font-medium">${s.date} <span class="text-[10px] text-slate-400 capitalize">(${s.periodType})</span></td>
+          <td class="py-2">${formatMoney(s.income)}</td>
+          <td class="py-2 ${s.surplus < 0 ? 'text-rose-500' : 'text-emerald-600'} font-semibold">${formatMoney(s.surplus)}</td>
+          <td class="py-2 text-right font-bold">${formatMoney(s.netWorth)}</td>
+        </tr>
+      `).join("");
+
+      renderCategories();
+      renderAllocationChart();
+      renderTimelineChart();
     }
 
     function renderCategories() {
@@ -563,7 +742,6 @@
 
         const card = document.createElement("div");
         card.className = "bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4";
-
         card.innerHTML = `
           <div class="flex items-center justify-between pb-3 border-b border-slate-100">
             <div class="flex items-center gap-3">
@@ -582,9 +760,11 @@
 
           <div class="space-y-2">
             ${cat.items.map(item => `
-              <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50/70 hover:bg-slate-100 transition-colors text-xs">
+              <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors text-xs">
                 <div>
-                  <span class="font-semibold text-slate-800">${item.name}</span>${item.interestRate ? `<span class="ml-2 text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-medium">${item.interestRate}% Int.</span>` : ''}
+                  <span class="font-semibold text-slate-800">${item.name}</span>${item.interestRate ? `<span class="ml-1.5 text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-semibold">${item.interestRate}% Int.</span>` : ''}
+                  ${item.totalPrincipalOutstanding ? `<span class="ml-1 text-[10px] text-slate-500 font-medium">Bal: ${formatMoney(item.totalPrincipalOutstanding)}</span>` : ''}
+                  ${item.totalPortfolioValue ? `<span class="ml-1 text-[10px] text-emerald-600 font-semibold">Portfolio: ${formatMoney(item.totalPortfolioValue)}</span>` : ''}
                 </div>
                 <div class="flex items-center gap-3">
                   <span class="font-semibold text-slate-900">${formatMoney(item.amount)}</span>
@@ -600,32 +780,24 @@
             <i class="fa-solid fa-plus text-[10px]"></i> Add ${cat.name} Item
           </button>
         `;
-
         container.appendChild(card);
       });
     }
 
-    function renderChart() {
+    function renderAllocationChart() {
       const ctx = document.getElementById("allocationChart").getContext("2d");
       const labels = appData.categories.map(c => c.name);
       const dataValues = appData.categories.map(c => c.items.reduce((s, it) => s + Number(it.amount || 0), 0));
 
-      if (chartInstance) {
-        chartInstance.destroy();
-      }
+      if (allocationChartInstance) allocationChartInstance.destroy();
 
-      chartInstance = new Chart(ctx, {
+      allocationChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
           labels: labels,
           datasets: [{
             data: dataValues,
-            backgroundColor: [
-              '#f43f5e', // Loans (rose)
-              '#10b981', // Savings (emerald)
-              '#6366f1', // Home (indigo)
-              '#f59e0b'  // Entertainment (amber)
-            ],
+            backgroundColor: ['#f43f5e', '#10b981', '#6366f1', '#f59e0b'],
             borderWidth: 2,
             borderColor: '#ffffff'
           }]
@@ -634,24 +806,81 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { boxWidth: 12, font: { size: 11, family: "'Plus Jakarta Sans'" } }
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  return ` ${context.label}: ${appData.currency} ${context.parsed.toLocaleString()}`;
-                }
-              }
-            }
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
           },
           cutout: '70%'
         }
       });
     }
 
-    // --- Interactive Modal Questionnaire Flow ---
+    function renderTimelineChart() {
+      const ctx = document.getElementById("timelineChart").getContext("2d");
+      const sorted = [...(appData.snapshots || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      const labels = sorted.map(s => s.date);
+      const netWorthData = sorted.map(s => s.netWorth);
+      const savingsData = sorted.map(s => s.investedNetWorth || s.savings);
+      const debtData = sorted.map(s => s.debtOutstanding || 0);
+
+      if (timelineChartInstance) timelineChartInstance.destroy();
+
+      timelineChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Net Worth',
+              data: netWorthData,
+              borderColor: '#4f46e5',
+              backgroundColor: 'rgba(79, 70, 229, 0.1)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 3
+            },
+            {
+              label: 'Investments / Assets',
+              data: savingsData,
+              borderColor: '#10b981',
+              tension: 0.3,
+              borderWidth: 2
+            },
+            {
+              label: 'Outstanding Debt',
+              data: debtData,
+              borderColor: '#f43f5e',
+              borderDash: [5, 5],
+              tension: 0.3,
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.dataset.label}: ${appData.currency} ${ctx.parsed.y.toLocaleString()}`
+              }
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: '#f1f5f9' },
+              ticks: { font: { size: 10 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    // --- Modal Questionnaire Flow ---
     function openAdvisorModal() {
       currentQuestionIdx = 0;
       document.getElementById("totalStepCount").textContent = QUESTIONS.length;
@@ -691,15 +920,13 @@
             }).join('')}
           </div>
 
-          <!-- Dynamic Text Box for Other -->
           <div id="otherTextInputContainer" class="${isOtherChosen ? '' : 'hidden'} mt-3">
-            <label class="block text-xs font-semibold text-indigo-700 mb-1">Specify your custom answer / condition:</label>
-            <input type="text" id="customOtherInput" value="${appData.surveyAnswers.otherGoalText || ''}" placeholder="e.g. Planning a sabbatical in 2 years; prepay 50% home loan..." class="w-full text-xs px-3 py-2 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+            <label class="block text-xs font-semibold text-indigo-700 mb-1">Specify your custom answer:</label>
+            <input type="text" id="customOtherInput" value="${appData.surveyAnswers.otherGoalText || ''}" placeholder="e.g. Prepay car loan completely by December 2026..." class="w-full text-xs px-3 py-2 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
           </div>
         </div>
       `;
 
-      // Button Label
       document.getElementById("prevBtn").style.visibility = currentQuestionIdx === 0 ? "hidden" : "visible";
       document.getElementById("nextBtn").textContent = (currentQuestionIdx === QUESTIONS.length - 1) ? "Finish & Optimize" : "Save & Next";
     }
@@ -707,11 +934,8 @@
     function onOptionSelect(key, val, isCustom) {
       appData.surveyAnswers[key] = val;
       const otherContainer = document.getElementById("otherTextInputContainer");
-      if (isCustom) {
-        otherContainer.classList.remove("hidden");
-      } else {
-        otherContainer.classList.add("hidden");
-      }
+      if (isCustom) otherContainer.classList.remove("hidden");
+      else otherContainer.classList.add("hidden");
     }
 
     function nextQuestion() {
@@ -720,8 +944,7 @@
       if (selected) {
         appData.surveyAnswers[q.key] = selected.value;
         if (selected.value === "Other") {
-          const txt = document.getElementById("customOtherInput").value;
-          appData.surveyAnswers.otherGoalText = txt;
+          appData.surveyAnswers.otherGoalText = document.getElementById("customOtherInput").value;
         }
       }
 
@@ -740,7 +963,7 @@
       }
     }
 
-    // --- Dynamic Item & Income Prompts ---
+    // --- Category & Item Prompts ---
     function promptEditIncome() {
       const val = prompt("Enter your monthly Net Inflow / Income:", appData.income);
       if (val !== null && !isNaN(val) && Number(val) >= 0) {
@@ -753,23 +976,33 @@
       const cat = appData.categories.find(c => c.id === catId);
       if (!cat) return;
 
-      const name = prompt(`Enter item name for ${cat.name}:`);
+      const name = prompt(`Item name for ${cat.name}:`);
       if (!name) return;
 
-      const amountStr = prompt(`Enter monthly amount for "${name}":`);
+      const amountStr = prompt(`Monthly commitment / outflow for "${name}":`);
       if (!amountStr || isNaN(amountStr)) return;
 
       let interest = 0;
+      let principalBal = 0;
+      let portfolioVal = 0;
+
       if (catId === "loans") {
-        const intStr = prompt(`Enter interest rate % (optional, for Debt Avalanche calculations):`, "8.5");
+        const intStr = prompt("Interest rate % p.a. (e.g. 8.5):", "8.5");
         if (intStr && !isNaN(intStr)) interest = Number(intStr);
+        const balStr = prompt("Total outstanding loan principal balance:", "2000000");
+        if (balStr && !isNaN(balStr)) principalBal = Number(balStr);
+      } else if (catId === "savings") {
+        const portStr = prompt("Total accumulated portfolio value for this asset:", "150000");
+        if (portStr && !isNaN(portStr)) portfolioVal = Number(portStr);
       }
 
       cat.items.push({
         id: "item_" + Date.now(),
         name: name,
         amount: Number(amountStr),
-        interestRate: interest
+        interestRate: interest,
+        totalPrincipalOutstanding: principalBal,
+        totalPortfolioValue: portfolioVal
       });
 
       saveState();
@@ -792,13 +1025,14 @@
       }
     }
 
-    // Currency Switcher Event
+    // Default Log Date to Today
+    document.getElementById("logDateInput").value = new Date().toISOString().split('T')[0];
+
     document.getElementById("currencySelector").addEventListener("change", (e) => {
       appData.currency = e.target.value;
       saveState();
     });
 
-    // Boot the app
     render();
   </script>
 </body>
