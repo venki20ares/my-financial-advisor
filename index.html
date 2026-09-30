@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WealthPilot Pro - Multi-Cadence Wealth & Budget Engine</title>
+  <title>WealthPilot Pro - MoM & YoY Wealth Engine</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -14,7 +14,7 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   </style>
 
-  <!-- Firebase Compatibility SDKs (Synchronous & Reliable) -->
+  <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -34,7 +34,7 @@
       </div>
       <div>
         <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">WealthPilot</h1>
-        <p class="text-indigo-200 text-xs sm:text-sm mt-1">Multi-Cadence Financial Advisor (DoD, WoW, MoM, YoY)</p>
+        <p class="text-indigo-200 text-xs sm:text-sm mt-1">Strategic Financial Advisor (MoM & YoY Trajectory)</p>
       </div>
 
       <button onclick="handleGoogleSignIn()" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all text-sm">
@@ -46,7 +46,7 @@
         </svg>
         <span>Sign In with Google</span>
       </button>
-      <p class="text-[11px] text-slate-400">Encrypted personal vault saved to your account.</p>
+      <p class="text-[11px] text-slate-400">Encrypted personal vault synced to Firebase.</p>
     </div>
   </div>
 
@@ -99,51 +99,44 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-      <!-- ========================================== -->
-      <!-- CADENCE CONTROLLER TABS (DoD, WoW, MoM, YoY)-->
-      <!-- ========================================== -->
+      <!-- CADENCE TOGGLE (MoM vs YoY) -->
       <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div class="inline-flex p-1 bg-slate-100 rounded-xl gap-1" id="cadenceTabs">
-          <button onclick="setCadence('daily')" data-cadence="daily" class="px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600">
-            <i class="fa-solid fa-clock mr-1"></i> Daily (DoD)
+          <button onclick="setCadence('monthly')" data-cadence="monthly" class="px-5 py-2 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm">
+            <i class="fa-solid fa-calendar mr-1.5"></i> Monthly Audit (MoM)
           </button>
-          <button onclick="setCadence('weekly')" data-cadence="weekly" class="px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600">
-            <i class="fa-solid fa-calendar-week mr-1"></i> Weekly (WoW)
-          </button>
-          <button onclick="setCadence('monthly')" data-cadence="monthly" class="px-3.5 py-2 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm">
-            <i class="fa-solid fa-calendar mr-1"></i> Monthly (MoM)
-          </button>
-          <button onclick="setCadence('annual')" data-cadence="annual" class="px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600">
-            <i class="fa-solid fa-gem mr-1"></i> Annual (YoY)
+          <button onclick="setCadence('annual')" data-cadence="annual" class="px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+            <i class="fa-solid fa-gem mr-1.5"></i> Annual Snapshot (YoY)
           </button>
         </div>
 
         <!-- Period Picker -->
         <div class="flex items-center gap-2">
-          <span class="text-xs text-slate-400 font-medium">Selected Period:</span>
-          <input type="date" id="activePeriodPicker" onchange="onDatePickerChange()" class="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 bg-slate-50 focus:ring-2 focus:ring-indigo-500">
+          <span class="text-xs text-slate-400 font-medium">Active Period:</span>
+          <input type="month" id="activePeriodPickerMonth" onchange="onPeriodPickerChange()" class="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 bg-slate-50 focus:ring-2 focus:ring-indigo-500">
+          <input type="number" id="activePeriodPickerYear" min="2020" max="2050" onchange="onPeriodPickerChange()" class="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 bg-slate-50 focus:ring-2 focus:ring-indigo-500 hidden" placeholder="YYYY">
           <button onclick="saveActivePeriod()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm">
             <i class="fa-solid fa-cloud-arrow-up"></i> Save & Sync
           </button>
         </div>
       </div>
 
-      <!-- Cadence Context Banner & Velocity Indicator -->
+      <!-- Cadence Velocity Indicator -->
       <div id="cadenceContextBar" class="bg-indigo-50 border border-indigo-100 rounded-2xl px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div class="flex items-center gap-2.5">
           <div id="cadenceIcon" class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">M</div>
           <div>
             <span class="font-bold text-slate-900" id="cadenceTitle">Monthly Audit Mode (MoM)</span>
-            <span class="text-slate-500 ml-2" id="cadenceSubtitle">Comparing current month performance vs last month</span>
+            <span class="text-slate-500 ml-2" id="cadenceSubtitle">Month-over-month salary inflows, debt EMIs, and SIP compounding</span>
           </div>
         </div>
-        <div class="flex items-center gap-3 font-semibold" id="cadenceDeltaPill">
-          <span class="text-slate-500">Trajectory Velocity:</span>
+        <div class="flex items-center gap-3 font-semibold">
+          <span class="text-slate-500">Cadence Velocity:</span>
           <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold" id="cadenceDeltaVal">+0% MoM</span>
         </div>
       </div>
 
-      <!-- Daily Advisor Notice & Trajectory Banner -->
+      <!-- Advisor Notice & Net Worth Banner -->
       <div class="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 shadow-xl relative overflow-hidden">
         <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div class="space-y-2">
@@ -151,7 +144,7 @@
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               Advisor Intelligence • <span id="advisorPeriodLabel">September 2026</span>
             </div>
-            <h2 class="text-xl sm:text-2xl font-bold" id="dailyAdvisorHeadline">Analyzing Cash Inflow & Commitments...</h2>
+            <h2 class="text-xl sm:text-2xl font-bold" id="dailyAdvisorHeadline">Analyzing Inflow & Outflow Commitments...</h2>
             <p class="text-indigo-200 text-xs sm:text-sm max-w-2xl leading-relaxed" id="dailyAdvisorBody">
               Direct surplus towards highest rate debt first while maintaining adequate emergency reserves.
             </p>
@@ -172,11 +165,11 @@
         </div>
       </div>
 
-      <!-- Dedicated Cadence Trajectory Chart -->
+      <!-- Dedicated Trajectory Chart -->
       <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 class="text-base font-bold text-slate-900" id="chartHeaderTitle">MoM Wealth & Cashflow Progression</h3>
+            <h3 class="text-base font-bold text-slate-900" id="chartHeaderTitle">MoM Wealth & Balance Trajectory</h3>
             <p class="text-xs text-slate-500" id="chartHeaderSubtitle">Progression across consecutive monthly audits</p>
           </div>
           <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg w-fit" id="chartPeriodCount">
@@ -188,7 +181,7 @@
         </div>
       </div>
 
-      <!-- Inflow & Outflow Overview Cards -->
+      <!-- Overview Metric Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
@@ -232,7 +225,38 @@
         </div>
       </div>
 
-      <!-- Main Workspace -->
+      <!-- ========================================== -->
+      <!-- NEW: INVESTMENT ASSETS & PORTFOLIO SECTION -->
+      <!-- ========================================== -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                <i class="fa-solid fa-vault"></i>
+              </span>
+              <h3 class="text-base font-bold text-slate-900">Total Investment Assets as of Today</h3>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Portfolio holdings used directly to calculate your live Net Worth</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="text-right">
+              <span class="text-xs text-slate-400 font-medium">Total Assets:</span>
+              <span class="text-lg font-extrabold text-emerald-600 ml-1" id="statTotalAssetsDisplay">₹0</span>
+            </div>
+            <button onclick="openAssetModal(null)" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm transition-all">
+              <i class="fa-solid fa-plus"></i> Add Asset
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Asset Grid -->
+        <div id="assetsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <!-- Dynamically populated assets -->
+        </div>
+      </div>
+
+      <!-- Main Workspace: Outflow Ledger & Allocation -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-7 space-y-6">
           <div class="flex items-center justify-between">
@@ -310,7 +334,58 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- 3. INFLOW MODAL (Salary + Other Sources)   -->
+  <!-- 3. NEW: ASSET POPUP MODAL                  -->
+  <!-- ========================================== -->
+  <div id="assetModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base" id="assetModalTitle">Add Investment Asset</h3>
+        <button onclick="closeAssetModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <input type="hidden" id="editAssetId">
+      
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Asset Description / Name</label>
+          <input type="text" id="editAssetName" placeholder="e.g. Nifty 50 Index Fund, EPF Balance, Emergency FD" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Asset Class</label>
+          <select id="editAssetClass" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold bg-slate-50">
+            <option value="equity">Equity Mutual Funds & Stocks</option>
+            <option value="provident">EPF / PPF / NPS (Retirement)</option>
+            <option value="liquid">Liquid Cash & Bank Fixed Deposits</option>
+            <option value="gold">Gold & Sovereign Gold Bonds (SGB)</option>
+            <option value="realestate">Real Estate & Land (Liquid Valuation)</option>
+            <option value="other">Other Liquid Investments</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Current Valuation / Balance (As of Today)</label>
+          <input type="number" id="editAssetValuation" step="any" placeholder="e.g. 450000" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-900">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Expected Return % p.a. (Optional)</label>
+          <input type="number" id="editAssetReturnRate" step="0.5" placeholder="e.g. 12" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-semibold">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <button id="deleteAssetBtn" onclick="deleteActiveAssetItem()" class="text-xs font-semibold text-rose-600 hover:text-rose-700">Delete Asset</button>
+        <div class="flex gap-2">
+          <button onclick="closeAssetModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-100">Cancel</button>
+          <button onclick="saveAssetModal()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md">Save Asset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. INFLOW MODAL                            -->
   <!-- ========================================== -->
   <div id="inflowModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5 border border-slate-100">
@@ -326,7 +401,7 @@
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Primary Salary / Inflow</label>
           <input type="number" id="inputPrimaryIncome" step="any" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500">
-          <p class="text-slate-400 mt-1">Changes here will only affect this selected period.</p>
+          <p class="text-slate-400 mt-1">Changes here only affect this specific period.</p>
         </div>
 
         <div class="border-t border-slate-100 pt-3">
@@ -346,7 +421,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- 4. EXPENSE / ITEM POPUP MODAL              -->
+  <!-- 5. EXPENSE / ITEM POPUP MODAL              -->
   <!-- ========================================== -->
   <div id="expenseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-slate-100">
@@ -408,7 +483,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- 5. USER PROFILE MODAL                      -->
+  <!-- 6. USER PROFILE MODAL                      -->
   <!-- ========================================== -->
   <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 border border-slate-100">
@@ -443,7 +518,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- 6. ADVISOR QUESTIONNAIRE MODAL             -->
+  <!-- 7. ADVISOR QUESTIONNAIRE MODAL             -->
   <!-- ========================================== -->
   <div id="advisorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-100">
@@ -486,12 +561,14 @@
 
     let currentUser = null;
     let unsubscribeFirestore = null;
-    const STORAGE_KEY = "wealthpilot_v3_multicadence";
+    const STORAGE_KEY = "wealthpilot_v5_assets_momyoy";
+    const PREV_STORAGE_KEY = "wealthpilot_v4_mom_yoy";
     const OLD_STORAGE_KEY = "wealthpilot_v2_history";
 
     let currentCadence = 'monthly';
-    let currentPeriodKey = '';
+    let currentPeriodKey = '2026-09';
 
+    // Default Store with dedicated Assets bucket
     const DEFAULT_STORE = {
       currency: "₹",
       surveyAnswers: {
@@ -502,9 +579,12 @@
         otherGoalText: ""
       },
       profilePrefs: { emergencyMonths: 6 },
+      // Dedicated Investment Assets Bucket
+      assets: [
+        { id: "a1", name: "Index & Active Mutual Funds", assetClass: "equity", valuation: 450000, returnRate: 12.0 },
+        { id: "a2", name: "Emergency Bank Deposit / Liquid Cash", assetClass: "liquid", valuation: 56888, returnRate: 6.5 }
+      ],
       periods: {
-        daily: {},
-        weekly: {},
         monthly: {
           "2026-09": {
             periodKey: "2026-09",
@@ -553,63 +633,89 @@
             ]
           }
         },
-        annual: {}
+        annual: {
+          "2026": {
+            periodKey: "2026",
+            date: "2026-12-31",
+            primaryIncome: 2076000,
+            otherInflows: [],
+            categories: [
+              {
+                id: "loans",
+                name: "Mortgages & Loans",
+                type: "needs",
+                icon: "fa-building-columns",
+                items: [
+                  { id: "al1", name: "Housing Loan Annual", amount: 540000, interestRate: 7.6, totalPrincipalOutstanding: 2800000 },
+                  { id: "al2", name: "Personal Loans Total", amount: 434640, interestRate: 12.0, totalPrincipalOutstanding: 740000 }
+                ]
+              },
+              {
+                id: "savings",
+                name: "Savings & Investments",
+                type: "savings",
+                icon: "fa-arrow-trend-up",
+                items: [
+                  { id: "as1", name: "Annual SIPs & Equity", amount: 360000, interestRate: 12.0, totalPortfolioValue: 450000 }
+                ]
+              },
+              {
+                id: "home",
+                name: "Cost for Home & Living",
+                type: "needs",
+                icon: "fa-house",
+                items: [
+                  { id: "ah1", name: "Annual Home Running Costs", amount: 50304.48, interestRate: 0 }
+                ]
+              },
+              {
+                id: "entertainment",
+                name: "Entertainment & Wants",
+                type: "wants",
+                icon: "fa-ticket",
+                items: []
+              }
+            ]
+          }
+        }
       }
     };
 
-    // --- AUTO-MIGRATION LOGIC ---
     function migrateOldDataToStore(oldAppData) {
       if (!oldAppData) return null;
-      console.log("Migrating older appData schema to multi-cadence appStore...");
-
       const newStore = JSON.parse(JSON.stringify(DEFAULT_STORE));
       newStore.currency = oldAppData.currency || "₹";
       if (oldAppData.surveyAnswers) newStore.surveyAnswers = oldAppData.surveyAnswers;
       if (oldAppData.profilePrefs) newStore.profilePrefs = oldAppData.profilePrefs;
+      if (oldAppData.assets) newStore.assets = oldAppData.assets;
 
       const workingMonthKey = "2026-09";
-      newStore.periods.monthly[workingMonthKey] = {
-        periodKey: workingMonthKey,
-        date: "2026-09-30",
-        primaryIncome: oldAppData.income || 173000,
-        otherInflows: [],
-        categories: oldAppData.categories && oldAppData.categories.length > 0
-          ? oldAppData.categories
-          : DEFAULT_STORE.periods.monthly["2026-09"].categories
-      };
-
-      // Migrate past snapshots
-      if (Array.isArray(oldAppData.snapshots)) {
-        oldAppData.snapshots.forEach(s => {
-          const dateStr = s.date || "2026-09-30";
-          const mKey = dateStr.substring(0, 7);
-          if (!newStore.periods.monthly[mKey]) {
-            newStore.periods.monthly[mKey] = {
-              periodKey: mKey,
-              date: dateStr,
-              primaryIncome: s.income || oldAppData.income || 173000,
-              otherInflows: [],
-              categories: JSON.parse(JSON.stringify(newStore.periods.monthly[workingMonthKey].categories))
-            };
-          }
-        });
+      if (oldAppData.periods && oldAppData.periods.monthly) {
+        newStore.periods = oldAppData.periods;
+      } else {
+        newStore.periods.monthly[workingMonthKey] = {
+          periodKey: workingMonthKey,
+          date: "2026-09-30",
+          primaryIncome: oldAppData.income || 173000,
+          otherInflows: [],
+          categories: oldAppData.categories && oldAppData.categories.length > 0
+            ? oldAppData.categories
+            : DEFAULT_STORE.periods.monthly["2026-09"].categories
+        };
       }
-
       return newStore;
     }
 
     function loadStore() {
-      // Check current storage key
       const currentSaved = localStorage.getItem(STORAGE_KEY);
       if (currentSaved) {
         try { return JSON.parse(currentSaved); } catch (e) { console.error(e); }
       }
 
-      // Check for older localStorage version
-      const oldSaved = localStorage.getItem(OLD_STORAGE_KEY);
-      if (oldSaved) {
+      const prevSaved = localStorage.getItem(PREV_STORAGE_KEY) || localStorage.getItem(OLD_STORAGE_KEY);
+      if (prevSaved) {
         try {
-          const oldData = JSON.parse(oldSaved);
+          const oldData = JSON.parse(prevSaved);
           const migrated = migrateOldDataToStore(oldData);
           if (migrated) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
@@ -685,7 +791,7 @@
     let allocationChartInstance = null;
     let trajectoryChartInstance = null;
 
-    // --- AUTH FLOW WITH CLOUD AUTO-MIGRATION ---
+    // --- AUTH FLOW ---
     auth.onAuthStateChanged((user) => {
       currentUser = user;
       const authScreen = document.getElementById("authScreen");
@@ -708,29 +814,24 @@
         unsubscribeFirestore = userDoc.onSnapshot((docSnap) => {
           if (docSnap.exists) {
             const cloudData = docSnap.data();
-
-            // 1. If cloud already has the multi-cadence format
             if (cloudData.appStore && cloudData.appStore.periods) {
               appStore = cloudData.appStore;
+              if (!appStore.assets) appStore.assets = DEFAULT_STORE.assets;
               localStorage.setItem(STORAGE_KEY, JSON.stringify(appStore));
               render();
               document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
               return;
             }
-
-            // 2. BACKWARD COMPATIBILITY: Migrate older appData found on Cloud Firestore
             if (cloudData.appData) {
               const migrated = migrateOldDataToStore(cloudData.appData);
               if (migrated) {
                 appStore = migrated;
                 saveStore();
-                document.getElementById("syncStatus").textContent = "Data Migrated & Synced ☁️";
+                document.getElementById("syncStatus").textContent = "Data Migrated & Synced ☁";
                 return;
               }
             }
           }
-
-          // 3. If doc does not exist or empty, upload current store
           saveStore();
         }, (err) => {
           console.error(err);
@@ -787,44 +888,44 @@
       
       document.querySelectorAll("#cadenceTabs button").forEach(btn => {
         if (btn.getAttribute("data-cadence") === cadence) {
-          btn.className = "px-3.5 py-2 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm";
+          btn.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all bg-white text-indigo-600 shadow-sm";
         } else {
-          btn.className = "px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900";
+          btn.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900";
         }
       });
 
-      const titles = {
-        daily: { title: "Daily Burn Mode (DoD)", sub: "Day-over-day tracking of micro-expenses and daily cash allowance", icon: "D" },
-        weekly: { title: "Weekly Review Mode (WoW)", sub: "Week-over-week run-rate velocity and weekly discipline audit", icon: "W" },
-        monthly: { title: "Monthly Audit Mode (MoM)", sub: "Month-over-month salary inflows, debt EMIs, and SIP compounding", icon: "M" },
-        annual: { title: "Annual Snapshot Mode (YoY)", sub: "Year-over-year asset expansion, liability reduction, and net worth milestone trajectory", icon: "Y" }
-      };
+      const monthPicker = document.getElementById("activePeriodPickerMonth");
+      const yearPicker = document.getElementById("activePeriodPickerYear");
 
-      document.getElementById("cadenceTitle").textContent = titles[cadence].title;
-      document.getElementById("cadenceSubtitle").textContent = titles[cadence].sub;
-      document.getElementById("cadenceIcon").textContent = titles[cadence].icon;
+      if (cadence === 'monthly') {
+        monthPicker.classList.remove("hidden");
+        yearPicker.classList.add("hidden");
+        document.getElementById("cadenceTitle").textContent = "Monthly Audit Mode (MoM)";
+        document.getElementById("cadenceSubtitle").textContent = "Month-over-month salary inflows, debt EMIs, and SIP compounding";
+        document.getElementById("cadenceIcon").textContent = "M";
+      } else {
+        monthPicker.classList.add("hidden");
+        yearPicker.classList.remove("hidden");
+        document.getElementById("cadenceTitle").textContent = "Annual Snapshot Mode (YoY)";
+        document.getElementById("cadenceSubtitle").textContent = "Year-over-year asset expansion, liability reduction, and net worth milestone trajectory";
+        document.getElementById("cadenceIcon").textContent = "Y";
+      }
 
       initPeriodForCurrentCadence();
       render();
     }
 
     function initPeriodForCurrentCadence() {
-      const picker = document.getElementById("activePeriodPicker");
-      const today = new Date().toISOString().split('T')[0];
+      const monthPicker = document.getElementById("activePeriodPickerMonth");
+      const yearPicker = document.getElementById("activePeriodPickerYear");
 
-      if (!picker.value) picker.value = today;
-      const d = new Date(picker.value);
+      if (!monthPicker.value) monthPicker.value = "2026-09";
+      if (!yearPicker.value) yearPicker.value = "2026";
 
-      if (currentCadence === 'daily') {
-        currentPeriodKey = picker.value;
-      } else if (currentCadence === 'weekly') {
-        const onejan = new Date(d.getFullYear(), 0, 1);
-        const week = Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
-        currentPeriodKey = `${d.getFullYear()}-W${week}`;
-      } else if (currentCadence === 'monthly') {
-        currentPeriodKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      } else if (currentCadence === 'annual') {
-        currentPeriodKey = `${d.getFullYear()}`;
+      if (currentCadence === 'monthly') {
+        currentPeriodKey = monthPicker.value;
+      } else {
+        currentPeriodKey = String(yearPicker.value);
       }
 
       if (!appStore.periods[currentCadence]) appStore.periods[currentCadence] = {};
@@ -834,20 +935,19 @@
           const lastPeriod = appStore.periods[currentCadence][keys[keys.length - 1]];
           appStore.periods[currentCadence][currentPeriodKey] = JSON.parse(JSON.stringify(lastPeriod));
           appStore.periods[currentCadence][currentPeriodKey].periodKey = currentPeriodKey;
-          appStore.periods[currentCadence][currentPeriodKey].date = picker.value;
         } else {
           appStore.periods[currentCadence][currentPeriodKey] = {
             periodKey: currentPeriodKey,
-            date: picker.value,
-            primaryIncome: currentCadence === 'daily' ? 5000 : 173000,
+            date: currentCadence === 'monthly' ? `${currentPeriodKey}-28` : `${currentPeriodKey}-12-31`,
+            primaryIncome: currentCadence === 'monthly' ? 173000 : 2076000,
             otherInflows: [],
-            categories: JSON.parse(JSON.stringify(DEFAULT_STORE.periods.monthly["2026-09"].categories))
+            categories: JSON.parse(JSON.stringify(DEFAULT_STORE.periods[currentCadence][currentCadence === 'monthly' ? "2026-09" : "2026"].categories))
           };
         }
       }
     }
 
-    function onDatePickerChange() {
+    function onPeriodPickerChange() {
       initPeriodForCurrentCadence();
       render();
     }
@@ -863,7 +963,7 @@
       alert(`Period ${currentPeriodKey} synced successfully!`);
     }
 
-    // --- FINANCIAL MATH ENGINE ---
+    // --- FINANCIAL MATH ENGINE (Accurate Net Worth) ---
     function calculatePeriodTotals(period) {
       const primaryInflow = Number(period.primaryIncome || 0);
       const otherInflowTotal = (period.otherInflows || []).reduce((acc, it) => acc + Number(it.amount || 0), 0);
@@ -874,16 +974,12 @@
       let totalNeeds = 0;
       let totalWants = 0;
       let totalDebtBalance = 0;
-      let totalInvestedAssets = 0;
 
       (period.categories || []).forEach(cat => {
         (cat.items || []).forEach(it => {
           const amt = Number(it.amount || 0);
           totalOutflow += amt;
-          if (cat.type === 'savings') {
-            totalSavings += amt;
-            totalInvestedAssets += Number(it.totalPortfolioValue || 0);
-          }
+          if (cat.type === 'savings') totalSavings += amt;
           if (cat.type === 'needs') {
             totalNeeds += amt;
             if (it.totalPrincipalOutstanding) totalDebtBalance += Number(it.totalPrincipalOutstanding || 0);
@@ -892,6 +988,8 @@
         });
       });
 
+      // Total Assets from Investment Assets Bucket
+      const totalInvestedAssets = (appStore.assets || []).reduce((acc, a) => acc + Number(a.valuation || 0), 0);
       const surplus = totalInflow - totalOutflow;
       const netWorth = totalInvestedAssets - totalDebtBalance;
 
@@ -915,7 +1013,7 @@
       const sortedKeys = Object.keys(periodsObj).sort();
       const currentIdx = sortedKeys.indexOf(currentPeriodKey);
 
-      let deltaText = "First Period Logged";
+      let deltaText = "Initial Period Logged";
 
       if (currentIdx > 0) {
         const prevKey = sortedKeys[currentIdx - 1];
@@ -924,9 +1022,8 @@
 
         const diff = curTotals.netWorth - prevTotals.netWorth;
         const sign = diff >= 0 ? "+" : "";
-        const labelMap = { daily: "DoD", weekly: "WoW", monthly: "MoM", annual: "YoY" };
-        
-        deltaText = `${sign}${formatMoney(diff)} vs ${prevKey} (${labelMap[currentCadence]})`;
+        const tag = currentCadence === 'monthly' ? 'MoM' : 'YoY';
+        deltaText = `${sign}${formatMoney(diff)} vs ${prevKey} (${tag})`;
       }
 
       return { deltaText };
@@ -956,6 +1053,10 @@
       surplusEl.textContent = formatMoney(totals.surplus);
       surplusEl.className = totals.surplus < 0 ? "text-2xl font-bold text-rose-600" : "text-2xl font-bold text-emerald-600";
 
+      // Render Assets Header Total
+      document.getElementById("statTotalAssetsDisplay").textContent = formatMoney(totals.totalInvestedAssets);
+
+      // Render Net Worth
       document.getElementById("statNetWorthDisplay").textContent = formatMoney(totals.netWorth);
       document.getElementById("statNetWorthDelta").textContent = velocity.deltaText;
       document.getElementById("cadenceDeltaVal").textContent = velocity.deltaText;
@@ -994,6 +1095,8 @@
       if (totals.otherInflowTotal > 0) {
         actionList.push(`Other Inflow Advantage: You generated ${formatMoney(totals.otherInflowTotal)} in non-primary income this period.`);
       }
+      actionList.push(`Total Investment Assets tracked: ${formatMoney(totals.totalInvestedAssets)} across ${(appStore.assets || []).length} portfolios.`);
+
       document.getElementById("advisorActionList").innerHTML = actionList.map(item => `
         <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
           <i class="fa-solid fa-circle-check text-indigo-600 mt-0.5"></i>
@@ -1001,11 +1104,126 @@
         </div>
       `).join("");
 
+      renderAssetsSection();
       renderCategoriesLedger(period);
       renderAllocationChart(period);
       renderTrajectoryChart();
     }
 
+    // --- RENDER ASSETS SECTION ---
+    function renderAssetsSection() {
+      const container = document.getElementById("assetsGrid");
+      container.innerHTML = "";
+
+      const assets = appStore.assets || [];
+      if (assets.length === 0) {
+        container.innerHTML = `<div class="col-span-full p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">No assets recorded yet. Click "+ Add Asset" above.</div>`;
+        return;
+      }
+
+      const iconMap = {
+        equity: { icon: "fa-chart-pie", color: "text-emerald-600", bg: "bg-emerald-50", tag: "Equity & Mutual Funds" },
+        provident: { icon: "fa-shield-halved", color: "text-indigo-600", bg: "bg-indigo-50", tag: "Retirement & EPF" },
+        liquid: { icon: "fa-building-columns", color: "text-amber-600", bg: "bg-amber-50", tag: "Liquid Cash / FD" },
+        gold: { icon: "fa-coins", color: "text-yellow-600", bg: "bg-yellow-50", tag: "Gold & SGB" },
+        realestate: { icon: "fa-house-chimney", color: "text-blue-600", bg: "bg-blue-50", tag: "Real Estate Valuation" },
+        other: { icon: "fa-box-archive", color: "text-purple-600", bg: "bg-purple-50", tag: "Other Asset" }
+      };
+
+      assets.forEach(a => {
+        const meta = iconMap[a.assetClass] || iconMap.other;
+        const card = document.createElement("div");
+        card.className = "p-3.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200/80 cursor-pointer transition-all hover:border-emerald-300 flex items-center justify-between";
+        card.onclick = () => openAssetModal(a.id);
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg ${meta.bg} ${meta.color} flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid ${meta.icon}"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs text-slate-800">${a.name}</h4>
+              <p class="text-[10px] text-slate-400">${meta.tag} ${a.returnRate ? `• ${a.returnRate}% p.a.` : ''}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-extrabold text-sm text-slate-900">${formatMoney(a.valuation)}</span>
+            <div class="text-[10px] text-indigo-600 font-semibold flex items-center justify-end gap-1">
+              <span>Edit</span> <i class="fa-solid fa-pen text-[8px]"></i>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- ASSET MODAL LOGIC ---
+    function openAssetModal(assetId) {
+      if (assetId) {
+        document.getElementById("assetModalTitle").textContent = "Edit Investment Asset";
+        document.getElementById("deleteAssetBtn").classList.remove("hidden");
+        const found = (appStore.assets || []).find(a => a.id === assetId);
+        if (found) {
+          document.getElementById("editAssetId").value = found.id;
+          document.getElementById("editAssetName").value = found.name;
+          document.getElementById("editAssetClass").value = found.assetClass || "equity";
+          document.getElementById("editAssetValuation").value = found.valuation;
+          document.getElementById("editAssetReturnRate").value = found.returnRate || "";
+        }
+      } else {
+        document.getElementById("assetModalTitle").textContent = "Add Investment Asset";
+        document.getElementById("deleteAssetBtn").classList.add("hidden");
+        document.getElementById("editAssetId").value = "";
+        document.getElementById("editAssetName").value = "";
+        document.getElementById("editAssetClass").value = "equity";
+        document.getElementById("editAssetValuation").value = "";
+        document.getElementById("editAssetReturnRate").value = "";
+      }
+      document.getElementById("assetModal").classList.remove("hidden");
+    }
+
+    function closeAssetModal() {
+      document.getElementById("assetModal").classList.add("hidden");
+    }
+
+    function saveAssetModal() {
+      const assetId = document.getElementById("editAssetId").value;
+      const name = document.getElementById("editAssetName").value.trim();
+      const assetClass = document.getElementById("editAssetClass").value;
+      const valuation = Number(document.getElementById("editAssetValuation").value) || 0;
+      const returnRate = Number(document.getElementById("editAssetReturnRate").value) || 0;
+
+      if (!name) { alert("Please provide an asset description."); return; }
+      if (!appStore.assets) appStore.assets = [];
+
+      if (assetId) {
+        const idx = appStore.assets.findIndex(a => a.id === assetId);
+        if (idx >= 0) {
+          appStore.assets[idx] = { id: assetId, name, assetClass, valuation, returnRate };
+        }
+      } else {
+        appStore.assets.push({
+          id: "ast_" + Date.now(),
+          name,
+          assetClass,
+          valuation,
+          returnRate
+        });
+      }
+
+      closeAssetModal();
+      saveStore();
+    }
+
+    function deleteActiveAssetItem() {
+      if (confirm("Delete this asset from your portfolio?")) {
+        const assetId = document.getElementById("editAssetId").value;
+        appStore.assets = (appStore.assets || []).filter(a => a.id !== assetId);
+        closeAssetModal();
+        saveStore();
+      }
+    }
+
+    // --- OUTFLOW LEDGER & CHARTS ---
     function renderCategoriesLedger(period) {
       const container = document.getElementById("categoriesContainer");
       container.innerHTML = "";
@@ -1079,8 +1297,12 @@
       const periodsObj = appStore.periods[currentCadence] || {};
       const sortedKeys = Object.keys(periodsObj).sort();
 
-      document.getElementById("chartPeriodCount").textContent = `${sortedKeys.length} ${currentCadence.toUpperCase()} Records`;
-      document.getElementById("chartHeaderTitle").textContent = `${currentCadence.toUpperCase()} Wealth & Balance Trajectory`;
+      const cadenceLabel = currentCadence === 'monthly' ? 'MoM' : 'YoY';
+      document.getElementById("chartPeriodCount").textContent = `${sortedKeys.length} ${cadenceLabel} Records`;
+      document.getElementById("chartHeaderTitle").textContent = `${cadenceLabel} Wealth & Balance Trajectory`;
+      document.getElementById("chartHeaderSubtitle").textContent = currentCadence === 'monthly'
+        ? "Progression across consecutive monthly audits"
+        : "Progression across annual wealth snapshots";
 
       const labels = sortedKeys;
       const netWorthData = [];
@@ -1314,7 +1536,7 @@
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appStore, null, 2));
       const a = document.createElement("a");
       a.setAttribute("href", dataStr);
-      a.setAttribute("download", `wealthpilot_multicadence_backup_${new Date().toISOString().split('T')[0]}.json`);
+      a.setAttribute("download", `wealthpilot_backup_${new Date().toISOString().split('T')[0]}.json`);
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -1327,27 +1549,23 @@
       reader.onload = function(e) {
         try {
           const imported = JSON.parse(e.target.result);
-          
-          // 1. If it's the new multi-cadence format
           if (imported.periods) {
             appStore = imported;
+            if (!appStore.assets) appStore.assets = DEFAULT_STORE.assets;
             saveStore();
-            alert("Multi-cadence history successfully restored!");
+            alert("History successfully restored!");
             return;
           }
-
-          // 2. If it's your previously downloaded JSON backup (old format)
           if (imported.categories || imported.income !== undefined) {
             const migrated = migrateOldDataToStore(imported);
             if (migrated) {
               appStore = migrated;
               saveStore();
-              alert("Old format backup successfully migrated & restored!");
+              alert("Old backup successfully migrated & restored!");
               return;
             }
           }
-
-          alert("Invalid WealthPilot JSON file structure.");
+          alert("Invalid JSON file.");
         } catch (err) { alert("Parse error: " + err.message); }
       };
       reader.readAsText(file);
@@ -1432,13 +1650,12 @@
       }
     }
 
-    // Default Currency Listener
     document.getElementById("currencySelector").addEventListener("change", (e) => {
       appStore.currency = e.target.value;
       saveStore();
     });
 
-    // Boot the Multi-Cadence Engine
+    // Boot MoM Mode
     setCadence('monthly');
   </script>
 </body>
