@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WealthPilot Pro - Multi-Period Wealth & Budget Journal</title>
+  <title>WealthPilot - Autonomous Financial Advisor & Wealth Engine</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -14,325 +14,380 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   </style>
 
-  <!-- Firebase Modular SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    // ==========================================
-    // PASTE YOUR FIREBASE CONFIG HERE:
-    // ==========================================
-    // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyA95USzCZOhGgUOke4ok1tF8Fn-VVaL5QM",
-  authDomain: "wealthpilot-app-2097.firebaseapp.com",
-  projectId: "wealthpilot-app-2097",
-  storageBucket: "wealthpilot-app-2097.firebasestorage.app",
-  messagingSenderId: "955085330496",
-  appId: "1:955085330496:web:115b8d0ae3198f248c27a5",
-  measurementId: "G-B4BE5FL07S"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-    // Attach to window so the main app script can interact
-    window.fbAuth = auth;
-    window.fbDb = db;
-    window.fbProvider = provider;
-    window.fbSignInWithPopup = signInWithPopup;
-    window.fbSignOut = signOut;
-    window.fbDoc = doc;
-    window.fbGetDoc = getDoc;
-    window.fbSetDoc = setDoc;
-    window.fbOnSnapshot = onSnapshot;
-
-    // Listen for auth state
-    onAuthStateChanged(auth, async (user) => {
-      window.handleAuthStateChanged(user);
-    });
-  </script>
+  <!-- Firebase Compatibility SDKs (Synchronous & Reliable) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-16">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-  <!-- Top Navbar -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-indigo-100">
-          <i class="fa-solid fa-chart-line text-lg"></i>
+  <!-- ========================================== -->
+  <!-- 1. AUTH / LOGIN VIEW (Visible when logged out) -->
+  <!-- ========================================== -->
+  <div id="authScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 relative overflow-hidden">
+    <!-- Background glow ornaments -->
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-md w-full bg-white/10 backdrop-blur-xl border border-white/15 p-8 rounded-3xl shadow-2xl relative z-10 text-center space-y-6">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-emerald-400 mx-auto flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-500/30">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">WealthPilot</h1>
+        <p class="text-indigo-200 text-xs sm:text-sm mt-1">Autonomous Daily Financial Advisor & Multi-Year Ledger</p>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-4 text-left space-y-2.5 text-xs text-indigo-100">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+          <span>Multi-Year & YoY Net Worth Tracking</span>
         </div>
-        <div>
-          <h1 class="font-bold text-lg text-slate-900 leading-tight">WealthPilot <span class="text-xs bg-indigo-100 text-indigo-700 font-semibold px-2 py-0.5 rounded-full ml-1">Cloud Sync</span></h1>
-          <p class="text-xs text-slate-500" id="syncStatus">Local Mode</p>
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-robot text-indigo-300"></i>
+          <span>Debt Avalanche & SIP Optimization Advisor</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-cloud text-amber-300"></i>
+          <span>Encrypted Cross-Device Firestore Sync</span>
         </div>
       </div>
-      
-      <!-- Action Toolbar -->
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- Auth Button -->
-        <button id="authBtn" onclick="toggleCloudAuth()" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all shadow-sm">
-          <i class="fa-brands fa-google"></i>
-          <span id="authBtnText">Sign In with Google</span>
-        </button>
 
-        <!-- Currency Selector -->
-        <select id="currencySelector" class="bg-slate-100 border border-slate-300 text-xs font-semibold rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-indigo-500">
-          <option value="₹" selected>INR (₹)</option>
-          <option value="$">USD ($)</option>
-          <option value="€">EUR (€)</option>
-          <option value="£">GBP (£)</option>
-          <option value="A$">AUD (A$)</option>
-        </select>
+      <button id="googleLoginBtn" onclick="handleGoogleSignIn()" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-900 font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm">
+        <svg class="w-4 h-4" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+          <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+        </svg>
+        <span>Sign In with Google</span>
+      </button>
 
-        <!-- Backup & Restore -->
-        <button onclick="exportDataBackup()" title="Download Backup" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg text-xs font-semibold transition-all">
-          <i class="fa-solid fa-download"></i>
-        </button>
-        <button onclick="document.getElementById('importFileInput').click()" title="Restore Backup" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg text-xs font-semibold transition-all">
-          <i class="fa-solid fa-upload"></i>
-        </button>
-        <input type="file" id="importFileInput" class="hidden" accept=".json" onchange="importDataBackup(event)">
-
-        <!-- Advisor Questionnaire -->
-        <button onclick="openAdvisorModal()" class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all shadow-sm">
-          <i class="fa-solid fa-sliders"></i>
-          <span class="hidden sm:inline">Preferences</span>
-        </button>
-      </div>
+      <p class="text-[11px] text-slate-400">Your financial data stays secured under your unique Firebase user account.</p>
     </div>
-  </header>
+  </div>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-    
-    <!-- Snapshot Time Controls & Quick Log Bar -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-          <i class="fa-solid fa-calendar-check"></i>
+  <!-- ========================================== -->
+  <!-- 2. MAIN APPLICATION (Visible after login)  -->
+  <!-- ========================================== -->
+  <div id="appScreen" class="hidden">
+    <!-- Top Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-700 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-indigo-100">
+            <i class="fa-solid fa-chart-line text-lg"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-lg text-slate-900 leading-tight">WealthPilot</h1>
+            <p class="text-xs text-slate-500" id="syncStatus">Cloud Synced ☁️</p>
+          </div>
         </div>
-        <div>
-          <h3 class="font-bold text-sm text-slate-900">Active Logging Snapshot</h3>
-          <p class="text-xs text-slate-500">Pick cadence, adjust figures below, and record to time-series history</p>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2.5">
-        <select id="logPeriodType" class="text-xs font-medium border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
-          <option value="month" selected>Monthly Audit</option>
-          <option value="day">Daily Micro-log</option>
-          <option value="week">Weekly Review</option>
-          <option value="year">Annual Snapshot</option>
-        </select>
-        <input type="date" id="logDateInput" class="text-xs font-medium border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
         
-        <button onclick="commitSnapshot()" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all shadow-sm">
-          <i class="fa-solid fa-cloud-arrow-up"></i> Save & Sync Snapshot
-        </button>
-      </div>
-    </div>
+        <!-- Action Toolbar -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <select id="currencySelector" class="bg-slate-100 border border-slate-300 text-xs font-semibold rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-indigo-500">
+            <option value="₹" selected>INR (₹)</option>
+            <option value="$">USD ($)</option>
+            <option value="€">EUR (€)</option>
+            <option value="£">GBP (£)</option>
+            <option value="A$">AUD (A$)</option>
+          </select>
 
-    <!-- Daily Advisor Notice & YoY Intelligence Banner -->
-    <div id="advisorBanner" class="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 shadow-xl relative overflow-hidden">
-      <div class="absolute -right-6 -bottom-6 opacity-10 pointer-events-none text-9xl text-white">
-        <i class="fa-solid fa-compass"></i>
-      </div>
-      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div class="space-y-2">
-          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 text-xs font-semibold">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Advisor Synthesis • <span id="advisorDateTag">Current Portfolio State</span>
-          </div>
-          <h2 class="text-xl sm:text-2xl font-bold" id="dailyAdvisorHeadline">Synthesizing portfolio trajectory...</h2>
-          <p class="text-indigo-200 text-xs sm:text-sm max-w-2xl leading-relaxed" id="dailyAdvisorBody">
-            Log snapshots across multiple periods to activate Year-over-Year (YoY) velocity checks and compound trajectory models.
-          </p>
+          <!-- Backup Download / Restore -->
+          <button onclick="exportDataBackup()" title="Download Backup JSON" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg text-xs font-semibold transition-all">
+            <i class="fa-solid fa-download"></i>
+          </button>
+          <button onclick="document.getElementById('importFileInput').click()" title="Restore Backup JSON" class="p-2 border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg text-xs font-semibold transition-all">
+            <i class="fa-solid fa-upload"></i>
+          </button>
+          <input type="file" id="importFileInput" class="hidden" accept=".json" onchange="importDataBackup(event)">
+
+          <!-- Profile Trigger -->
+          <button onclick="openProfileModal()" class="flex items-center gap-2 p-1.5 pr-2.5 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all">
+            <img id="navUserAvatar" src="https://ui-avatars.com/api/?name=User" class="w-6 h-6 rounded-full object-cover">
+            <span id="navUserName" class="text-xs font-semibold text-slate-700 hidden sm:inline">Profile</span>
+          </button>
+
+          <!-- Advisor Questionnaire -->
+          <button onclick="openAdvisorModal()" class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all shadow-sm">
+            <i class="fa-solid fa-sliders"></i>
+            <span class="hidden sm:inline">Advisor Prefs</span>
+          </button>
         </div>
+      </div>
+    </header>
 
-        <div class="grid grid-cols-2 gap-3 sm:gap-4 bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 min-w-[280px]">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      
+      <!-- Snapshot Logging Bar -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
           <div>
-            <div class="text-[11px] text-indigo-200 font-medium">Estimated Net Worth</div>
-            <div class="text-xl sm:text-2xl font-extrabold text-white" id="statNetWorthDisplay">--</div>
-            <div class="text-[10px] text-emerald-400 font-medium mt-0.5" id="yoyNetWorthGrowth">YoY: Calibrating...</div>
-          </div>
-          <div class="border-l border-white/10 pl-3 sm:pl-4">
-            <div class="text-[11px] text-indigo-200 font-medium">Financial Health</div>
-            <div class="text-xl sm:text-2xl font-extrabold text-amber-300" id="healthScoreDisplay">-- / 100</div>
-            <div class="text-[10px] text-indigo-300 font-medium mt-0.5" id="healthScoreStatus">Calibrating</div>
+            <h3 class="font-bold text-sm text-slate-900">Active Logging Snapshot</h3>
+            <p class="text-xs text-slate-500">Pick cadence, adjust figures below, and record to time-series history</p>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Timeline & YoY Trajectory Chart -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h3 class="text-base font-bold text-slate-900">Timeline & Year-over-Year (YoY) Wealth Trajectory</h3>
-          <p class="text-xs text-slate-500">Historical progression of Net Worth, Total Wealth/SIPs, and Outstanding Debt</p>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <select id="logPeriodType" class="text-xs font-medium border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
+            <option value="month" selected>Monthly Audit</option>
+            <option value="day">Daily Micro-log</option>
+            <option value="week">Weekly Review</option>
+            <option value="year">Annual Snapshot</option>
+          </select>
+          <input type="date" id="logDateInput" class="text-xs font-medium border border-slate-300 rounded-lg px-3 py-2 bg-slate-50">
+          
+          <button onclick="commitSnapshot()" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all shadow-sm">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Save & Sync Snapshot
+          </button>
         </div>
-        <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg w-fit">
-          <span id="snapshotCountText">0 Snapshots</span> Logged
-        </div>
-      </div>
-      <div class="h-64 sm:h-72 w-full">
-        <canvas id="timelineChart"></canvas>
-      </div>
-    </div>
-
-    <!-- Active Balance Metrics Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
-          <span>Inflow / Income</span>
-          <i class="fa-solid fa-wallet text-emerald-600 bg-emerald-50 p-2 rounded-lg"></i>
-        </div>
-        <div class="text-2xl font-bold text-slate-900" id="statIncomeDisplay">₹0</div>
-        <button onclick="promptEditIncome()" class="mt-2 text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
-          <i class="fa-solid fa-pen-to-square"></i> Modify Income
-        </button>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
-          <span>Current Commitments</span>
-          <i class="fa-solid fa-receipt text-rose-600 bg-rose-50 p-2 rounded-lg"></i>
+      <!-- Daily Advisor Notice & YoY Intelligence Banner -->
+      <div id="advisorBanner" class="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 shadow-xl relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 opacity-10 pointer-events-none text-9xl text-white">
+          <i class="fa-solid fa-compass"></i>
         </div>
-        <div class="text-2xl font-bold text-slate-900" id="statOutflowDisplay">₹0</div>
-        <div class="text-xs text-slate-500 mt-2" id="outflowRatioDisplay">0% of inflow</div>
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Advisor Synthesis • <span id="advisorDateTag">Current Portfolio State</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold" id="dailyAdvisorHeadline">Synthesizing portfolio trajectory...</h2>
+            <p class="text-indigo-200 text-xs sm:text-sm max-w-2xl leading-relaxed" id="dailyAdvisorBody">
+              Log snapshots across multiple periods to activate Year-over-Year (YoY) velocity checks and compound trajectory models.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 sm:gap-4 bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10 min-w-[280px]">
+            <div>
+              <div class="text-[11px] text-indigo-200 font-medium">Estimated Net Worth</div>
+              <div class="text-xl sm:text-2xl font-extrabold text-white" id="statNetWorthDisplay">--</div>
+              <div class="text-[10px] text-emerald-400 font-medium mt-0.5" id="yoyNetWorthGrowth">YoY: Calibrating...</div>
+            </div>
+            <div class="border-l border-white/10 pl-3 sm:pl-4">
+              <div class="text-[11px] text-indigo-200 font-medium">Financial Health</div>
+              <div class="text-xl sm:text-2xl font-extrabold text-amber-300" id="healthScoreDisplay">-- / 100</div>
+              <div class="text-[10px] text-indigo-300 font-medium mt-0.5" id="healthScoreStatus">Calibrating</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
-          <span>Investments & Mutual Funds</span>
-          <i class="fa-solid fa-piggy-bank text-indigo-600 bg-indigo-50 p-2 rounded-lg"></i>
-        </div>
-        <div class="text-2xl font-bold text-slate-900" id="statSavingsDisplay">₹0</div>
-        <div class="text-xs text-slate-500 mt-2" id="savingsRatioDisplay">Target: ≥ 20%</div>
-      </div>
-
-      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
-          <span>Surplus / Unallocated</span>
-          <i class="fa-solid fa-coins text-amber-600 bg-amber-50 p-2 rounded-lg"></i>
-        </div>
-        <div class="text-2xl font-bold" id="statRemainingDisplay">₹0</div>
-        <div class="text-xs text-slate-500 mt-2" id="statRemainingSubtext">Available buffer</div>
-      </div>
-    </div>
-
-    <!-- Main Workspace -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      <div class="lg:col-span-7 space-y-6">
-        <div class="flex items-center justify-between">
+      <!-- Timeline & YoY Trajectory Chart -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 class="text-lg font-bold text-slate-900">Current Ledger Breakdown</h3>
-            <p class="text-xs text-slate-500">Edit entries for your active snapshot</p>
+            <h3 class="text-base font-bold text-slate-900">Timeline & Year-over-Year (YoY) Wealth Trajectory</h3>
+            <p class="text-xs text-slate-500">Historical progression of Net Worth, Total Wealth/SIPs, and Outstanding Debt</p>
           </div>
-          <button onclick="promptNewItem()" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all">
-            <i class="fa-solid fa-plus"></i> Add Item
+          <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg w-fit">
+            <span id="snapshotCountText">0 Snapshots</span> Logged
+          </div>
+        </div>
+        <div class="h-64 sm:h-72 w-full">
+          <canvas id="timelineChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Active Balance Metrics Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
+            <span>Inflow / Income</span>
+            <i class="fa-solid fa-wallet text-emerald-600 bg-emerald-50 p-2 rounded-lg"></i>
+          </div>
+          <div class="text-2xl font-bold text-slate-900" id="statIncomeDisplay">₹0</div>
+          <button onclick="promptEditIncome()" class="mt-2 text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+            <i class="fa-solid fa-pen-to-square"></i> Modify Income
           </button>
         </div>
 
-        <div id="categoriesContainer" class="space-y-4"></div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
+            <span>Current Commitments</span>
+            <i class="fa-solid fa-receipt text-rose-600 bg-rose-50 p-2 rounded-lg"></i>
+          </div>
+          <div class="text-2xl font-bold text-slate-900" id="statOutflowDisplay">₹0</div>
+          <div class="text-xs text-slate-500 mt-2" id="outflowRatioDisplay">0% of inflow</div>
+        </div>
 
-        <!-- 50/30/20 Rule Analysis -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <i class="fa-solid fa-scale-balanced text-indigo-600"></i> 50 / 30 / 20 Rule Analysis
-            </h4>
-            <span class="text-xs text-slate-400 font-medium">Standard Benchmark</span>
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
+            <span>Investments & Mutual Funds</span>
+            <i class="fa-solid fa-piggy-bank text-indigo-600 bg-indigo-50 p-2 rounded-lg"></i>
+          </div>
+          <div class="text-2xl font-bold text-slate-900" id="statSavingsDisplay">₹0</div>
+          <div class="text-xs text-slate-500 mt-2" id="savingsRatioDisplay">Target: ≥ 20%</div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
+            <span>Surplus / Unallocated</span>
+            <i class="fa-solid fa-coins text-amber-600 bg-amber-50 p-2 rounded-lg"></i>
+          </div>
+          <div class="text-2xl font-bold" id="statRemainingDisplay">₹0</div>
+          <div class="text-xs text-slate-500 mt-2" id="statRemainingSubtext">Available buffer</div>
+        </div>
+      </div>
+
+      <!-- Main Workspace -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-7 space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Current Ledger Breakdown</h3>
+              <p class="text-xs text-slate-500">Edit entries for your active snapshot</p>
+            </div>
+            <button onclick="promptNewItem()" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all">
+              <i class="fa-solid fa-plus"></i> Add Item
+            </button>
           </div>
 
-          <div class="space-y-3 text-xs">
-            <div>
-              <div class="flex justify-between mb-1 text-slate-600 font-medium">
-                <span>Needs / Loans & Home (Target: ≤50%)</span>
-                <span id="needsPercentText">0%</span>
-              </div>
-              <div class="w-full bg-slate-100 rounded-full h-2">
-                <div id="needsProgressBar" class="h-2 rounded-full bg-indigo-600" style="width: 0%"></div>
-              </div>
+          <div id="categoriesContainer" class="space-y-4"></div>
+
+          <!-- 50/30/20 Rule Analysis -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-scale-balanced text-indigo-600"></i> 50 / 30 / 20 Rule Analysis
+              </h4>
+              <span class="text-xs text-slate-400 font-medium">Standard Benchmark</span>
             </div>
 
-            <div>
-              <div class="flex justify-between mb-1 text-slate-600 font-medium">
-                <span>Wants / Entertainment (Target: ≤30%)</span>
-                <span id="wantsPercentText">0%</span>
+            <div class="space-y-3 text-xs">
+              <div>
+                <div class="flex justify-between mb-1 text-slate-600 font-medium">
+                  <span>Needs / Loans & Home (Target: ≤50%)</span>
+                  <span id="needsPercentText">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div id="needsProgressBar" class="h-2 rounded-full bg-indigo-600" style="width: 0%"></div>
+                </div>
               </div>
-              <div class="w-full bg-slate-100 rounded-full h-2">
-                <div id="wantsProgressBar" class="h-2 rounded-full bg-amber-500" style="width: 0%"></div>
+
+              <div>
+                <div class="flex justify-between mb-1 text-slate-600 font-medium">
+                  <span>Wants / Entertainment (Target: ≤30%)</span>
+                  <span id="wantsPercentText">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div id="wantsProgressBar" class="h-2 rounded-full bg-amber-500" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between mb-1 text-slate-600 font-medium">
+                  <span>Investments & Wealth (Target: ≥20%)</span>
+                  <span id="savingsProgressBarText">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2">
+                  <div id="savingsProgressBar" class="h-2 rounded-full bg-emerald-500" style="width: 0%"></div>
+                </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <div class="flex justify-between mb-1 text-slate-600 font-medium">
-                <span>Investments & Wealth (Target: ≥20%)</span>
-                <span id="savingsProgressBarText">0%</span>
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h3 class="text-base font-bold text-slate-900 mb-4">Outflow Allocation</h3>
+            <div class="relative h-60 flex items-center justify-center">
+              <canvas id="allocationChart"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center">
+                <i class="fa-solid fa-lightbulb"></i>
               </div>
-              <div class="w-full bg-slate-100 rounded-full h-2">
-                <div id="savingsProgressBar" class="h-2 rounded-full bg-emerald-500" style="width: 0%"></div>
+              <div>
+                <h4 class="font-bold text-sm text-slate-900">Advisor Directives</h4>
+                <p class="text-xs text-slate-500">Continuous suggestions based on history</p>
               </div>
+            </div>
+            <div id="advisorActionList" class="space-y-2.5"></div>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="font-bold text-sm text-slate-900">Recorded Timeline History</h4>
+              <button onclick="clearHistory()" class="text-[11px] text-rose-600 hover:underline">Reset All</button>
+            </div>
+            <div class="max-h-48 overflow-y-auto custom-scrollbar">
+              <table class="w-full text-left text-xs">
+                <thead class="text-slate-400 border-b border-slate-100">
+                  <tr>
+                    <th class="py-1.5 font-medium">Date</th>
+                    <th class="py-1.5 font-medium">Inflow</th>
+                    <th class="py-1.5 font-medium">Surplus</th>
+                    <th class="py-1.5 font-medium text-right">Net Worth</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
+    </main>
+  </div>
 
-      <div class="lg:col-span-5 space-y-6">
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <h3 class="text-base font-bold text-slate-900 mb-4">Outflow Allocation</h3>
-          <div class="relative h-60 flex items-center justify-center">
-            <canvas id="allocationChart"></canvas>
-          </div>
+  <!-- ========================================== -->
+  <!-- 3. USER PROFILE MODAL                      -->
+  <!-- ========================================== -->
+  <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base">User Profile & Preferences</h3>
+        <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-xl">
+        <img id="profileAvatar" src="" class="w-14 h-14 rounded-full object-cover border-2 border-indigo-500 shadow">
+        <div>
+          <h4 id="profileName" class="font-bold text-slate-900 text-sm">Venkatesh</h4>
+          <p id="profileEmail" class="text-xs text-slate-500">user@email.com</p>
+          <span class="inline-block mt-1 text-[10px] font-semibold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Cloud Synchronized</span>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Target Emergency Cushion (Months)</label>
+          <input type="number" id="prefEmergencyMonths" min="3" max="24" value="6" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+          <p class="text-slate-400 mt-1">Recommended is 6 to 12 months of mandatory needs.</p>
         </div>
 
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center">
-              <i class="fa-solid fa-lightbulb"></i>
-            </div>
-            <div>
-              <h4 class="font-bold text-sm text-slate-900">Advisor Directives</h4>
-              <p class="text-xs text-slate-500">Continuous suggestions based on history</p>
-            </div>
-          </div>
-          <div id="advisorActionList" class="space-y-2.5"></div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Expected Equity SIP Return Rate (% p.a.)</label>
+          <input type="number" id="prefExpectedReturn" min="5" max="20" step="0.5" value="12.0" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+          <p class="text-slate-400 mt-1">Used by the advisor to prioritize debt vs equity prepayments.</p>
         </div>
+      </div>
 
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <h4 class="font-bold text-sm text-slate-900">Recorded Timeline History</h4>
-            <button onclick="clearHistory()" class="text-[11px] text-rose-600 hover:underline">Reset All</button>
-          </div>
-          <div class="max-h-48 overflow-y-auto custom-scrollbar">
-            <table class="w-full text-left text-xs">
-              <thead class="text-slate-400 border-b border-slate-100">
-                <tr>
-                  <th class="py-1.5 font-medium">Date</th>
-                  <th class="py-1.5 font-medium">Inflow</th>
-                  <th class="py-1.5 font-medium">Surplus</th>
-                  <th class="py-1.5 font-medium text-right">Net Worth</th>
-                </tr>
-              </thead>
-              <tbody id="historyTableBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
-            </table>
-          </div>
-        </div>
+      <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+        <button onclick="handleSignOut()" class="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+        <button onclick="saveProfilePreferences()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md">
+          Save Preferences
+        </button>
       </div>
     </div>
-  </main>
+  </div>
 
-  <!-- Interactive Questionnaire Modal -->
+  <!-- ========================================== -->
+  <!-- 4. QUESTIONNAIRE MODAL                     -->
+  <!-- ========================================== -->
   <div id="advisorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar border border-slate-100">
       <div class="flex items-center justify-between pb-4 border-b border-slate-100">
@@ -358,13 +413,34 @@ const analytics = getAnalytics(app);
   </div>
 
   <script>
-    const STORAGE_KEY = "wealthpilot_v2_history";
+    // --- FIREBASE CONFIGURATION (Pre-filled with your project parameters) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyA95USzCZOhGgUOke4ok1tF8Fn-VVaL5QM",
+      authDomain: "wealthpilot-app-2097.firebaseapp.com",
+      projectId: "wealthpilot-app-2097",
+      storageBucket: "wealthpilot-app-2097.firebasestorage.app",
+      messagingSenderId: "955085330496",
+      appId: "1:955085330496:web:115b8d0ae3198f248c27a5",
+      measurementId: "G-B4BE5FL07S"
+    };
+
+    // Initialize Firebase Compat
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const provider = new firebase.auth.GoogleAuthProvider();
+
     let currentUser = null;
     let unsubscribeFirestore = null;
+    const STORAGE_KEY = "wealthpilot_v2_history";
 
     const DEFAULT_DATA = {
       currency: "₹",
       income: 120000,
+      profilePrefs: {
+        emergencyMonths: 6,
+        expectedReturnRate: 12.0
+      },
       categories: [
         {
           id: "loans",
@@ -504,7 +580,91 @@ const analytics = getAnalytics(app);
     let allocationChartInstance = null;
     let timelineChartInstance = null;
 
-    // --- Local & Remote Sync Operations ---
+    // --- Authentication & Screen Routing ---
+    auth.onAuthStateChanged((user) => {
+      currentUser = user;
+      const authScreen = document.getElementById("authScreen");
+      const appScreen = document.getElementById("appScreen");
+
+      if (user) {
+        authScreen.classList.add("hidden");
+        appScreen.classList.remove("hidden");
+
+        // Set User Profile headers
+        const photo = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || "User")}`;
+        document.getElementById("navUserAvatar").src = photo;
+        document.getElementById("navUserName").textContent = user.displayName ? user.displayName.split(' ')[0] : "Account";
+        document.getElementById("profileAvatar").src = photo;
+        document.getElementById("profileName").textContent = user.displayName || "WealthPilot Member";
+        document.getElementById("profileEmail").textContent = user.email || "";
+
+        // Attach Firestore Realtime Listener
+        const userDoc = db.collection("users").doc(user.uid);
+        if (unsubscribeFirestore) unsubscribeFirestore();
+
+        unsubscribeFirestore = userDoc.onSnapshot((docSnap) => {
+          if (docSnap.exists && docSnap.data().appData) {
+            appData = docSnap.data().appData;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            render();
+            document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
+          } else {
+            // First time login for this user: initialize Firestore doc
+            saveState();
+          }
+        }, (err) => {
+          console.error("Firestore error:", err);
+          document.getElementById("syncStatus").textContent = "Sync Offline";
+        });
+
+      } else {
+        authScreen.classList.remove("hidden");
+        appScreen.classList.add("hidden");
+        if (unsubscribeFirestore) unsubscribeFirestore();
+      }
+    });
+
+    async function handleGoogleSignIn() {
+      try {
+        await auth.signInWithPopup(provider);
+      } catch (err) {
+        if (err.code === 'auth/popup-blocked') {
+          await auth.signInWithRedirect(provider);
+        } else {
+          alert("Login error: " + err.message);
+        }
+      }
+    }
+
+    async function handleSignOut() {
+      if (confirm("Are you sure you want to sign out?")) {
+        closeProfileModal();
+        await auth.signOut();
+      }
+    }
+
+    // --- Profile Modal & Preferences ---
+    function openProfileModal() {
+      if (!appData.profilePrefs) appData.profilePrefs = { emergencyMonths: 6, expectedReturnRate: 12.0 };
+      document.getElementById("prefEmergencyMonths").value = appData.profilePrefs.emergencyMonths || 6;
+      document.getElementById("prefExpectedReturn").value = appData.profilePrefs.expectedReturnRate || 12.0;
+      document.getElementById("profileModal").classList.remove("hidden");
+    }
+
+    function closeProfileModal() {
+      document.getElementById("profileModal").classList.add("hidden");
+    }
+
+    function saveProfilePreferences() {
+      if (!appData.profilePrefs) appData.profilePrefs = {};
+      appData.profilePrefs.emergencyMonths = Number(document.getElementById("prefEmergencyMonths").value) || 6;
+      appData.profilePrefs.expectedReturnRate = Number(document.getElementById("prefExpectedReturn").value) || 12.0;
+      closeProfileModal();
+      saveState();
+      alert("Preferences updated!");
+    }
+
+    // --- State Persistence (Local + Cloud) ---
     function loadLocalState() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -514,68 +674,22 @@ const analytics = getAnalytics(app);
     }
 
     async function saveState() {
-      // 1. Always keep local storage updated
       localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
       render();
 
-      // 2. If logged in to Firebase, push to cloud in real time
-      if (currentUser && window.fbDb && window.fbDoc && window.fbSetDoc) {
+      if (currentUser) {
         try {
-          const userDocRef = window.fbDoc(window.fbDb, "users", currentUser.uid);
-          await window.fbSetDoc(userDocRef, { appData: appData, updatedAt: new Date().toISOString() });
-          document.getElementById("syncStatus").textContent = "Synced to Cloud ☁️";
+          await db.collection("users").doc(currentUser.uid).set({
+            appData: appData,
+            updatedAt: new Date().toISOString()
+          });
+          document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
         } catch (err) {
-          console.error("Firestore sync error:", err);
+          console.error("Firestore save error:", err);
           document.getElementById("syncStatus").textContent = "Sync failed (check rules)";
         }
       }
     }
-
-    // Auth Handler (called from Firebase module)
-    window.handleAuthStateChanged = async function(user) {
-      currentUser = user;
-      const authBtnText = document.getElementById("authBtnText");
-      const syncStatus = document.getElementById("syncStatus");
-
-      if (user) {
-        authBtnText.textContent = user.displayName ? user.displayName.split(' ')[0] + " (Sign Out)" : "Sign Out";
-        syncStatus.textContent = `Syncing as ${user.email}`;
-
-        // Listen for live Firestore updates (real-time sync across devices)
-        const userDocRef = window.fbDoc(window.fbDb, "users", user.uid);
-        if (unsubscribeFirestore) unsubscribeFirestore();
-
-        unsubscribeFirestore = window.fbOnSnapshot(userDocRef, (docSnap) => {
-          if (docSnap.exists() && docSnap.data().appData) {
-            appData = docSnap.data().appData;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-            render();
-            syncStatus.textContent = "Synced to Cloud ☁️";
-          } else {
-            // First time login: push local data to Firestore
-            saveState();
-          }
-        });
-      } else {
-        authBtnText.textContent = "Sign In with Google";
-        syncStatus.textContent = "Local Storage (Not Synced)";
-        if (unsubscribeFirestore) unsubscribeFirestore();
-      }
-    };
-
-    window.toggleCloudAuth = async function() {
-      if (currentUser) {
-        if (confirm("Do you want to sign out? Your data remains on your device and in the cloud.")) {
-          await window.fbSignOut(window.fbAuth);
-        }
-      } else {
-        try {
-          await window.fbSignInWithPopup(window.fbAuth, window.fbProvider);
-        } catch (err) {
-          alert("Login error: " + err.message);
-        }
-      }
-    };
 
     function formatMoney(amount) {
       return `${appData.currency} ${Number(amount).toLocaleString()}`;
@@ -636,23 +750,24 @@ const analytics = getAnalytics(app);
         if (diff > 0) {
           yoyAdvice = `Your wealth trajectory is positive! Net balance shifted up by ${formatMoney(diff)} since ${oldest.date}.`;
         } else {
-          yoyAdvice = `Liabilities are outpacing growth compared to ${oldest.date}. Focus on eliminating loans >8% interest.`;
+          yoyAdvice = `Liabilities are outpacing growth compared to ${oldest.date}. Prioritize closing loans > 8% interest.`;
         }
       }
 
       const actionItems = [];
       const goal = appData.surveyAnswers.goalPriority || "Minimize Loans";
+      const targetMonths = (appData.profilePrefs && appData.profilePrefs.emergencyMonths) || 6;
 
       if (surplus < 0) {
-        actionItems.push("Urgent: Cash deficit. Trim discretionary expenses and check subscription renewals.");
+        actionItems.push("Urgent: Cash deficit detected. Freeze discretionary wants and review recurring subscriptions.");
       } else if (goal.includes("Loans")) {
         actionItems.push(`Debt Avalanche Active: Direct ${formatMoney(surplus * 0.75)} surplus to your highest-rate loan.`);
-        actionItems.push(`Retain remaining ${formatMoney(surplus * 0.25)} as an emergency liquidity cushion.`);
+        actionItems.push(`Retain remaining ${formatMoney(surplus * 0.25)} in emergency buffer.`);
       } else if (goal.includes("Investments")) {
         actionItems.push(`Compounding Directive: Channel ${formatMoney(surplus * 0.8)} into broad-market index/flexicap mutual fund SIPs.`);
         actionItems.push("Automate your transfers directly on salary credit day.");
       } else {
-        actionItems.push(`Resilience Directive: Keep ${formatMoney(totals.totalNeeds * 6)} in liquid funds (6 months buffer).`);
+        actionItems.push(`Resilience Directive: Keep ${formatMoney(totals.totalNeeds * targetMonths)} in liquid funds (${targetMonths} months cover).`);
       }
 
       if (yoyAdvice) actionItems.push(yoyAdvice);
@@ -668,7 +783,7 @@ const analytics = getAnalytics(app);
         needsRate,
         wantsRate,
         headline: surplus < 0 ? "Deficit Warning: Action Required" : `Surplus Available: ${formatMoney(surplus)}`,
-        body: `Based on your goal to '${goal}', you are directing ${savingsRate.toFixed(1)}% to savings and ${needsRate.toFixed(1)}% to needs. Prioritize closing debts whose rate outpaces safe investment returns.`
+        body: `Based on your goal to '${goal}', you are directing ${savingsRate.toFixed(1)}% to savings and ${needsRate.toFixed(1)}% to needs. Keep prepaying loans that charge higher than your safe investment return threshold.`
       };
     }
 
@@ -703,6 +818,7 @@ const analytics = getAnalytics(app);
       }
 
       saveState();
+      alert(`Snapshot saved and synced for ${dateVal}!`);
     }
 
     function clearHistory() {
@@ -1090,8 +1206,6 @@ const analytics = getAnalytics(app);
       appData.currency = e.target.value;
       saveState();
     });
-
-    render();
   </script>
 </body>
 </html>
