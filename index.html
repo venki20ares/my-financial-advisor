@@ -110,7 +110,6 @@
           </button>
         </div>
 
-        <!-- Period Picker -->
         <div class="flex items-center gap-2">
           <span class="text-xs text-slate-400 font-medium">Active Period:</span>
           <input type="month" id="activePeriodPickerMonth" onchange="onPeriodPickerChange()" class="text-xs font-semibold border border-slate-300 rounded-lg px-3 py-1.5 bg-slate-50 focus:ring-2 focus:ring-indigo-500">
@@ -165,7 +164,7 @@
         </div>
       </div>
 
-      <!-- Dedicated Trajectory Chart -->
+      <!-- Trajectory Chart -->
       <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
@@ -181,7 +180,7 @@
         </div>
       </div>
 
-      <!-- Overview Metric Cards -->
+      <!-- Metric Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
@@ -326,9 +325,7 @@
       </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- FLOATING GROQ AI CHAT BUTTON & DRAWER      -->
-    <!-- ========================================== -->
+    <!-- FLOATING GROQ AI CHAT BUTTON & DRAWER -->
     <div class="fixed bottom-6 right-6 z-40">
       <button onclick="toggleGroqChatDrawer()" class="flex items-center gap-2.5 bg-gradient-to-r from-indigo-600 to-indigo-800 hover:from-indigo-700 hover:to-indigo-900 text-white font-bold px-4 py-3.5 rounded-full shadow-2xl hover:shadow-indigo-500/50 transition-all transform hover:-translate-y-1 active:translate-y-0">
         <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
@@ -338,7 +335,6 @@
 
     <!-- AI Chat Slide-over Drawer -->
     <div id="groqChatDrawer" class="fixed inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-200 flex flex-col">
-      <!-- Drawer Header -->
       <div class="p-4 border-b border-slate-100 bg-slate-900 text-white flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md">
@@ -347,7 +343,7 @@
           <div>
             <h3 class="font-bold text-sm leading-tight flex items-center gap-1.5">
               <span>WealthPilot AI</span>
-              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono">Groq Llama 3.3</span>
+              <span id="activeModelBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono">GPT-OSS 120B</span>
             </h3>
             <p class="text-[11px] text-indigo-200">Powered with your live balance & loan data</p>
           </div>
@@ -362,7 +358,6 @@
         </div>
       </div>
 
-      <!-- Quick Context Indicator -->
       <div class="bg-indigo-50/80 px-4 py-2 border-b border-indigo-100 flex items-center justify-between text-[11px] text-indigo-900">
         <span class="flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -371,7 +366,6 @@
         <button onclick="clearChatHistory()" class="text-[10px] text-slate-500 hover:text-rose-600 font-medium">Clear Chat</button>
       </div>
 
-      <!-- Messages Area -->
       <div id="chatMessagesContainer" class="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-3.5 text-xs">
         <div class="flex items-start gap-2.5">
           <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -385,7 +379,6 @@
         </div>
       </div>
 
-      <!-- Suggested Prompt Chips -->
       <div class="px-4 py-2 bg-slate-50 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto custom-scrollbar whitespace-nowrap">
         <button onclick="sendQuickPrompt('Which loan should I prepay first based on my interest rates?')" class="text-[11px] bg-white border border-slate-200 hover:border-indigo-400 text-slate-700 px-2.5 py-1 rounded-full shadow-2xs">
           🎯 Which loan to prepay?
@@ -398,7 +391,6 @@
         </button>
       </div>
 
-      <!-- Input Area -->
       <div class="p-3 border-t border-slate-200 bg-white">
         <form onsubmit="handleSendUserMessage(event)" class="flex items-center gap-2">
           <input type="text" id="chatUserInput" placeholder="Ask about loans, mutual funds, budgets..." class="flex-1 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -419,7 +411,7 @@
           <button onclick="closeGroqKeyModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
         <p class="text-xs text-slate-500 leading-relaxed">
-          Groq provides free ultra-fast access to <strong>Llama 3.3 70B</strong>. You can get a free key from <a href="https://console.groq.com/keys" target="_blank" class="text-indigo-600 font-semibold underline">console.groq.com/keys</a>. Your key is stored securely on your browser.
+          Groq provides free ultra-fast access to <strong>openai/gpt-oss-120b</strong>. You can get a free key from <a href="https://console.groq.com/keys" target="_blank" class="text-indigo-600 font-semibold underline">console.groq.com/keys</a>. Your key is stored securely on your browser.
         </p>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Groq API Key (starts with <code>gsk_</code>)</label>
@@ -958,7 +950,7 @@
             appStore: appStore,
             updatedAt: new Date().toISOString()
           });
-          document.getElementById("syncStatus").textContent = "Cloud Synced ☁️️";
+          document.getElementById("syncStatus").textContent = "Cloud Synced ☁";
         } catch (e) {
           console.error(e);
           document.getElementById("syncStatus").textContent = "Sync Pending";
@@ -1721,14 +1713,13 @@
     }
 
     // ==========================================
-    // GROQ AI CHAT INTEGRATION ENGINE
+    // GROQ AI CHAT INTEGRATION (GPT-OSS 120B & 20B)
     // ==========================================
     function toggleGroqChatDrawer() {
       const drawer = document.getElementById("groqChatDrawer");
       const isClosed = drawer.classList.contains("translate-x-full");
       if (isClosed) {
         drawer.classList.remove("translate-x-full");
-        // Check if API key is present
         const key = getGroqApiKey();
         if (!key) {
           setTimeout(openGroqKeyModal, 400);
@@ -1782,7 +1773,6 @@
       handleSendUserMessage(new Event('submit'));
     }
 
-    // Build the dynamic financial context prompt
     function buildFinancialSystemPrompt() {
       const period = getActivePeriod();
       const totals = calculatePeriodTotals(period);
@@ -1843,10 +1833,7 @@ INSTRUCTIONS FOR THE ADVISOR:
       inputEl.value = "";
       appendMessageToChat("user", query);
 
-      // Show typing indicator
       const typingId = appendTypingIndicator();
-
-      // Assemble Groq Payload with System Context
       const systemPrompt = buildFinancialSystemPrompt();
       const messagesPayload = [
         { role: "system", content: systemPrompt },
@@ -1854,20 +1841,36 @@ INSTRUCTIONS FOR THE ADVISOR:
         { role: "user", content: query }
       ];
 
-      try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      // Robust multi-model dispatch: Primary GPT-OSS 120B, fallback to GPT-OSS 20B
+      const primaryModel = "openai/gpt-oss-120b";
+      const fallbackModel = "openai/gpt-oss-20b";
+
+      async function executeGroqRequest(modelName) {
+        return await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${apiKey}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
+            model: modelName,
             messages: messagesPayload,
             temperature: 0.3,
             max_tokens: 1024
           })
         });
+      }
+
+      try {
+        let activeModelUsed = primaryModel;
+        let response = await executeGroqRequest(primaryModel);
+
+        // If primary model is unavailable or rate-limited, failover to 20B
+        if (!response.ok && (response.status === 404 || response.status === 400 || response.status === 429)) {
+          console.warn(`Primary model ${primaryModel} failed with status ${response.status}. Falling back to ${fallbackModel}...`);
+          activeModelUsed = fallbackModel;
+          response = await executeGroqRequest(fallbackModel);
+        }
 
         removeTypingIndicator(typingId);
 
@@ -1879,7 +1882,8 @@ INSTRUCTIONS FOR THE ADVISOR:
         const data = await response.json();
         const botReply = data.choices[0].message.content;
 
-        // Save to conversational memory
+        document.getElementById("activeModelBadge").textContent = activeModelUsed.includes("120b") ? "GPT-OSS 120B" : "GPT-OSS 20B";
+
         chatConversationHistory.push({ role: "user", content: query });
         chatConversationHistory.push({ role: "assistant", content: botReply });
 
@@ -1887,7 +1891,7 @@ INSTRUCTIONS FOR THE ADVISOR:
 
       } catch (err) {
         removeTypingIndicator(typingId);
-        appendMessageToChat("assistant", `⚠ Error from Groq: ${err.message}. Please check your API key or network.`);
+        appendMessageToChat("assistant", `⚠ Error from Groq: ${err.message}. Please verify your API key.`);
       }
     }
 
@@ -1904,7 +1908,6 @@ INSTRUCTIONS FOR THE ADVISOR:
         `;
       } else {
         msgDiv.className = "flex items-start gap-2.5";
-        // Parse simple markdown bullet points and bolding
         const formatted = formatSimpleMarkdown(text);
         msgDiv.innerHTML = `
           <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -1930,7 +1933,7 @@ INSTRUCTIONS FOR THE ADVISOR:
         <div class="w-2 h-2 rounded-full bg-indigo-500 animate-bounce"></div>
         <div class="w-2 h-2 rounded-full bg-indigo-500 animate-bounce [animation-delay:-.3s]"></div>
         <div class="w-2 h-2 rounded-full bg-indigo-500 animate-bounce [animation-delay:-.5s]"></div>
-        <span class="ml-1 text-[11px]">Advisor analyzing ledger via Groq...</span>
+        <span class="ml-1 text-[11px]">Advisor analyzing ledger via Groq GPT-OSS...</span>
       `;
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
