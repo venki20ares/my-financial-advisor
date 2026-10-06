@@ -184,7 +184,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <div class="flex items-center justify-between text-slate-500 text-xs font-medium mb-1">
-            <span>Total Inflow (Salary + Other)</span>
+            <span id="inflowCardTitle">Total Inflow (Salary + Other)</span>
             <i class="fa-solid fa-wallet text-emerald-600 bg-emerald-50 p-2 rounded-lg"></i>
           </div>
           <div class="text-2xl font-bold text-slate-900" id="statTotalInflowDisplay">₹0</div>
@@ -373,7 +373,7 @@
           </div>
           <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-sm text-slate-800 leading-relaxed space-y-1.5 max-w-[85%]">
             <p class="font-semibold text-slate-900">Hello Venkatesh!</p>
-            <p>I have analyzed your active <strong>September 2026</strong> balance sheet. I see your primary income, your 5 loan obligations, and your mutual fund assets.</p>
+            <p>I have analyzed your active balance sheet. I see your primary income, your loan obligations, and your mutual fund assets.</p>
             <p class="text-slate-600">What financial decision can I help you optimize today?</p>
           </div>
         </div>
@@ -474,12 +474,12 @@
     </div>
   </div>
 
-  <!-- Inflow Modal -->
+  <!-- Inflow Modal (Handles Monthly or Fixed Annual Income) -->
   <div id="inflowModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5 border border-slate-100">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div>
-          <h3 class="font-bold text-slate-900 text-base">Manage Inflow for Period</h3>
+          <h3 class="font-bold text-slate-900 text-base" id="inflowModalTitle">Manage Inflow</h3>
           <p class="text-xs text-slate-500" id="inflowModalPeriodSubtitle"></p>
         </div>
         <button onclick="closeInflowModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -487,12 +487,12 @@
 
       <div class="space-y-4 text-xs">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Primary Salary / Inflow</label>
+          <label class="block font-semibold text-slate-700 mb-1" id="primaryInflowInputLabel">Primary Salary / Inflow</label>
           <input type="number" id="inputPrimaryIncome" step="any" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500">
-          <p class="text-slate-400 mt-1">Changes here only affect this specific period.</p>
+          <p class="text-slate-400 mt-1" id="primaryInflowHelpText">Changes here apply strictly to this active period.</p>
         </div>
 
-        <div class="border-t border-slate-100 pt-3">
+        <div class="border-t border-slate-100 pt-3" id="otherInflowsSection">
           <div class="flex items-center justify-between mb-2">
             <label class="font-semibold text-slate-700">Inflow From Other Sources</label>
             <button onclick="addOtherInflowRow('', 0)" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">+ Add Source</button>
@@ -643,14 +643,23 @@
 
     let currentUser = null;
     let unsubscribeFirestore = null;
-    const STORAGE_KEY = "wealthpilot_v5_assets_momyoy";
-    const PREV_STORAGE_KEY = "wealthpilot_v4_mom_yoy";
-    const OLD_STORAGE_KEY = "wealthpilot_v2_history";
+    const STORAGE_KEY = "wealthpilot_v6_isolated_periods";
+    const PREV_STORAGE_KEY = "wealthpilot_v5_assets_momyoy";
     const GROQ_KEY_STORAGE = "wealthpilot_groq_key";
 
     let currentCadence = 'monthly';
     let currentPeriodKey = '2026-09';
     let chatConversationHistory = [];
+
+    // Helper to generate a pristine empty categories structure
+    function createEmptyCategories() {
+      return [
+        { id: "loans", name: "Mortgages & Loans", type: "needs", icon: "fa-building-columns", items: [] },
+        { id: "savings", name: "Savings & Investments", type: "savings", icon: "fa-arrow-trend-up", items: [] },
+        { id: "home", name: "Cost for Home & Living", type: "needs", icon: "fa-house", items: [] },
+        { id: "entertainment", name: "Entertainment & Wants", type: "wants", icon: "fa-ticket", items: [] }
+      ];
+    }
 
     const DEFAULT_STORE = {
       currency: "₹",
@@ -680,11 +689,11 @@
                 type: "needs",
                 icon: "fa-building-columns",
                 items: [
-                  { id: "l1", name: "Housing Loan", amount: 45000, interestRate: 7.6, totalPrincipalOutstanding: 2800000 },
-                  { id: "l2", name: "Personal Loan 1", amount: 12950, interestRate: 11.5, totalPrincipalOutstanding: 320000 },
+                  { id: "l1", name: "Housing Loan", amount: 45270, interestRate: 7.6, totalPrincipalOutstanding: 6946554 },
+                  { id: "l2", name: "Personal Loan 1", amount: 12950, interestRate: 23.87, totalPrincipalOutstanding: 393144 },
                   { id: "l3", name: "Personal Loan 2", amount: 11284, interestRate: 12.0, totalPrincipalOutstanding: 280000 },
-                  { id: "l4", name: "Education Loan", amount: 6686, interestRate: 8.5, totalPrincipalOutstanding: 190000 },
-                  { id: "l5", name: "Personal Loan 3", amount: 6000, interestRate: 13.0, totalPrincipalOutstanding: 140000 }
+                  { id: "l4", name: "Education Loan", amount: 6681, interestRate: 8.5, totalPrincipalOutstanding: 190000 },
+                  { id: "l5", name: "Personal Loan 3", amount: 3246.52, interestRate: 13.0, totalPrincipalOutstanding: 140000 }
                 ]
               },
               {
@@ -719,88 +728,43 @@
           "2026": {
             periodKey: "2026",
             date: "2026-12-31",
-            primaryIncome: 2076000,
+            primaryIncome: 2500000, // Fixed Annual Package (Independent from monthly)
             otherInflows: [],
-            categories: [
-              {
-                id: "loans",
-                name: "Mortgages & Loans",
-                type: "needs",
-                icon: "fa-building-columns",
-                items: [
-                  { id: "al1", name: "Housing Loan Annual", amount: 540000, interestRate: 7.6, totalPrincipalOutstanding: 2800000 },
-                  { id: "al2", name: "Personal Loans Total", amount: 434640, interestRate: 12.0, totalPrincipalOutstanding: 740000 }
-                ]
-              },
-              {
-                id: "savings",
-                name: "Savings & Investments",
-                type: "savings",
-                icon: "fa-arrow-trend-up",
-                items: [
-                  { id: "as1", name: "Annual SIPs & Equity", amount: 360000, interestRate: 12.0, totalPortfolioValue: 450000 }
-                ]
-              },
-              {
-                id: "home",
-                name: "Cost for Home & Living",
-                type: "needs",
-                icon: "fa-house",
-                items: [
-                  { id: "ah1", name: "Annual Home Running Costs", amount: 50304.48, interestRate: 0 }
-                ]
-              },
-              {
-                id: "entertainment",
-                name: "Entertainment & Wants",
-                type: "wants",
-                icon: "fa-ticket",
-                items: []
-              }
-            ]
+            categories: createEmptyCategories()
           }
         }
       }
     };
 
-    function migrateOldDataToStore(oldAppData) {
-      if (!oldAppData) return null;
-      const newStore = JSON.parse(JSON.stringify(DEFAULT_STORE));
-      newStore.currency = oldAppData.currency || "₹";
-      if (oldAppData.surveyAnswers) newStore.surveyAnswers = oldAppData.surveyAnswers;
-      if (oldAppData.profilePrefs) newStore.profilePrefs = oldAppData.profilePrefs;
-      if (oldAppData.assets) newStore.assets = oldAppData.assets;
+    function migrateOldDataToStore(old) {
+      if (!old) return null;
+      const s = JSON.parse(JSON.stringify(DEFAULT_STORE));
+      s.currency = old.currency || "₹";
+      if (old.surveyAnswers) s.surveyAnswers = old.surveyAnswers;
+      if (old.profilePrefs) s.profilePrefs = old.profilePrefs;
+      if (old.assets) s.assets = old.assets;
 
-      const workingMonthKey = "2026-09";
-      if (oldAppData.periods && oldAppData.periods.monthly) {
-        newStore.periods = oldAppData.periods;
-      } else {
-        newStore.periods.monthly[workingMonthKey] = {
-          periodKey: workingMonthKey,
-          date: "2026-09-30",
-          primaryIncome: oldAppData.income || 173000,
-          otherInflows: [],
-          categories: oldAppData.categories && oldAppData.categories.length > 0
-            ? oldAppData.categories
-            : DEFAULT_STORE.periods.monthly["2026-09"].categories
-        };
+      if (old.periods && old.periods.monthly) {
+        s.periods.monthly = old.periods.monthly;
       }
-      return newStore;
+      if (old.periods && old.periods.annual) {
+        s.periods.annual = old.periods.annual;
+      }
+      return s;
     }
 
     function loadStore() {
-      const currentSaved = localStorage.getItem(STORAGE_KEY);
-      if (currentSaved) {
-        try { return JSON.parse(currentSaved); } catch (e) { console.error(e); }
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) { console.error(e); }
       }
-      const prevSaved = localStorage.getItem(PREV_STORAGE_KEY) || localStorage.getItem(OLD_STORAGE_KEY);
-      if (prevSaved) {
+      const prev = localStorage.getItem(PREV_STORAGE_KEY) || localStorage.getItem("wealthpilot_v4_mom_yoy");
+      if (prev) {
         try {
-          const oldData = JSON.parse(prevSaved);
-          const migrated = migrateOldDataToStore(oldData);
-          if (migrated) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-            return migrated;
+          const m = migrateOldDataToStore(JSON.parse(prev));
+          if (m) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
+            return m;
           }
         } catch (e) { console.error(e); }
       }
@@ -902,15 +866,6 @@
               document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
               return;
             }
-            if (cloudData.appData) {
-              const migrated = migrateOldDataToStore(cloudData.appData);
-              if (migrated) {
-                appStore = migrated;
-                saveStore();
-                document.getElementById("syncStatus").textContent = "Data Migrated & Synced ☁";
-                return;
-              }
-            }
           }
           saveStore();
         }, (err) => {
@@ -950,7 +905,7 @@
             appStore: appStore,
             updatedAt: new Date().toISOString()
           });
-          document.getElementById("syncStatus").textContent = "Cloud Synced ☁";
+          document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
         } catch (e) {
           console.error(e);
           document.getElementById("syncStatus").textContent = "Sync Pending";
@@ -979,14 +934,16 @@
       if (cadence === 'monthly') {
         monthPicker.classList.remove("hidden");
         yearPicker.classList.add("hidden");
+        document.getElementById("inflowCardTitle").textContent = "Total Monthly Inflow (Salary + Other)";
         document.getElementById("cadenceTitle").textContent = "Monthly Audit Mode (MoM)";
         document.getElementById("cadenceSubtitle").textContent = "Month-over-month salary inflows, debt EMIs, and SIP compounding";
         document.getElementById("cadenceIcon").textContent = "M";
       } else {
         monthPicker.classList.add("hidden");
         yearPicker.classList.remove("hidden");
+        document.getElementById("inflowCardTitle").textContent = "Fixed Annual Income (Fixed Package)";
         document.getElementById("cadenceTitle").textContent = "Annual Snapshot Mode (YoY)";
-        document.getElementById("cadenceSubtitle").textContent = "Year-over-year asset expansion, liability reduction, and net worth milestone trajectory";
+        document.getElementById("cadenceSubtitle").textContent = "Fixed Annual Package, annual wealth milestones, and asset trajectory";
         document.getElementById("cadenceIcon").textContent = "Y";
       }
 
@@ -994,6 +951,7 @@
       render();
     }
 
+    // STRICT PERIOD ISOLATION: A new unentered period starts strictly at ZERO on all sections
     function initPeriodForCurrentCadence() {
       const monthPicker = document.getElementById("activePeriodPickerMonth");
       const yearPicker = document.getElementById("activePeriodPickerYear");
@@ -1008,21 +966,16 @@
       }
 
       if (!appStore.periods[currentCadence]) appStore.periods[currentCadence] = {};
+      
+      // If this month/year does not exist yet: create brand new ZERO slate (no cloning from past months)
       if (!appStore.periods[currentCadence][currentPeriodKey]) {
-        const keys = Object.keys(appStore.periods[currentCadence]);
-        if (keys.length > 0) {
-          const lastPeriod = appStore.periods[currentCadence][keys[keys.length - 1]];
-          appStore.periods[currentCadence][currentPeriodKey] = JSON.parse(JSON.stringify(lastPeriod));
-          appStore.periods[currentCadence][currentPeriodKey].periodKey = currentPeriodKey;
-        } else {
-          appStore.periods[currentCadence][currentPeriodKey] = {
-            periodKey: currentPeriodKey,
-            date: currentCadence === 'monthly' ? `${currentPeriodKey}-28` : `${currentPeriodKey}-12-31`,
-            primaryIncome: currentCadence === 'monthly' ? 173000 : 2076000,
-            otherInflows: [],
-            categories: JSON.parse(JSON.stringify(DEFAULT_STORE.periods[currentCadence][currentCadence === 'monthly' ? "2026-09" : "2026"].categories))
-          };
-        }
+        appStore.periods[currentCadence][currentPeriodKey] = {
+          periodKey: currentPeriodKey,
+          date: currentCadence === 'monthly' ? `${currentPeriodKey}-28` : `${currentPeriodKey}-12-31`,
+          primaryIncome: 0, // Starts at zero
+          otherInflows: [],
+          categories: createEmptyCategories() // Clean empty categories
+        };
       }
     }
 
@@ -1117,7 +1070,12 @@
       document.getElementById("advisorPeriodLabel").textContent = `${currentPeriodKey} (${currentCadence.toUpperCase()})`;
 
       document.getElementById("statTotalInflowDisplay").textContent = formatMoney(totals.totalInflow);
-      document.getElementById("inflowBreakdownTag").textContent = `(${formatMoney(totals.primaryInflow)} Primary + ${formatMoney(totals.otherInflowTotal)} Other)`;
+      
+      if (currentCadence === 'monthly') {
+        document.getElementById("inflowBreakdownTag").textContent = `(${formatMoney(totals.primaryInflow)} Primary + ${formatMoney(totals.otherInflowTotal)} Other)`;
+      } else {
+        document.getElementById("inflowBreakdownTag").textContent = `(Fixed Annual Income Package)`;
+      }
       
       document.getElementById("statOutflowDisplay").textContent = formatMoney(totals.totalOutflow);
       const outflowPercent = totals.totalInflow > 0 ? ((totals.totalOutflow / totals.totalInflow) * 100).toFixed(0) : 0;
@@ -1132,7 +1090,6 @@
       surplusEl.className = totals.surplus < 0 ? "text-2xl font-bold text-rose-600" : "text-2xl font-bold text-emerald-600";
 
       document.getElementById("chatSurplusBadge").textContent = formatMoney(totals.surplus);
-
       document.getElementById("statTotalAssetsDisplay").textContent = formatMoney(totals.totalInvestedAssets);
       document.getElementById("statNetWorthDisplay").textContent = formatMoney(totals.netWorth);
       document.getElementById("statNetWorthDelta").textContent = velocity.deltaText;
@@ -1158,12 +1115,16 @@
       document.getElementById("healthScoreStatus").textContent = score >= 75 ? "Optimal Growth" : "Attention Required";
 
       let headline = totals.surplus < 0 ? "Deficit Warning: Action Required" : `Surplus Available: ${formatMoney(totals.surplus)}`;
-      let body = `Based on your goal, you are directing ${savRate}% to investments and ${needsRate}% to commitments.`;
+      let body = totals.totalInflow === 0 
+        ? "No income or commitments recorded for this period yet. Click 'Manage Inflow' or '+ Add Item' to populate."
+        : `Based on your goal, you are directing ${savRate}% to investments and ${needsRate}% to commitments.`;
       document.getElementById("dailyAdvisorHeadline").textContent = headline;
       document.getElementById("dailyAdvisorBody").textContent = body;
 
       const actionList = [];
-      if (totals.surplus < 0) {
+      if (totals.totalInflow === 0 && totals.totalOutflow === 0) {
+        actionList.push("Period is clean/empty. Ready for your actual salary and adjusted loan repayments.");
+      } else if (totals.surplus < 0) {
         actionList.push("Cash flow is running at a deficit. Trim discretionary wants or evaluate loan refinancing.");
       } else {
         actionList.push(`Debt Avalanche: Direct ${formatMoney(totals.surplus * 0.75)} surplus to your loan with the highest interest % first.`);
@@ -1294,7 +1255,21 @@
       const container = document.getElementById("categoriesContainer");
       container.innerHTML = "";
 
-      (period.categories || []).forEach(cat => {
+      const cats = period.categories || [];
+      const totalItems = cats.reduce((acc, c) => acc + (c.items ? c.items.length : 0), 0);
+
+      if (totalItems === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-xs text-slate-400 bg-white rounded-2xl border border-dashed border-slate-200 space-y-2">
+            <i class="fa-solid fa-wallet text-2xl text-slate-300"></i>
+            <p class="font-semibold text-slate-600">Zero outflows recorded for ${currentPeriodKey}.</p>
+            <p>Click '+ Add Item' above to record this month's loan EMIs or living costs.</p>
+          </div>
+        `;
+        return;
+      }
+
+      cats.forEach(cat => {
         const catTotal = (cat.items || []).reduce((acc, it) => acc + Number(it.amount || 0), 0);
         const card = document.createElement("div");
         card.className = "bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3";
@@ -1313,7 +1288,8 @@
             ${(cat.items || []).map(it => `
               <div onclick="openExpenseModal('${it.id}')" class="flex items-center justify-between p-2 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors text-xs cursor-pointer border border-transparent hover:border-indigo-200">
                 <div>
-                  <span class="font-semibold text-slate-800">${it.name}</span>${it.interestRate ? `<span class="ml-1 text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-semibold">${it.interestRate}% Int.</span>` : ''}
+                  <span class="font-semibold text-slate-800">${it.name}</span>
+                  ${it.interestRate ? `<span class="ml-1 text-[10px] bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded font-semibold">${it.interestRate}% Int.</span>` : ''}
                   ${it.totalPrincipalOutstanding ? `<span class="ml-1 text-[10px] text-slate-500 font-medium">Bal: ${formatMoney(it.totalPrincipalOutstanding)}</span>` : ''}
                 </div>
                 <div class="flex items-center gap-2">
@@ -1337,14 +1313,16 @@
       const labels = (period.categories || []).map(c => c.name);
       const dataValues = (period.categories || []).map(c => (c.items || []).reduce((s, it) => s + Number(it.amount || 0), 0));
 
+      const totalVal = dataValues.reduce((a, b) => a + b, 0);
+
       if (allocationChartInstance) allocationChartInstance.destroy();
       allocationChartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
-          labels: labels,
+          labels: totalVal > 0 ? labels : ['No Outflows'],
           datasets: [{
-            data: dataValues,
-            backgroundColor: ['#f43f5e', '#10b981', '#6366f1', '#f59e0b'],
+            data: totalVal > 0 ? dataValues : [1],
+            backgroundColor: totalVal > 0 ? ['#f43f5e', '#10b981', '#6366f1', '#f59e0b'] : ['#f1f5f9'],
             borderWidth: 2,
             borderColor: '#ffffff'
           }]
@@ -1433,15 +1411,26 @@
       });
     }
 
-    // --- INFLOW MODAL LOGIC ---
+    // --- INFLOW MODAL LOGIC (Supports Month Salary & Fixed Annual Package) ---
     function openInflowModal() {
       const period = getActivePeriod();
-      document.getElementById("inflowModalPeriodSubtitle").textContent = `Targeting Period: ${currentPeriodKey}`;
+      document.getElementById("inflowModalPeriodSubtitle").textContent = `Targeting Period: ${currentPeriodKey} (${currentCadence.toUpperCase()})`;
       document.getElementById("inputPrimaryIncome").value = period.primaryIncome || 0;
 
-      const container = document.getElementById("otherInflowsContainer");
-      container.innerHTML = "";
-      (period.otherInflows || []).forEach(it => addOtherInflowRow(it.name, it.amount));
+      const isAnnual = currentCadence === 'annual';
+      document.getElementById("inflowModalTitle").textContent = isAnnual ? "Set Fixed Annual Income" : "Manage Monthly Salary & Inflows";
+      document.getElementById("primaryInflowInputLabel").textContent = isAnnual ? "Fixed Annual Gross Package (CTC)" : "Primary Salary (Net Received)";
+      document.getElementById("primaryInflowHelpText").textContent = isAnnual ? "Set your fixed annual income package once (not tracked from months)." : "Changes here apply strictly to this specific month.";
+
+      const otherSection = document.getElementById("otherInflowsSection");
+      if (isAnnual) {
+        otherSection.classList.add("hidden");
+      } else {
+        otherSection.classList.remove("hidden");
+        const container = document.getElementById("otherInflowsContainer");
+        container.innerHTML = "";
+        (period.otherInflows || []).forEach(it => addOtherInflowRow(it.name, it.amount));
+      }
 
       document.getElementById("inflowModal").classList.remove("hidden");
     }
@@ -1464,14 +1453,16 @@
       const period = getActivePeriod();
       period.primaryIncome = Number(document.getElementById("inputPrimaryIncome").value) || 0;
 
-      const otherRows = document.querySelectorAll(".other-inflow-row");
-      const otherList = [];
-      otherRows.forEach(r => {
-        const name = r.querySelector(".other-inflow-name").value.trim();
-        const amt = Number(r.querySelector(".other-inflow-amount").value) || 0;
-        if (name && amt > 0) otherList.push({ name, amount: amt });
-      });
-      period.otherInflows = otherList;
+      if (currentCadence === 'monthly') {
+        const otherRows = document.querySelectorAll(".other-inflow-row");
+        const otherList = [];
+        otherRows.forEach(r => {
+          const name = r.querySelector(".other-inflow-name").value.trim();
+          const amt = Number(r.querySelector(".other-inflow-amount").value) || 0;
+          if (name && amt > 0) otherList.push({ name, amount: amt });
+        });
+        period.otherInflows = otherList;
+      }
 
       closeInflowModal();
       saveStore();
@@ -1788,7 +1779,7 @@
 You give precise, mathematically rigorous, and empathetic financial guidance.
 
 HERE IS THE USER'S REAL-TIME FINANCIAL LEDGER FOR PERIOD: ${currentPeriodKey} (${currentCadence.toUpperCase()}):
-• Primary Salary Inflow: ${formatMoney(totals.primaryInflow)}
+• Primary Inflow: ${formatMoney(totals.primaryInflow)}
 • Other Inflow Sources: ${formatMoney(totals.otherInflowTotal)}
 • Total Inflow: ${formatMoney(totals.totalInflow)}
 • Total Committed Outflow: ${formatMoney(totals.totalOutflow)}
@@ -1797,8 +1788,8 @@ HERE IS THE USER'S REAL-TIME FINANCIAL LEDGER FOR PERIOD: ${currentPeriodKey} ($
 • Total Outstanding Debt Balance: ${formatMoney(totals.totalDebtBalance)}
 • Current Calculated Net Worth: ${formatMoney(totals.netWorth)}
 
-USER'S DETAILED LOAN PORTFOLIO:
-${loans || "No loans recorded."}
+USER'S DETAILED LOAN PORTFOLIO FOR THIS PERIOD:
+${loans || "No loans recorded for this period."}
 
 USER'S INVESTMENT ASSETS:
 ${assets || "No assets recorded."}
@@ -1841,7 +1832,6 @@ INSTRUCTIONS FOR THE ADVISOR:
         { role: "user", content: query }
       ];
 
-      // Robust multi-model dispatch: Primary GPT-OSS 120B, fallback to GPT-OSS 20B
       const primaryModel = "openai/gpt-oss-120b";
       const fallbackModel = "openai/gpt-oss-20b";
 
@@ -1865,7 +1855,6 @@ INSTRUCTIONS FOR THE ADVISOR:
         let activeModelUsed = primaryModel;
         let response = await executeGroqRequest(primaryModel);
 
-        // If primary model is unavailable or rate-limited, failover to 20B
         if (!response.ok && (response.status === 404 || response.status === 400 || response.status === 429)) {
           console.warn(`Primary model ${primaryModel} failed with status ${response.status}. Falling back to ${fallbackModel}...`);
           activeModelUsed = fallbackModel;
