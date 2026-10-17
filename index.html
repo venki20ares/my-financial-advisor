@@ -28,7 +28,7 @@
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- SheetJS for Client-Side Excel / CSV Parsing -->
+  <!-- SheetJS for Client-Side Excel / CSV / BIFF Parsing -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
@@ -453,15 +453,15 @@
       </div>
     </div>
 
-    <!-- CSV / EXCEL IMPORT & STAGING MODAL -->
+    <!-- CSV / EXCEL / HDFC STATEMENT IMPORT & STAGING MODAL -->
     <div id="importModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-      <div class="glass-card rounded-2xl shadow-2xl max-w-3xl w-full p-6 space-y-5 border border-cyber-border max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="glass-card rounded-2xl shadow-2xl max-w-4xl w-full p-6 space-y-5 border border-cyber-border max-h-[90vh] overflow-y-auto custom-scrollbar">
         <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
           <div>
             <h3 class="font-bold text-white text-base flex items-center gap-2">
               <i class="fa-solid fa-file-excel text-emerald-400"></i> Bank Statement / CSV Import Staging
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">Upload a CSV or Excel file to parse and auto-categorize transactions before logging</p>
+            <p class="text-xs text-slate-400 mt-0.5">Supports HDFC Statements, CSVs & Excel spreadsheets with full manual overrides</p>
           </div>
           <button onclick="closeImportModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
@@ -469,8 +469,8 @@
         <div class="space-y-4">
           <div class="border-2 border-dashed border-cyber-border rounded-xl p-6 text-center hover:border-emerald-500/50 transition-all bg-cyber-bg/50 cursor-pointer" onclick="document.getElementById('excelFileInput').click()">
             <i class="fa-solid fa-cloud-arrow-up text-3xl text-emerald-400 mb-2"></i>
-            <p class="text-xs font-bold text-white">Click to upload statement (.csv, .xlsx, .xls)</p>
-            <p class="text-[10px] text-slate-400 mt-1">Parses descriptions, amounts, and auto-tags Maslow sub-categories</p>
+            <p class="text-xs font-bold text-white">Click to upload statement (.xls, .xlsx, .csv)</p>
+            <p class="text-[10px] text-slate-400 mt-1">Parses HDFC statements, cleans UPI narration strings, and extracts debits & credits</p>
             <input type="file" id="excelFileInput" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleExcelFileUpload(event)">
           </div>
 
@@ -482,13 +482,14 @@
               </button>
             </div>
 
-            <div class="max-h-64 overflow-y-auto custom-scrollbar border border-cyber-border rounded-xl bg-cyber-bg">
+            <div class="max-h-72 overflow-y-auto custom-scrollbar border border-cyber-border rounded-xl bg-cyber-bg">
               <table class="w-full text-left text-xs text-slate-300">
                 <thead class="bg-cyber-card text-slate-400 border-b border-cyber-border sticky top-0 font-semibold">
                   <tr>
                     <th class="p-2.5">Description</th>
                     <th class="p-2.5">Amount</th>
-                    <th class="p-2.5">Target Main Category</th>
+                    <th class="p-2.5">Flow Type</th>
+                    <th class="p-2.5">Main Category</th>
                     <th class="p-2.5">Smart Sub-Category</th>
                     <th class="p-2.5 text-center">Action</th>
                   </tr>
@@ -1424,7 +1425,8 @@
                 <div onclick="openExpenseModal('${it.id}')" class="flex items-center justify-between p-2.5 rounded-xl bg-cyber-bg hover:bg-cyber-card border border-cyber-border hover:border-emerald-500/40 transition-all text-xs cursor-pointer">
                   <div>
                     <span class="font-semibold text-white">${it.name}</span>
-                    <span class="ml-2 text-[10px] bg-cyber-card text-emerald-400 border border-cyber-border px-2 py-0.5 rounded font-medium">${subTag}</span>${it.interestRate ? `<span class="ml-1 text-[10px] bg-rose-500/20 text-rose-400 px-1.5 py-0.5 rounded font-semibold border border-rose-500/30">${it.interestRate}% Int.</span>` : ''}
+                    <span class="ml-2 text-[10px] bg-cyber-card text-emerald-400 border border-cyber-border px-2 py-0.5 rounded font-medium">${subTag}</span>
+                    ${it.interestRate ? `<span class="ml-1 text-[10px] bg-rose-500/20 text-rose-400 px-1.5 py-0.5 rounded font-semibold border border-rose-500/30">${it.interestRate}% Int.</span>` : ''}
                   </div>
                   <div class="flex items-center gap-2 font-mono-code">
                     <span class="font-bold text-white">${formatMoney(it.amount)}</span>
@@ -1443,7 +1445,7 @@
       });
     }
 
-    // --- CSV / EXCEL PARSER & STAGING ENGINE ---
+    // --- CSV / EXCEL PARSER & STAGING ENGINE (HDFC COMPATIBLE) ---
     function openImportModal() {
       document.getElementById("importTargetPeriodTag").textContent = currentPeriodKey;
       document.getElementById("importModal").classList.remove("hidden");
@@ -1468,7 +1470,7 @@
 
           parseAndStageRawRows(jsonRows);
         } catch (err) {
-          alert("Error parsing file: " + err.message);
+          alert("Error parsing statement file: " + err.message);
         }
       };
       reader.readAsArrayBuffer(file);
@@ -1476,29 +1478,91 @@
 
     function parseAndStageRawRows(rows) {
       stagedParsedTransactions = [];
-      if (rows.length < 2) return;
+      if (!rows || rows.length === 0) return;
 
-      for (let i = 1; i < rows.length; i++) {
+      // 1. Locate Table Header Index in HDFC Statement
+      let headerIdx = -1;
+      let dateCol = -1, narrCol = -1, debitCol = -1, creditCol = -1;
+
+      for (let i = 0; i < Math.min(rows.length, 30); i++) {
+        const rowStr = (rows[i] || []).map(c => String(c).toLowerCase()).join(" ");
+        if (rowStr.includes("narration") || rowStr.includes("withdrawal") || rowStr.includes("deposit")) {
+          headerIdx = i;
+          const headerRow = rows[i].map(c => String(c).trim().toLowerCase());
+          
+          dateCol = headerRow.findIndex(c => c.includes("date"));
+          narrCol = headerRow.findIndex(c => c.includes("narration") || c.includes("particulars") || c.includes("description"));
+          debitCol = headerRow.findIndex(c => c.includes("withdrawal") || c.includes("debit") || c.includes("outflow"));
+          creditCol = headerRow.findIndex(c => c.includes("deposit") || c.includes("credit") || c.includes("inflow"));
+          break;
+        }
+      }
+
+      if (dateCol === -1) dateCol = 0;
+      if (narrCol === -1) narrCol = 1;
+      if (debitCol === -1) debitCol = 4;
+      if (creditCol === -1) creditCol = 5;
+
+      const startRow = headerIdx >= 0 ? headerIdx + 1 : 0;
+
+      // 2. Loop through Data Rows
+      for (let i = startRow; i < rows.length; i++) {
         const row = rows[i];
         if (!row || row.length === 0) continue;
 
-        let desc = String(row[0] || row[1] || "Expense").trim();
-        let amt = parseFloat(row[1] || row[2] || row[3] || 0);
+        const rowText = row.map(c => String(c)).join(" ");
+        if (rowText.includes("STATEMENT SUMMARY") || rowText.includes("End Of Statement") || rowText.includes("Generated On:")) {
+          break; // Stop parsing at statement footer summary
+        }
 
-        if (isNaN(amt) || amt <= 0) continue;
+        let rawNarr = String(row[narrCol] || "").trim();
+        if (!rawNarr || rawNarr.startsWith("*****")) continue; // Skip header divider lines
 
-        const autoTag = predictCategoriesFromText(desc);
+        let debitAmt = parseFloat(String(row[debitCol] || "").replace(/,/g, ''));
+        let creditAmt = parseFloat(String(row[creditCol] || "").replace(/,/g, ''));
+
+        let isOutflow = true;
+        let amount = 0;
+
+        if (!isNaN(debitAmt) && debitAmt > 0) {
+          amount = debitAmt;
+          isOutflow = true;
+        } else if (!isNaN(creditAmt) && creditAmt > 0) {
+          amount = creditAmt;
+          isOutflow = false;
+        } else {
+          continue; // Skip zero/invalid rows
+        }
+
+        let cleanName = cleanBankNarration(rawNarr);
+        const autoTag = predictCategoriesFromText(rawNarr);
 
         stagedParsedTransactions.push({
           id: "stg_" + Date.now() + "_" + i,
-          name: desc,
-          amount: amt,
+          rawDescription: rawNarr,
+          name: cleanName,
+          amount: amount,
+          type: isOutflow ? 'outflow' : 'inflow',
           category: autoTag.category,
           subCategory: autoTag.subCategory
         });
       }
 
       renderStagingTable();
+    }
+
+    function cleanBankNarration(narr) {
+      let text = narr;
+      if (text.startsWith("UPI-")) {
+        const parts = text.split("-");
+        if (parts.length > 1) text = parts[1];
+      } else if (text.startsWith("ACH D-")) {
+        text = text.replace("ACH D-", "").trim();
+      } else if (text.startsWith("IMPS-")) {
+        const parts = text.split("-");
+        if (parts.length > 2) text = parts[2];
+      }
+      return text.substring(0, 35).trim();
     }
 
     function predictCategoriesFromText(text) {
@@ -1513,13 +1577,16 @@
       if (t.includes("sip") || t.includes("mutual") || t.includes("fund") || t.includes("zerodha") || t.includes("groww")) {
         return { category: "savings", subCategory: "equity_sip" };
       }
-      if (t.includes("swiggy") || t.includes("zomato") || t.includes("restaurant") || t.includes("cafe") || t.includes("food")) {
+      if (t.includes("swiggy") || t.includes("zomato") || t.includes("restaurant") || t.includes("cafe") || t.includes("mcdonalds")) {
         return { category: "entertainment", subCategory: "dining" };
       }
-      if (t.includes("movie") || t.includes("netflix") || t.includes("cinema") || t.includes("bookmyshow")) {
+      if (t.includes("movie") || t.includes("pvr") || t.includes("inox") || t.includes("bookmyshow") || t.includes("cinema")) {
         return { category: "entertainment", subCategory: "movies" };
       }
-      if (t.includes("grocery") || t.includes("supermarket") || t.includes("mart") || t.includes("provisions")) {
+      if (t.includes("airtel") || t.includes("broadband") || t.includes("electricity") || t.includes("utility")) {
+        return { category: "home", subCategory: "utilities" };
+      }
+      if (t.includes("grocery") || t.includes("supermarket") || t.includes("zepto") || t.includes("amazon pay")) {
         return { category: "home", subCategory: "groceries" };
       }
 
@@ -1538,22 +1605,32 @@
         const tr = document.createElement("tr");
         tr.className = "hover:bg-cyber-card/50 transition-colors";
         tr.innerHTML = `
-          <td class="p-2.5 font-medium text-white">${item.name}</td>
-          <td class="p-2.5 font-bold font-mono-code text-emerald-400">${formatMoney(item.amount)}</td>
-          <td class="p-2.5">
-            <select onchange="updateStagedRowCategory(${index}, 'category', this.value)" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[11px] text-slate-200">
+          <td class="p-2">
+            <input type="text" value="${item.name}" onchange="stagedParsedTransactions[${index}].name = this.value" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-xs text-white w-full">
+          </td>
+          <td class="p-2 font-bold font-mono-code text-emerald-400">
+            <input type="number" step="any" value="${item.amount}" onchange="stagedParsedTransactions[${index}].amount = Number(this.value)" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-xs font-mono-code text-emerald-400 w-24">
+          </td>
+          <td class="p-2">
+            <select onchange="stagedParsedTransactions[${index}].type = this.value; renderStagingTable();" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[11px] font-bold ${item.type === 'outflow' ? 'text-rose-400' : 'text-emerald-400'}">
+              <option value="outflow" ${item.type === 'outflow' ? 'selected' : ''}>Outflow (Expense)</option>
+              <option value="inflow" ${item.type === 'inflow' ? 'selected' : ''}>Inflow (Income)</option>
+            </select>
+          </td>
+          <td class="p-2">
+            <select onchange="updateStagedRowCategory(${index}, 'category', this.value)" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[11px] text-slate-200" ${item.type === 'inflow' ? 'disabled' : ''}>
               <option value="loans" ${item.category === 'loans' ? 'selected' : ''}>Mortgages & Loans</option>
               <option value="savings" ${item.category === 'savings' ? 'selected' : ''}>Savings & Investments</option>
               <option value="home" ${item.category === 'home' ? 'selected' : ''}>Cost for Home & Living</option>
               <option value="entertainment" ${item.category === 'entertainment' ? 'selected' : ''}>Entertainment & Wants</option>
             </select>
           </td>
-          <td class="p-2.5">
-            <select onchange="updateStagedRowCategory(${index}, 'subCategory', this.value)" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[11px] text-white">
+          <td class="p-2">
+            <select onchange="updateStagedRowCategory(${index}, 'subCategory', this.value)" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[11px] text-white" ${item.type === 'inflow' ? 'disabled' : ''}>
               ${(SUB_CATEGORY_MAP[item.category] || []).map(s => `<option value="${s.id}" ${item.subCategory === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
             </select>
           </td>
-          <td class="p-2.5 text-center">
+          <td class="p-2 text-center">
             <button onclick="removeStagedRow(${index})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-trash"></i></button>
           </td>
         `;
@@ -1577,7 +1654,7 @@
 
     function autoCategorizeStagedRows() {
       stagedParsedTransactions.forEach(item => {
-        const autoTag = predictCategoriesFromText(item.name);
+        const autoTag = predictCategoriesFromText(item.rawDescription || item.name);
         item.category = autoTag.category;
         item.subCategory = autoTag.subCategory;
       });
@@ -1586,19 +1663,28 @@
 
     function commitStagedTransactions() {
       const period = getActivePeriod();
+
       stagedParsedTransactions.forEach(stg => {
-        let catObj = period.categories.find(c => c.id === stg.category);
-        if (!catObj) {
-          catObj = { id: stg.category, name: stg.category, items: [] };
-          period.categories.push(catObj);
+        if (stg.type === 'inflow') {
+          if (!period.otherInflows) period.otherInflows = [];
+          period.otherInflows.push({
+            name: stg.name,
+            amount: stg.amount
+          });
+        } else {
+          let catObj = period.categories.find(c => c.id === stg.category);
+          if (!catObj) {
+            catObj = { id: stg.category, name: stg.category, items: [] };
+            period.categories.push(catObj);
+          }
+          catObj.items.push({
+            id: "it_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+            name: stg.name,
+            subCategory: stg.subCategory,
+            amount: stg.amount,
+            interestRate: 0
+          });
         }
-        catObj.items.push({
-          id: "it_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
-          name: stg.name,
-          subCategory: stg.subCategory,
-          amount: stg.amount,
-          interestRate: 0
-        });
       });
 
       closeImportModal();
