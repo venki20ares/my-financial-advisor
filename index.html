@@ -1,1547 +1,2175 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WealthPilot Pro - Cyber-Emerald Fintech</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        obsidian: '#020617',
-                        slateDark: '#0F172A',
-                        emeraldNeon: '#10B981',
-                        emeraldGlow: '#059669',
-                        indigoNeon: '#6366F1',
-                        indigoGlow: '#4F46E5',
-                        cyanNeon: '#06B6D4',
-                        cardBg: 'rgba(15, 23, 42, 0.75)',
-                    },
-                    boxShadow: {
-                        'neon-emerald': '0 0 20px -3px rgba(16, 185, 129, 0.35)',
-                        'neon-indigo': '0 0 20px -3px rgba(99, 102, 241, 0.35)',
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
-                    }
-                }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WealthPilot Pro - Cyber Emerald Financial Terminal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              bg: '#090d16',
+              surface: '#111827',
+              card: '#161f32',
+              border: '#1f2d47',
+              emerald: '#10b981',
+              emeraldGlow: '#059669',
+              indigo: '#6366f1',
+              rose: '#f43f5e',
+              amber: '#f59e0b'
             }
+          }
         }
-    </script>
-    <!-- Google Font: Inter & JetBrains Mono for Code/Numbers -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Firebase App & Firestore Compatibility SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SheetJS for Client-Side Excel / CSV Parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #090d16; color: #f3f4f6; }
+    .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #090d16; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f2d47; border-radius: 4px; }
+    .glass-card { background: rgba(22, 31, 50, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(31, 45, 71, 0.8); }
+    .glass-card-hover { transition: all 0.2s ease-in-out; }
+    .glass-card-hover:hover { border-color: rgba(16, 185, 129, 0.4); transform: translateY(-1px); }
+  </style>
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 50% 0%, #0F172A 0%, #020617 100%);
-            min-height: 100vh;
-            color: #E2E8F0;
-        }
-        .font-mono-num {
-            font-family: 'JetBrains Mono', monospace;
-        }
-        /* Glassmorphism styling */
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-panel-glow {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.15);
-        }
-        .glass-input {
-            background: rgba(2, 6, 23, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #F8FAFC;
-        }
-        .glass-input:focus {
-            border-color: #10B981;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
-            outline: none;
-        }
-        /* Custom Futuristic Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #020617;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1E293B;
-            border-radius: 9999px;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #10B981;
-        }
-        /* Glowing Text */
-        .text-glow-emerald {
-            text-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
-        }
-        .text-glow-indigo {
-            text-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
-        }
-    </style>
+  <!-- Firebase Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-obsidian text-slate-200 antialiased selection:bg-emeraldNeon selection:text-obsidian pb-16">
+<body class="bg-cyber-bg text-slate-100 antialiased min-h-screen relative pb-20 selection:bg-emerald-500 selection:text-slate-950">
 
-    <!-- TOP HEADER / NAV -->
-    <header class="sticky top-0 z-30 glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3 transition-all">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            
-            <!-- Logo & Brand -->
-            <div class="flex items-center justify-between w-full md:w-auto">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emeraldNeon to-indigoNeon p-[1px] flex items-center justify-center shadow-neon-emerald">
-                        <div class="w-full h-full bg-obsidian rounded-[11px] flex items-center justify-center">
-                            <i class="fa-solid fa-chart-line text-emeraldNeon text-lg"></i>
-                        </div>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                            WEALTH<span class="text-emeraldNeon text-glow-emerald">PILOT</span>
-                            <span class="text-[10px] font-mono font-semibold uppercase px-2 py-0.5 rounded-full bg-emeraldNeon/10 text-emeraldNeon border border-emeraldNeon/30">PRO</span>
-                        </h1>
-                        <p class="text-xs text-slate-400">Cyber-Emerald Intelligence</p>
-                    </div>
-                </div>
+  <!-- ========================================== -->
+  <!-- 1. AUTH SCREEN                             -->
+  <!-- ========================================== -->
+  <div id="authScreen" class="min-h-screen flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-cyber-bg to-black relative overflow-hidden">
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-                <!-- Mobile Tab Toggle -->
-                <div class="flex md:hidden items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800">
-                    <button onclick="switchView('dashboard')" id="btn-tab-dash-mb" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-emeraldNeon text-obsidian shadow-sm">
-                        📊 Dash
-                    </button>
-                    <button onclick="switchView('monthly')" id="btn-tab-log-mb" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all">
-                        📝 Log
-                    </button>
-                </div>
-            </div>
+    <div class="max-w-md w-full glass-card p-8 rounded-3xl shadow-2xl relative z-10 text-center space-y-6 border border-cyber-border">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-indigo-600 mx-auto flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-500/20">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">WealthPilot Pro</h1>
+        <p class="text-emerald-400/80 text-xs sm:text-sm mt-1 font-medium">Cyber Emerald Financial Engine</p>
+      </div>
 
-            <!-- Central Desktop View Switcher -->
-            <div class="hidden md:flex items-center bg-slate-900/90 p-1 rounded-2xl border border-slate-800/80 shadow-inner">
-                <button onclick="switchView('dashboard')" id="btn-tab-dash" class="flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold transition-all bg-emeraldNeon text-obsidian shadow-neon-emerald">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <span>Dashboard</span>
-                </button>
-                <button onclick="switchView('monthly')" id="btn-tab-log" class="flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span>Monthly Log</span>
-                </button>
-            </div>
+      <button onclick="handleGoogleSignIn()" class="w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-950 font-bold rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all text-sm">
+        <svg class="w-4 h-4" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.15z"/>
+          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+          <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
+          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+        </svg>
+        <span>Sign In with Google</span>
+      </button>
+      <p class="text-[11px] text-slate-400">Encrypted personal ledger synced to Firebase Cloud.</p>
+    </div>
+  </div>
 
-            <!-- Right Controls: Currency, Backup, Profile -->
-            <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
-                <!-- Currency Selector -->
-                <div class="relative">
-                    <select id="currency-select" onchange="updateCurrency(this.value)" class="glass-input text-xs font-mono rounded-xl px-3 py-1.5 pr-6 appearance-none cursor-pointer focus:ring-1 focus:ring-emeraldNeon">
-                        <option value="₹" selected>INR (₹)</option>
-                        <option value="$">USD ($)</option>
-                        <option value="€">EUR (€)</option>
-                        <option value="£">GBP (£)</option>
-                        <option value="AED ">AED</option>
-                    </select>
-                </div>
-
-                <!-- Backup & Restore -->
-                <button onclick="exportDataJSON()" title="Export Backup JSON" class="p-2 rounded-xl glass-panel hover:border-emeraldNeon/50 text-slate-300 hover:text-emeraldNeon transition-all text-xs">
-                    <i class="fa-solid fa-download"></i>
-                </button>
-                <label title="Import Backup JSON" class="p-2 rounded-xl glass-panel hover:border-emeraldNeon/50 text-slate-300 hover:text-emeraldNeon transition-all text-xs cursor-pointer">
-                    <i class="fa-solid fa-upload"></i>
-                    <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
-                </label>
-
-                <!-- Key Modal Trigger -->
-                <button onclick="openGroqKeyModal()" title="Groq AI Settings" class="p-2 rounded-xl glass-panel hover:border-indigoNeon/50 text-slate-300 hover:text-indigoNeon transition-all text-xs">
-                    <i class="fa-solid fa-key"></i>
-                </button>
-
-                <!-- Profile / Sync -->
-                <button onclick="openFirebaseModal()" class="flex items-center space-x-2 glass-panel px-3 py-1.5 rounded-xl border border-slate-700/60 hover:border-emeraldNeon/40 transition-all text-xs">
-                    <div id="auth-status-dot" class="w-2 h-2 rounded-full bg-slate-500"></div>
-                    <span id="auth-user-label" class="font-medium text-slate-300">Guest</span>
-                </button>
-            </div>
+  <!-- ========================================== -->
+  <!-- 2. MAIN APPLICATION                        -->
+  <!-- ========================================== -->
+  <div id="appScreen" class="hidden">
+    <!-- Top Cyber Header -->
+    <header class="bg-cyber-surface/80 backdrop-blur-xl border-b border-cyber-border sticky top-0 z-30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+            <i class="fa-solid fa-chart-line text-lg"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-lg text-white leading-tight tracking-tight">WealthPilot <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">PRO</span></h1>
+            <p class="text-[11px] text-slate-400" id="syncStatus">Cloud Synced ☁️</p>
+          </div>
         </div>
+
+        <!-- Executive Navigation Tabs (Dashboard vs Monthly Log) -->
+        <div class="hidden md:flex p-1 bg-cyber-bg rounded-xl border border-cyber-border" id="mainViewNav">
+          <button onclick="switchMainView('dashboard')" id="navTabDashboard" class="px-5 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow-md">
+            <i class="fa-solid fa-chart-pie mr-1.5"></i> 📈 Dashboard
+          </button>
+          <button onclick="switchMainView('monthly')" id="navTabMonthly" class="px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
+            <i class="fa-solid fa-receipt mr-1.5"></i> 📝 Monthly Log
+          </button>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <select id="currencySelector" class="bg-cyber-card border border-cyber-border text-xs font-semibold rounded-lg px-2.5 py-1.5 text-slate-200 focus:ring-2 focus:ring-emerald-500">
+            <option value="₹" selected>INR (₹)</option>
+            <option value="$">USD ($)</option>
+            <option value="€">EUR (€)</option>
+            <option value="£">GBP (£)</option>
+            <option value="A$">AUD (A$)</option>
+          </select>
+
+          <!-- CSV / Excel Import Trigger -->
+          <button onclick="openImportModal()" title="Import CSV / Bank Statement" class="p-2 border border-cyber-border text-slate-300 hover:text-emerald-400 hover:border-emerald-500/50 bg-cyber-card rounded-lg text-xs transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-file-excel text-emerald-400"></i>
+            <span class="hidden sm:inline font-semibold">Import Statement</span>
+          </button>
+
+          <button onclick="exportDataBackup()" title="Download Backup JSON" class="p-2 border border-cyber-border text-slate-300 hover:text-emerald-400 bg-cyber-card rounded-lg text-xs">
+            <i class="fa-solid fa-download"></i>
+          </button>
+
+          <button onclick="openProfileModal()" class="flex items-center gap-2 p-1.5 pr-2.5 bg-cyber-card hover:bg-cyber-border/50 border border-cyber-border rounded-lg">
+            <img id="navUserAvatar" src="https://ui-avatars.com/api/?name=User" class="w-6 h-6 rounded-full object-cover">
+            <span id="navUserName" class="text-xs font-semibold text-slate-200 hidden sm:inline">Profile</span>
+          </button>
+
+          <button onclick="openAdvisorModal()" class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-sm">
+            <i class="fa-solid fa-sliders"></i>
+            <span class="hidden sm:inline">Advisor Prefs</span>
+          </button>
+        </div>
+      </div>
     </header>
 
-    <!-- MAIN WORKSPACE CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 lg:px-8 pt-6">
+    <!-- Mobile View Navigator Bar -->
+    <div class="md:hidden bg-cyber-surface border-b border-cyber-border p-2 flex justify-center gap-2">
+      <button onclick="switchMainView('dashboard')" id="mobileNavDashboard" class="flex-1 py-2 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950">
+        📈 Dashboard
+      </button>
+      <button onclick="switchMainView('monthly')" id="mobileNavMonthly" class="flex-1 py-2 rounded-lg text-xs font-bold bg-cyber-card text-slate-400 border border-cyber-border">
+        📝 Monthly Log
+      </button>
+    </div>
 
-        <!-- ================================================================================= -->
-        <!-- VIEW A: 📈 EXECUTIVE DASHBOARD (READ-ONLY OVERVIEW - NO INDIVIDUAL LOG ROWS)     -->
-        <!-- ================================================================================= -->
-        <div id="view-dashboard" class="space-y-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-            <!-- Executive Net Worth & Health Banner -->
-            <div class="glass-panel-glow rounded-3xl p-6 relative overflow-hidden">
-                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-emeraldNeon/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -left-10 -top-10 w-64 h-64 bg-indigoNeon/10 rounded-full blur-3xl pointer-events-none"></div>
+      <!-- ========================================== -->
+      <!-- VIEW A: EXECUTIVE DASHBOARD                -->
+      <!-- ========================================== -->
+      <div id="viewDashboard" class="space-y-6">
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                    <!-- Net Worth Pillar -->
-                    <div class="lg:col-span-5 space-y-1">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xs uppercase tracking-wider font-semibold text-emeraldNeon font-mono">Executive Net Worth</span>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] bg-emeraldNeon/20 text-emeraldNeon border border-emeraldNeon/30">Live Aggregate</span>
-                        </div>
-                        <div class="text-3xl md:text-4xl font-extrabold text-white font-mono-num tracking-tight" id="dash-net-worth">
-                            ₹0.00
-                        </div>
-                        <p class="text-xs text-slate-400 flex items-center gap-1" id="dash-net-worth-change">
-                            <i class="fa-solid fa-arrow-trend-up text-emeraldNeon"></i>
-                            <span>Calculated across active holdings & liability outstanding</span>
-                        </p>
-                    </div>
-
-                    <!-- Health Score & Cadence -->
-                    <div class="lg:col-span-3 border-y lg:border-y-0 lg:border-l border-slate-800 py-4 lg:py-0 lg:pl-6 space-y-2">
-                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Financial Health Score</div>
-                        <div class="flex items-center space-x-3">
-                            <div class="text-3xl font-bold text-white font-mono-num" id="dash-health-score">82</div>
-                            <div class="text-xs text-emeraldNeon font-medium bg-emeraldNeon/10 px-2.5 py-1 rounded-lg border border-emeraldNeon/20">
-                                Optimal
-                            </div>
-                        </div>
-                        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
-                            <div id="dash-health-bar" class="bg-gradient-to-r from-indigoNeon to-emeraldNeon h-full rounded-full transition-all duration-700" style="width: 82%"></div>
-                        </div>
-                    </div>
-
-                    <!-- Directives Badge -->
-                    <div class="lg:col-span-4 bg-slate-900/80 rounded-2xl p-4 border border-slate-800 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-indigoNeon flex items-center gap-1.5">
-                                <i class="fa-solid fa-robot"></i> Advisor Directive
-                            </span>
-                            <span class="text-[10px] text-slate-500 font-mono">Automated</span>
-                        </div>
-                        <p class="text-xs text-slate-300 leading-relaxed" id="dash-ai-directive">
-                            Loading strategic financial directive...
-                        </p>
-                    </div>
-                </div>
+        <!-- Executive Net Worth Banner -->
+        <div class="rounded-3xl glass-card p-6 border border-cyber-border relative overflow-hidden">
+          <div class="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div class="space-y-2">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Executive Command Center • <span id="dashActivePeriodTag">October 2026</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight" id="dashAdvisorHeadline">Analyzing Multi-Month Financial Position...</h2>
+              <p class="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed" id="dashAdvisorBody">
+                Strategic wealth overview aggregating your liquid portfolios, loan liabilities, and Maslow tier allocations.
+              </p>
             </div>
 
-            <!-- Top Executive Macro KPI Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Inflow Card -->
-                <div class="glass-panel p-5 rounded-2xl space-y-2 hover:border-emeraldNeon/40 transition-all">
-                    <div class="flex items-center justify-between text-xs text-slate-400">
-                        <span>Total Monthly Inflow</span>
-                        <i class="fa-solid fa-arrow-down-left text-emeraldNeon bg-emeraldNeon/10 p-2 rounded-xl"></i>
-                    </div>
-                    <div class="text-2xl font-bold text-white font-mono-num" id="dash-kpi-inflow">₹0.00</div>
-                    <div class="text-[11px] text-slate-400">Net Income & Additional Cash</div>
-                </div>
-
-                <!-- Outflow Card -->
-                <div class="glass-panel p-5 rounded-2xl space-y-2 hover:border-rose-500/40 transition-all">
-                    <div class="flex items-center justify-between text-xs text-slate-400">
-                        <span>Committed Outflows</span>
-                        <i class="fa-solid fa-arrow-up-right text-rose-400 bg-rose-500/10 p-2 rounded-xl"></i>
-                    </div>
-                    <div class="text-2xl font-bold text-white font-mono-num" id="dash-kpi-outflow">₹0.00</div>
-                    <div class="text-[11px] text-slate-400" id="dash-kpi-outflow-pct">0% of Total Income</div>
-                </div>
-
-                <!-- Investments Card -->
-                <div class="glass-panel p-5 rounded-2xl space-y-2 hover:border-indigoNeon/40 transition-all">
-                    <div class="flex items-center justify-between text-xs text-slate-400">
-                        <span>Investments & SIPs</span>
-                        <i class="fa-solid fa-piggy-bank text-indigoNeon bg-indigoNeon/10 p-2 rounded-xl"></i>
-                    </div>
-                    <div class="text-2xl font-bold text-white font-mono-num" id="dash-kpi-invest">₹0.00</div>
-                    <div class="text-[11px] text-emeraldNeon font-medium" id="dash-kpi-invest-pct">0% Savings Rate</div>
-                </div>
-
-                <!-- Surplus Card -->
-                <div class="glass-panel p-5 rounded-2xl space-y-2 hover:border-cyanNeon/40 transition-all">
-                    <div class="flex items-center justify-between text-xs text-slate-400">
-                        <span>Net Period Surplus</span>
-                        <i class="fa-solid fa-wallet text-cyanNeon bg-cyanNeon/10 p-2 rounded-xl"></i>
-                    </div>
-                    <div class="text-2xl font-bold text-white font-mono-num text-cyanNeon" id="dash-kpi-surplus">₹0.00</div>
-                    <div class="text-[11px] text-slate-400">Unallocated Liquid Buffer</div>
-                </div>
+            <div class="grid grid-cols-2 gap-3 bg-cyber-bg/80 p-4 rounded-2xl border border-cyber-border min-w-[300px]">
+              <div>
+                <div class="text-[11px] text-slate-400 font-medium">Calculated Net Worth</div>
+                <div class="text-xl sm:text-2xl font-extrabold text-emerald-400 font-mono-code" id="dashNetWorthDisplay">₹0</div>
+                <div class="text-[10px] text-emerald-400 font-medium mt-0.5" id="dashNetWorthDelta">-- vs prior</div>
+              </div>
+              <div class="border-l border-cyber-border pl-3">
+                <div class="text-[11px] text-slate-400 font-medium">Health Index</div>
+                <div class="text-xl sm:text-2xl font-extrabold text-amber-400 font-mono-code" id="dashHealthScore">-- / 100</div>
+                <div class="text-[10px] text-slate-400 font-medium mt-0.5" id="dashHealthStatus">Stable</div>
+              </div>
             </div>
-
-            <!-- Macro Budget Distribution & Maslow Sub-Category Breakdown Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-                <!-- 50/30/20 Budget Bars -->
-                <div class="lg:col-span-5 glass-panel p-6 rounded-3xl space-y-5 border border-slate-800">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-scale-balanced text-emeraldNeon"></i>
-                            <span>50 / 30 / 20 Macro Allocation</span>
-                        </h3>
-                        <span class="text-[11px] font-mono text-slate-400">Benchmark Target</span>
-                    </div>
-
-                    <!-- Needs Bar (<=50%) -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-xs font-semibold">
-                            <span class="text-slate-300">Needs (Loans & Living Costs)</span>
-                            <span id="bar-needs-val" class="font-mono text-indigoNeon">0% (Target: ≤50%)</span>
-                        </div>
-                        <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden border border-slate-800">
-                            <div id="bar-needs-fill" class="bg-indigoNeon h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                    </div>
-
-                    <!-- Wants Bar (<=30%) -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-xs font-semibold">
-                            <span class="text-slate-300">Wants (Discretionary)</span>
-                            <span id="bar-wants-val" class="font-mono text-amber-400">0% (Target: ≤30%)</span>
-                        </div>
-                        <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden border border-slate-800">
-                            <div id="bar-wants-fill" class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                    </div>
-
-                    <!-- Savings Bar (>=20%) -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-xs font-semibold">
-                            <span class="text-slate-300">Savings & Investments</span>
-                            <span id="bar-savings-val" class="font-mono text-emeraldNeon">0% (Target: ≥20%)</span>
-                        </div>
-                        <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden border border-slate-800">
-                            <div id="bar-savings-fill" class="bg-emeraldNeon h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                    </div>
-
-                    <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-                        <i class="fa-solid fa-circle-info text-emeraldNeon mr-1"></i>
-                        Allocations update automatically from active period logs across loans, living, lifestyle, and equity SIPs.
-                    </div>
-                </div>
-
-                <!-- Smart Sub-Category Maslow Analytics -->
-                <div class="lg:col-span-7 glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div>
-                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-layer-group text-indigoNeon"></i>
-                                <span>Smart Sub-Category Spend Distribution</span>
-                            </h3>
-                            <p class="text-[11px] text-slate-400">Hierarchy Breakdown (Maslow Financial Framework)</p>
-                        </div>
-                        <span class="px-2.5 py-1 bg-indigoNeon/10 text-indigoNeon border border-indigoNeon/30 text-[10px] font-mono rounded-lg">Maslow Tiered</span>
-                    </div>
-
-                    <!-- Sub-Category Grid -->
-                    <div id="dash-maslow-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
-                        <!-- Dynamic sub-category cards injected here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Investment Assets & Wealth Trajectory Chart -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-                <!-- Asset Portfolio Snapshot Grid -->
-                <div class="lg:col-span-5 glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-vault text-emeraldNeon"></i>
-                            <span>Asset Portfolio Snapshot</span>
-                        </h3>
-                        <span class="text-xs font-mono text-emeraldNeon font-bold" id="dash-total-assets-val">₹0.00</span>
-                    </div>
-
-                    <div id="dash-asset-grid" class="space-y-3 max-h-64 overflow-y-auto pr-1">
-                        <!-- Dynamic asset cards -->
-                    </div>
-                </div>
-
-                <!-- Trajectory Line Chart -->
-                <div class="lg:col-span-7 glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div>
-                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-chart-line text-cyanNeon"></i>
-                                <span>Wealth Trajectory & Balance Progression</span>
-                            </h3>
-                            <p class="text-[11px] text-slate-400">Net Worth Growth vs Monthly Inflow & Outflow</p>
-                        </div>
-                        <span class="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-1 rounded-md border border-slate-800">MoM Progression</span>
-                    </div>
-
-                    <div class="h-64 w-full relative">
-                        <canvas id="trajectoryChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
+          </div>
         </div>
 
-        <!-- ================================================================================= -->
-        <!-- VIEW B: 📝 MONTHLY LOG (OPERATIONAL DATA ENTRY & PERIOD ISOLATION WORKSPACE)     -->
-        <!-- ================================================================================= -->
-        <div id="view-monthly" class="hidden space-y-6">
+        <!-- 50/30/20 Budget Macro Bar -->
+        <div class="glass-card rounded-2xl p-6 border border-cyber-border space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-white text-sm flex items-center gap-2">
+              <i class="fa-solid fa-scale-balanced text-emerald-400"></i> 50 / 30 / 20 Macro Budget Distribution
+            </h3>
+            <span class="text-xs text-slate-400 font-medium" id="dashCadenceLabel">Target Metrics</span>
+          </div>
 
-            <!-- Month Selection & Control Bar -->
-            <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-800">
-                <div class="flex items-center space-x-3 w-full sm:w-auto">
-                    <span class="text-xs font-semibold uppercase text-slate-400 font-mono">Active Period:</span>
-                    <input type="month" id="period-picker" onchange="changePeriod(this.value)" class="glass-input rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-emeraldNeon focus:ring-1 focus:ring-emeraldNeon">
-                    <span id="period-status-tag" class="text-[10px] font-mono px-2 py-1 rounded-lg bg-emeraldNeon/10 text-emeraldNeon border border-emeraldNeon/20">Active Log</span>
-                </div>
-
-                <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
-                    <button onclick="openInflowModal()" class="px-4 py-2 rounded-xl bg-emeraldNeon/10 border border-emeraldNeon/30 hover:bg-emeraldNeon/20 text-emeraldNeon text-xs font-bold transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-plus-circle"></i>
-                        <span>Manage Inflow</span>
-                    </button>
-                    <button onclick="openOutflowModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emeraldNeon to-indigoNeon text-obsidian text-xs font-bold transition-all shadow-neon-emerald flex items-center gap-2 hover:opacity-95">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Add Outflow Item</span>
-                    </button>
-                </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div class="bg-cyber-bg p-3.5 rounded-xl border border-cyber-border space-y-1.5">
+              <div class="flex justify-between font-semibold text-slate-300">
+                <span>Needs & Essential Living</span>
+                <span id="dashNeedsPct" class="text-indigo-400 font-bold">0%</span>
+              </div>
+              <div class="w-full bg-cyber-card rounded-full h-2">
+                <div id="dashNeedsBar" class="h-2 rounded-full bg-indigo-500 transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <p class="text-[10px] text-slate-400">Target: ≤ 50% of Inflow</p>
             </div>
 
-            <!-- Inflow Metric & Income Sources Summary Card -->
-            <div class="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <div>
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-money-bill-wave text-emeraldNeon"></i>
-                            <span>Period Inflow & Cash Receipts</span>
-                        </h3>
-                        <p class="text-[11px] text-slate-400">Primary salary net income and additional period inflows</p>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs text-slate-400 block">Total Income</span>
-                        <span class="text-xl font-bold font-mono-num text-emeraldNeon" id="log-total-inflow">₹0.00</span>
-                    </div>
-                </div>
-
-                <div id="log-inflow-sources-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    <!-- Dynamic inflow pills -->
-                </div>
+            <div class="bg-cyber-bg p-3.5 rounded-xl border border-cyber-border space-y-1.5">
+              <div class="flex justify-between font-semibold text-slate-300">
+                <span>Wants & Lifestyle</span>
+                <span id="dashWantsPct" class="text-amber-400 font-bold">0%</span>
+              </div>
+              <div class="w-full bg-cyber-card rounded-full h-2">
+                <div id="dashWantsBar" class="h-2 rounded-full bg-amber-500 transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <p class="text-[10px] text-slate-400">Target: ≤ 30% of Inflow</p>
             </div>
 
-            <!-- Period Outflow Ledger (Categorized Lists with Sub-Category Badges) -->
-            <div class="space-y-6">
-
-                <!-- 1. Mortgages & Loans Section -->
-                <div class="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center space-x-2">
-                            <span class="p-2 rounded-xl bg-indigoNeon/10 text-indigoNeon text-xs"><i class="fa-solid fa-building-columns"></i></span>
-                            <div>
-                                <h3 class="text-sm font-bold text-white">Mortgages & Loans (Debt)</h3>
-                                <p class="text-[11px] text-slate-400">Needs / Security Tier • Target & Debt Clearing</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-mono font-bold text-indigoNeon" id="cat-total-loans">₹0.00</span>
-                        </div>
-                    </div>
-                    <div id="ledger-loans-list" class="space-y-2"></div>
-                </div>
-
-                <!-- 2. Savings & Investments Section -->
-                <div class="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center space-x-2">
-                            <span class="p-2 rounded-xl bg-emeraldNeon/10 text-emeraldNeon text-xs"><i class="fa-solid fa-chart-line"></i></span>
-                            <div>
-                                <h3 class="text-sm font-bold text-white">Savings & Investments</h3>
-                                <p class="text-[11px] text-slate-400">Wealth Creation Tier • SIPs & Wealth Accumulation</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-mono font-bold text-emeraldNeon" id="cat-total-savings">₹0.00</span>
-                        </div>
-                    </div>
-                    <div id="ledger-savings-list" class="space-y-2"></div>
-                </div>
-
-                <!-- 3. Cost for Home & Living Section -->
-                <div class="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center space-x-2">
-                            <span class="p-2 rounded-xl bg-cyanNeon/10 text-cyanNeon text-xs"><i class="fa-solid fa-house"></i></span>
-                            <div>
-                                <h3 class="text-sm font-bold text-white">Cost for Home & Living</h3>
-                                <p class="text-[11px] text-slate-400">Essential Needs Tier • Groceries, Utilities & Healthcare</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-mono font-bold text-cyanNeon" id="cat-total-living">₹0.00</span>
-                        </div>
-                    </div>
-                    <div id="ledger-living-list" class="space-y-2"></div>
-                </div>
-
-                <!-- 4. Entertainment & Wants Section -->
-                <div class="glass-panel p-6 rounded-3xl space-y-4 border border-slate-800">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center space-x-2">
-                            <span class="p-2 rounded-xl bg-amber-400/10 text-amber-400 text-xs"><i class="fa-solid fa-utensils"></i></span>
-                            <div>
-                                <h3 class="text-sm font-bold text-white">Entertainment & Wants</h3>
-                                <p class="text-[11px] text-slate-400">Discretionary Lifestyle Tier • Dining, Movies, Travel & Hobbies</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-mono font-bold text-amber-400" id="cat-total-wants">₹0.00</span>
-                        </div>
-                    </div>
-                    <div id="ledger-wants-list" class="space-y-2"></div>
-                </div>
-
+            <div class="bg-cyber-bg p-3.5 rounded-xl border border-cyber-border space-y-1.5">
+              <div class="flex justify-between font-semibold text-slate-300">
+                <span>Savings & Investments</span>
+                <span id="dashSavingsPct" class="text-emerald-400 font-bold">0%</span>
+              </div>
+              <div class="w-full bg-cyber-card rounded-full h-2">
+                <div id="dashSavingsBar" class="h-2 rounded-full bg-emerald-500 transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <p class="text-[10px] text-slate-400">Target: ≥ 20% of Inflow</p>
             </div>
-
+          </div>
         </div>
 
+        <!-- Maslow Smart Sub-Category Spend Breakdown -->
+        <div class="glass-card rounded-2xl p-6 border border-cyber-border space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-cyber-border">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-emerald-400"></i> Smart Sub-Category Spend Breakdown (Maslow Hierarchy)
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Granular distribution mapped into Physiological, Security, Lifestyle & Wealth Tiers</p>
+            </div>
+            <span class="text-xs font-mono-code bg-cyber-bg px-3 py-1.5 rounded-lg text-emerald-400 border border-cyber-border" id="dashTotalSpendTag">Total Outflow: ₹0</span>
+          </div>
+
+          <div id="maslowBreakdownContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Dynamic Sub-category Cards populated via JS -->
+          </div>
+        </div>
+
+        <!-- Investment Assets Snapshot & Multi-Month Trajectory -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-5 glass-card rounded-2xl p-6 border border-cyber-border space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
+              <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                <i class="fa-solid fa-vault text-emerald-400"></i> Investment Assets Portfolio
+              </h3>
+              <button onclick="openAssetModal(null)" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+                <i class="fa-solid fa-plus"></i> Add Asset
+              </button>
+            </div>
+            <div id="dashAssetsGrid" class="space-y-2.5 max-h-72 overflow-y-auto custom-scrollbar"></div>
+          </div>
+
+          <div class="lg:col-span-7 glass-card rounded-2xl p-6 border border-cyber-border space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
+              <div>
+                <h3 class="font-bold text-white text-sm">Multi-Month Trajectory</h3>
+                <p class="text-xs text-slate-400">Progression across logged periods</p>
+              </div>
+              <span class="text-xs font-semibold text-slate-400 bg-cyber-bg px-2.5 py-1 rounded-lg border border-cyber-border" id="dashPeriodCount">0 Records</span>
+            </div>
+            <div class="h-60 w-full">
+              <canvas id="dashTrajectoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- VIEW B: OPERATIONAL MONTHLY LOG            -->
+      <!-- ========================================== -->
+      <div id="viewMonthly" class="space-y-6 hidden">
+
+        <!-- Active Period Bar & Inflow Controls -->
+        <div class="glass-card rounded-2xl p-4 border border-cyber-border flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-400 font-medium">ACTIVE PERIOD:</span>
+            <input type="month" id="logPeriodPickerMonth" onchange="onLogPeriodChange()" class="bg-cyber-bg text-white border border-cyber-border rounded-xl px-3.5 py-2 text-xs font-bold font-mono-code focus:ring-2 focus:ring-emerald-500">
+            <span class="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20" id="logActiveTag">Active Log</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="openInflowModal()" class="bg-cyber-card hover:bg-cyber-border border border-cyber-border text-emerald-400 text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 transition-all">
+              <i class="fa-solid fa-circle-plus"></i> Manage Inflow
+            </button>
+            <button onclick="openExpenseModal(null)" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all">
+              <i class="fa-solid fa-plus"></i> Add Outflow Item
+            </button>
+          </div>
+        </div>
+
+        <!-- Period Inflow Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass-card rounded-2xl p-5 border border-cyber-border">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+              <span>Primary Salary Inflow</span>
+              <i class="fa-solid fa-wallet text-emerald-400 bg-emerald-500/10 p-2 rounded-lg"></i>
+            </div>
+            <div class="text-2xl font-extrabold text-white font-mono-code" id="logPrimaryInflowDisplay">₹0</div>
+            <p class="text-[10px] text-slate-400 mt-1" id="logOtherInflowTag">+ ₹0 Other Inflows</p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-5 border border-cyber-border">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+              <span>Committed Outflow</span>
+              <i class="fa-solid fa-receipt text-rose-400 bg-rose-500/10 p-2 rounded-lg"></i>
+            </div>
+            <div class="text-2xl font-extrabold text-white font-mono-code" id="logTotalOutflowDisplay">₹0</div>
+            <p class="text-[10px] text-slate-400 mt-1" id="logOutflowRatioTag">0% of inflow</p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-5 border border-cyber-border">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+              <span>Investments & SIPs</span>
+              <i class="fa-solid fa-piggy-bank text-indigo-400 bg-indigo-500/10 p-2 rounded-lg"></i>
+            </div>
+            <div class="text-2xl font-extrabold text-white font-mono-code" id="logSavingsDisplay">₹0</div>
+            <p class="text-[10px] text-slate-400 mt-1">Target: ≥ 20%</p>
+          </div>
+
+          <div class="glass-card rounded-2xl p-5 border border-cyber-border">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+              <span>Net Monthly Surplus</span>
+              <i class="fa-solid fa-coins text-amber-400 bg-amber-500/10 p-2 rounded-lg"></i>
+            </div>
+            <div class="text-2xl font-extrabold font-mono-code" id="logSurplusDisplay">₹0</div>
+            <p class="text-[10px] text-slate-400 mt-1">Available cash buffer</p>
+          </div>
+        </div>
+
+        <!-- Period Itemized Ledger -->
+        <div class="glass-card rounded-2xl p-6 border border-cyber-border space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
+            <div>
+              <h3 class="text-base font-bold text-white">Period Outflow Ledger</h3>
+              <p class="text-xs text-slate-400">Click any line item to adjust amounts, interest rates, or balances</p>
+            </div>
+            <button onclick="openImportModal()" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 bg-cyber-bg px-3 py-1.5 rounded-lg border border-cyber-border">
+              <i class="fa-solid fa-file-csv"></i> Import Excel/CSV
+            </button>
+          </div>
+
+          <div id="logCategoriesContainer" class="space-y-4">
+            <!-- Populated via renderCategoriesLedger() -->
+          </div>
+        </div>
+      </div>
     </main>
 
-    <!-- FLOATING ASK ADVISOR AI CHAT TRIGGER BUTTON -->
+    <!-- FLOATING GROQ AI CHAT BUTTON & DRAWER -->
     <div class="fixed bottom-6 right-6 z-40">
-        <button onclick="toggleGroqDrawer()" class="group flex items-center space-x-3 px-5 py-3 rounded-full bg-gradient-to-r from-emeraldNeon to-indigoNeon text-obsidian font-bold shadow-neon-emerald hover:scale-105 transition-all">
-            <i class="fa-solid fa-wand-magic-sparkles text-lg animate-pulse"></i>
-            <span class="text-xs tracking-wider uppercase font-extrabold">Ask Advisor AI</span>
+      <button onclick="toggleGroqChatDrawer()" class="flex items-center gap-2.5 bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 text-slate-950 font-extrabold px-5 py-3.5 rounded-full shadow-2xl shadow-emerald-500/30 transition-all transform hover:-translate-y-1 active:translate-y-0">
+        <i class="fa-solid fa-wand-magic-sparkles text-slate-950"></i>
+        <span class="text-xs font-bold tracking-wide">ASK ADVISOR AI</span>
+      </button>
+    </div>
+
+    <!-- AI Chat Slide-over Drawer -->
+    <div id="groqChatDrawer" class="fixed inset-y-0 right-0 max-w-md w-full bg-cyber-surface shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-cyber-border flex flex-col">
+      <div class="p-4 border-b border-cyber-border bg-cyber-card text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center shadow-md font-bold">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm leading-tight flex items-center gap-1.5">
+              <span>WealthPilot AI</span>
+              <span id="activeModelBadge" class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-mono-code border border-emerald-500/30">GPT-OSS 120B</span>
+            </h3>
+            <p class="text-[11px] text-slate-400">Powered with live portfolio & loan data</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button onclick="openGroqKeyModal()" title="Manage Groq Key" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-cyber-border text-xs">
+            <i class="fa-solid fa-key"></i>
+          </button>
+          <button onclick="toggleGroqChatDrawer()" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-cyber-border text-sm">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-cyber-bg/80 px-4 py-2 border-b border-cyber-border flex items-center justify-between text-[11px] text-slate-300">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          Active Surplus: <strong id="chatSurplusBadge" class="text-emerald-400 font-mono-code">₹0</strong>
+        </span>
+        <button onclick="clearChatHistory()" class="text-[10px] text-slate-400 hover:text-rose-400 font-medium">Clear Chat</button>
+      </div>
+
+      <div id="chatMessagesContainer" class="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-3.5 text-xs">
+        <div class="flex items-start gap-2.5">
+          <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">
+            <i class="fa-solid fa-user-tie text-[10px]"></i>
+          </div>
+          <div class="bg-cyber-card p-3 rounded-2xl rounded-tl-sm text-slate-200 border border-cyber-border leading-relaxed space-y-1.5 max-w-[85%]">
+            <p class="font-bold text-white">Hello Venkatesh!</p>
+            <p>I have analyzed your active <strong>October 2026</strong> balance sheet. I see your primary income, loan obligations, and mutual fund portfolios.</p>
+            <p class="text-slate-400">What financial decision can I help you optimize today?</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-4 py-2 bg-cyber-bg border-t border-cyber-border flex items-center gap-1.5 overflow-x-auto custom-scrollbar whitespace-nowrap">
+        <button onclick="sendQuickPrompt('Which loan should I prepay first based on my interest rates?')" class="text-[11px] bg-cyber-card border border-cyber-border hover:border-emerald-500/50 text-slate-300 px-2.5 py-1 rounded-full">
+          🎯 Which loan to prepay?
         </button>
+        <button onclick="sendQuickPrompt('Can I afford a ₹30,000 discretionary spend this month?')" class="text-[11px] bg-cyber-card border border-cyber-border hover:border-emerald-500/50 text-slate-300 px-2.5 py-1 rounded-full">
+          🛍️ Afford ₹30k spend?
+        </button>
+      </div>
+
+      <div class="p-3 border-t border-cyber-border bg-cyber-surface">
+        <form onsubmit="handleSendUserMessage(event)" class="flex items-center gap-2">
+          <input type="text" id="chatUserInput" placeholder="Ask about loans, mutual funds, budgets..." class="flex-1 bg-cyber-bg border border-cyber-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <button type="submit" id="chatSendBtn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl w-9 h-9 flex items-center justify-center flex-shrink-0 shadow-md transition-all">
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+          </button>
+        </form>
+      </div>
     </div>
 
-    <!-- CASCADING ADD / EDIT OUTFLOW ITEM MODAL -->
-    <div id="modal-outflow" class="fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-6 rounded-3xl max-w-lg w-full space-y-5 border border-slate-700 shadow-glass relative">
-            <button onclick="closeOutflowModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <div class="border-b border-slate-800 pb-3">
-                <h3 class="text-base font-bold text-white flex items-center gap-2" id="outflow-modal-title">
-                    <i class="fa-solid fa-pen-to-square text-emeraldNeon"></i>
-                    <span>Add Outflow Item</span>
-                </h3>
-                <p class="text-xs text-slate-400">Configure item description, main category & smart sub-category</p>
-            </div>
-
-            <form id="outflow-form" onsubmit="saveOutflowItem(event)" class="space-y-4">
-                <input type="hidden" id="outflow-id">
-
-                <!-- Item Description -->
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-300">Item Description / Title</label>
-                    <input type="text" id="outflow-name" required placeholder="e.g. Paneer Manchurian, Housing Loan, Nifty 50 SIP" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs">
-                </div>
-
-                <!-- Main Category Selection -->
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-300">1. Target Main Category (50/30/20 Bucket)</label>
-                    <select id="outflow-main-cat" onchange="handleMainCatChange(this.value)" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs appearance-none cursor-pointer">
-                        <option value="loans">🏛️ Mortgages & Loans (Debt Management)</option>
-                        <option value="savings">📈 Savings & Investments (Wealth Creation)</option>
-                        <option value="living">🏠 Cost for Home & Living (Essential Needs)</option>
-                        <option value="wants">🎭 Entertainment & Wants (Discretionary Lifestyle)</option>
-                    </select>
-                </div>
-
-                <!-- Dynamic Cascading Smart Sub-Category -->
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-300">2. Smart Sub-Category (Maslow Mapping)</label>
-                    <select id="outflow-sub-cat" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs appearance-none cursor-pointer">
-                        <!-- Populated dynamically based on main category -->
-                    </select>
-                </div>
-
-                <!-- Monthly Outflow Amount -->
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-300">Outflow Amount for Period</label>
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-2.5 text-xs text-slate-400 font-mono currency-symbol">₹</span>
-                        <input type="number" step="0.01" id="outflow-amount" required placeholder="0.00" class="w-full glass-input rounded-xl pl-8 pr-3.5 py-2 text-xs font-mono">
-                    </div>
-                </div>
-
-                <!-- Debt-Specific Fields (Revealed when 'loans' selected) -->
-                <div id="loan-specific-fields" class="grid grid-cols-2 gap-3 p-3 bg-slate-900/80 rounded-2xl border border-slate-800">
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-semibold text-slate-300">Interest Rate (% p.a.)</label>
-                        <input type="number" step="0.01" id="outflow-interest" placeholder="7.6" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs font-mono">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[11px] font-semibold text-slate-300">Outstanding Principal</label>
-                        <input type="number" step="0.01" id="outflow-principal" placeholder="0.00" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs font-mono">
-                    </div>
-                </div>
-
-                <!-- Savings Asset Field (Revealed when 'savings' selected) -->
-                <div id="savings-specific-fields" class="p-3 bg-slate-900/80 rounded-2xl border border-slate-800 hidden space-y-1">
-                    <label class="text-[11px] font-semibold text-slate-300">Accumulated Portfolio Holding Value</label>
-                    <input type="number" step="0.01" id="outflow-portfolio-val" placeholder="0.00" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs font-mono">
-                </div>
-
-                <!-- Modal Actions -->
-                <div class="flex items-center justify-between pt-3 border-t border-slate-800">
-                    <button type="button" id="btn-delete-outflow" onclick="deleteOutflowItem()" class="px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold hover:bg-rose-500/20 transition-all hidden">
-                        <i class="fa-solid fa-trash mr-1"></i> Delete
-                    </button>
-                    <div class="flex items-center space-x-2 ml-auto">
-                        <button type="button" onclick="closeOutflowModal()" class="px-4 py-2 rounded-xl glass-panel text-slate-300 text-xs font-semibold hover:text-white">Cancel</button>
-                        <button type="submit" class="px-5 py-2 rounded-xl bg-emeraldNeon text-obsidian text-xs font-bold shadow-neon-emerald hover:opacity-95">Save Changes</button>
-                    </div>
-                </div>
-            </form>
+    <!-- Groq Key Setup Modal -->
+    <div id="groqKeyModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-cyber-border">
+        <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
+          <h3 class="font-bold text-white text-base flex items-center gap-2">
+            <i class="fa-solid fa-key text-amber-400"></i> Configure Groq API Key
+          </h3>
+          <button onclick="closeGroqKeyModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Groq provides free ultra-fast access to <strong>openai/gpt-oss-120b</strong>. Get a free key from <a href="https://console.groq.com/keys" target="_blank" class="text-emerald-400 font-semibold underline">console.groq.com/keys</a>.
+        </p>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Groq API Key (starts with <code>gsk_</code>)</label>
+          <input type="password" id="groqApiKeyInput" placeholder="gsk_..." class="w-full text-xs bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-white font-mono-code">
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-cyber-border">
+          <button onclick="closeGroqKeyModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-cyber-card">Cancel</button>
+          <button onclick="saveGroqApiKey()" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md">Save Key</button>
+        </div>
+      </div>
     </div>
 
-    <!-- INFLOW MANAGEMENT MODAL -->
-    <div id="modal-inflow" class="fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-6 rounded-3xl max-w-lg w-full space-y-5 border border-slate-700 shadow-glass relative">
-            <button onclick="closeInflowModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-lg">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <div class="border-b border-slate-800 pb-3">
-                <h3 class="text-base font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-money-bill-transfer text-emeraldNeon"></i>
-                    <span>Manage Monthly Inflow</span>
-                </h3>
-                <p class="text-xs text-slate-400">Set primary net income & custom cash receipts for this month</p>
-            </div>
-
-            <div class="space-y-4">
-                <!-- Primary Net Salary -->
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-slate-300">Primary Salary Net Income (This Month)</label>
-                    <div class="relative">
-                        <span class="absolute left-3.5 top-2.5 text-xs text-slate-400 font-mono currency-symbol">₹</span>
-                        <input type="number" step="0.01" id="inflow-primary-val" placeholder="173000" class="w-full glass-input rounded-xl pl-8 pr-3.5 py-2 text-xs font-mono">
-                    </div>
-                </div>
-
-                <!-- Additional Inflow Sources List -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <label class="text-xs font-semibold text-slate-300">Additional Inflow Sources</label>
-                        <button onclick="addInflowSourceRow()" class="text-[11px] text-emeraldNeon hover:underline font-semibold">+ Add Source</button>
-                    </div>
-                    <div id="inflow-sources-container" class="space-y-2 max-h-40 overflow-y-auto pr-1">
-                        <!-- Dynamic inflow source rows -->
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-2 pt-3 border-t border-slate-800">
-                    <button type="button" onclick="closeInflowModal()" class="px-4 py-2 rounded-xl glass-panel text-slate-300 text-xs font-semibold">Cancel</button>
-                    <button type="button" onclick="saveInflowData()" class="px-5 py-2 rounded-xl bg-emeraldNeon text-obsidian text-xs font-bold shadow-neon-emerald">Apply Inflow</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- GROQ AI ADVISOR SLIDE-OVER DRAWER -->
-    <div id="drawer-groq" class="fixed inset-y-0 right-0 z-50 w-full max-w-md glass-panel border-l border-slate-800 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
-        <!-- Drawer Header -->
-        <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
-            <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-xl bg-indigoNeon/20 border border-indigoNeon/40 flex items-center justify-center">
-                    <i class="fa-solid fa-robot text-indigoNeon text-sm"></i>
-                </div>
-                <div>
-                    <h3 class="text-sm font-bold text-white">Ask WealthPilot AI</h3>
-                    <p class="text-[10px] text-slate-400">Groq LLM Engine • Financial Directive</p>
-                </div>
-            </div>
-            <button onclick="toggleGroqDrawer()" class="text-slate-400 hover:text-white p-2">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-        </div>
-
-        <!-- Quick Prompt Chips -->
-        <div class="p-3 bg-slate-950/60 border-b border-slate-800/80 flex items-center gap-2 overflow-x-auto text-[11px]">
-            <button onclick="sendQuickPrompt('Which loan should I prepay first using my surplus?')" class="px-3 py-1.5 rounded-full glass-panel hover:border-emeraldNeon text-slate-300 whitespace-nowrap">
-                ⚡ Prepay Loan?
-            </button>
-            <button onclick="sendQuickPrompt('Can I afford a discretionary expense of 30,000 this month?')" class="px-3 py-1.5 rounded-full glass-panel hover:border-emeraldNeon text-slate-300 whitespace-nowrap">
-                💸 Afford 30k spend?
-            </button>
-            <button onclick="sendQuickPrompt('Evaluate my current 50/30/20 budget breakdown and Maslow tiers.')" class="px-3 py-1.5 rounded-full glass-panel hover:border-emeraldNeon text-slate-300 whitespace-nowrap">
-                📊 Evaluate 50/30/20
-            </button>
-        </div>
-
-        <!-- Chat History -->
-        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4">
-            <div class="flex items-start space-x-2">
-                <div class="w-7 h-7 rounded-lg bg-indigoNeon/20 flex items-center justify-center shrink-0 text-indigoNeon text-xs">AI</div>
-                <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs leading-relaxed text-slate-300">
-                    Hello! I've loaded your live balance sheet, interest rates, and Maslow tier spending breakdown. How can I assist with your financial strategy today?
-                </div>
-            </div>
-        </div>
-
-        <!-- Chat Input -->
-        <div class="p-4 border-t border-slate-800 bg-slate-900/90 space-y-2">
-            <form onsubmit="handleChatSubmit(event)" class="flex items-center gap-2">
-                <input type="text" id="chat-input" placeholder="Ask about loans, savings, or spending..." class="flex-1 glass-input rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-emeraldNeon">
-                <button type="submit" class="px-4 py-2 rounded-xl bg-emeraldNeon text-obsidian text-xs font-bold shadow-neon-emerald hover:opacity-95">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </form>
-            <div class="flex justify-between items-center text-[10px] text-slate-500">
-                <span>Model: Groq LLaMA / DeepSeek</span>
-                <button onclick="openGroqKeyModal()" class="hover:underline text-indigoNeon">Configure API Key</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- GROQ API KEY MODAL -->
-    <div id="modal-groq-key" class="fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-6 rounded-3xl max-w-md w-full space-y-4 border border-slate-700 shadow-glass">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-key text-indigoNeon"></i>
-                <span>Configure Groq API Key</span>
+    <!-- CSV / EXCEL IMPORT & STAGING MODAL -->
+    <div id="importModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card rounded-2xl shadow-2xl max-w-3xl w-full p-6 space-y-5 border border-cyber-border max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
+          <div>
+            <h3 class="font-bold text-white text-base flex items-center gap-2">
+              <i class="fa-solid fa-file-excel text-emerald-400"></i> Bank Statement / CSV Import Staging
             </h3>
-            <p class="text-xs text-slate-400">Enter your Groq API key (`gsk_...`) to activate intelligent AI directives.</p>
-            <input type="password" id="groq-key-input" placeholder="gsk_..." class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono">
-            <div class="flex justify-end space-x-2">
-                <button onclick="closeGroqKeyModal()" class="px-4 py-2 rounded-xl glass-panel text-slate-300 text-xs">Cancel</button>
-                <button onclick="saveGroqKey()" class="px-4 py-2 rounded-xl bg-indigoNeon text-white text-xs font-bold">Save Key</button>
-            </div>
+            <p class="text-xs text-slate-400 mt-0.5">Upload a CSV or Excel file to parse and auto-categorize transactions before logging</p>
+          </div>
+          <button onclick="closeImportModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
+
+        <div class="space-y-4">
+          <div class="border-2 border-dashed border-cyber-border rounded-xl p-6 text-center hover:border-emerald-500/50 transition-all bg-cyber-bg/50 cursor-pointer" onclick="document.getElementById('excelFileInput').click()">
+            <i class="fa-solid fa-cloud-arrow-up text-3xl text-emerald-400 mb-2"></i>
+            <p class="text-xs font-bold text-white">Click to upload statement (.csv, .xlsx, .xls)</p>
+            <p class="text-[10px] text-slate-400 mt-1">Parses descriptions, amounts, and auto-tags Maslow sub-categories</p>
+            <input type="file" id="excelFileInput" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleExcelFileUpload(event)">
+          </div>
+
+          <div id="stagingTableArea" class="hidden space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-white" id="stagedCountTag">0 Transactions Parsed</span>
+              <button onclick="autoCategorizeStagedRows()" class="text-xs font-semibold text-emerald-400 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Re-Run Smart Categorizer
+              </button>
+            </div>
+
+            <div class="max-h-64 overflow-y-auto custom-scrollbar border border-cyber-border rounded-xl bg-cyber-bg">
+              <table class="w-full text-left text-xs text-slate-300">
+                <thead class="bg-cyber-card text-slate-400 border-b border-cyber-border sticky top-0 font-semibold">
+                  <tr>
+                    <th class="p-2.5">Description</th>
+                    <th class="p-2.5">Amount</th>
+                    <th class="p-2.5">Target Main Category</th>
+                    <th class="p-2.5">Smart Sub-Category</th>
+                    <th class="p-2.5 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="stagingTableBody" class="divide-y divide-cyber-border"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-cyber-border">
+          <span class="text-[11px] text-slate-400">Parsed items will merge into active period <strong id="importTargetPeriodTag" class="text-emerald-400">October 2026</strong></span>
+          <div class="flex gap-2">
+            <button onclick="closeImportModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-cyber-card">Cancel</button>
+            <button id="commitImportBtn" onclick="commitStagedTransactions()" disabled class="px-5 py-2 rounded-lg text-xs font-extrabold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md disabled:opacity-50">Commit To Log</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- FIREBASE AUTH & FIRESTORE MODAL -->
-    <div id="modal-firebase" class="fixed inset-0 z-50 bg-obsidian/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-6 rounded-3xl max-w-md w-full space-y-4 border border-slate-700 shadow-glass">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-cloud text-emeraldNeon"></i>
-                <span>Firebase Cloud Synchronization</span>
-            </h3>
-            <p class="text-xs text-slate-400">Sync your ledger securely across mobile and desktop devices.</p>
-            
-            <div id="firebase-logged-out" class="space-y-3">
-                <button onclick="loginWithGoogle()" class="w-full py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:border-emeraldNeon text-white text-xs font-bold flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-google text-emeraldNeon"></i>
-                    <span>Sign In with Google</span>
-                </button>
-            </div>
-
-            <div id="firebase-logged-in" class="hidden space-y-3">
-                <p class="text-xs text-emeraldNeon font-semibold" id="firebase-user-email">User signed in</p>
-                <button onclick="logoutFirebase()" class="w-full py-2 rounded-xl bg-rose-500/20 text-rose-400 text-xs font-semibold">Sign Out</button>
-            </div>
-
-            <div class="flex justify-end pt-2">
-                <button onclick="closeFirebaseModal()" class="px-4 py-2 rounded-xl glass-panel text-slate-300 text-xs">Close</button>
-            </div>
+    <!-- Asset Modal -->
+    <div id="assetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-cyber-border">
+        <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
+          <h3 class="font-bold text-white text-base" id="assetModalTitle">Add Investment Asset</h3>
+          <button onclick="closeAssetModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
+
+        <input type="hidden" id="editAssetId">
+        
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Asset Description / Name</label>
+            <input type="text" id="editAssetName" placeholder="e.g. Nifty 50 Index Fund, EPF Balance, Emergency FD" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-sm font-semibold text-white">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Asset Class</label>
+            <select id="editAssetClass" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-xs font-semibold text-slate-200">
+              <option value="equity">Equity Mutual Funds & Stocks</option>
+              <option value="provident">EPF / PPF / NPS (Retirement)</option>
+              <option value="liquid">Liquid Cash & Bank Fixed Deposits</option>
+              <option value="gold">Gold & Sovereign Gold Bonds (SGB)</option>
+              <option value="realestate">Real Estate & Land (Liquid Valuation)</option>
+              <option value="other">Other Liquid Investments</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Current Valuation / Balance (As of Today)</label>
+            <input type="number" id="editAssetValuation" step="any" placeholder="e.g. 450000" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-sm font-bold text-emerald-400 font-mono-code">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Expected Return % p.a. (Optional)</label>
+            <input type="number" id="editAssetReturnRate" step="0.5" placeholder="e.g. 12" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-1.5 text-xs text-white">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-cyber-border">
+          <button id="deleteAssetBtn" onclick="deleteActiveAssetItem()" class="text-xs font-semibold text-rose-400 hover:text-rose-300">Delete Asset</button>
+          <div class="flex gap-2">
+            <button onclick="closeAssetModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-cyber-card">Cancel</button>
+            <button onclick="saveAssetModal()" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md">Save Asset</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- APPLICATION LOGIC JS -->
-    <script>
-        // ==========================================
-        // 1. DATA SCHEMA & CASCADING SUB-CATEGORIES
-        // ==========================================
-        const SUB_CATEGORY_MAP = {
-            loans: [
-                { id: 'home_loan', label: '🏠 Housing / Home Loan' },
-                { id: 'personal_loan', label: '💳 Personal Loans' },
-                { id: 'education_loan', label: '🎓 Education & Skill Loans' },
-                { id: 'auto_loan', label: '🚗 Vehicle / Auto Loan' },
-                { id: 'credit_card', label: '💳 Credit Cards & Short Debt' }
-            ],
-            savings: [
-                { id: 'equity_mf', label: '📈 Equity Mutual Funds & Stocks' },
-                { id: 'retirement', label: '🛡️ Retirement & EPF / PPF / NPS' },
-                { id: 'emergency_fd', label: '🏦 Emergency & Fixed Deposits' },
-                { id: 'gold_sgb', label: '🪙 Gold & Sovereign Bonds' },
-                { id: 'real_estate', label: '🏢 Real Estate & Fixed Assets' }
-            ],
-            living: [
-                { id: 'groceries', label: '🛒 Groceries & Kitchen Supplies' },
-                { id: 'utilities', label: '⚡ Utilities & Monthly Bills' },
-                { id: 'rent_maint', label: '🏠 Housing Rent & Maintenance' },
-                { id: 'healthcare', label: '🏥 Healthcare & Insurance' },
-                { id: 'commute', label: '⛽ Daily Commute & Transport' }
-            ],
-            wants: [
-                { id: 'dining', label: '🍕 Dining Out & Food Delivery' },
-                { id: 'movies_ott', label: '🎬 Movies & OTT Subscriptions' },
-                { id: 'travel', label: '✈️ Travel & Vacations' },
-                { id: 'apparel', label: '🛍️ Apparel, Fashion & Accessories' },
-                { id: 'hobbies', label: '🎮 Hobbies & Electronics' }
+    <!-- Inflow Modal -->
+    <div id="inflowModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5 border border-cyber-border">
+        <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
+          <div>
+            <h3 class="font-bold text-white text-base">Manage Inflow for Period</h3>
+            <p class="text-xs text-slate-400" id="inflowModalPeriodSubtitle"></p>
+          </div>
+          <button onclick="closeInflowModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Primary Salary Net Received</label>
+            <input type="number" id="inputPrimaryIncome" step="any" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-sm font-bold text-emerald-400 font-mono-code focus:ring-2 focus:ring-emerald-500">
+            <p class="text-slate-400 mt-1">Changes here apply strictly to this specific period.</p>
+          </div>
+
+          <div class="border-t border-cyber-border pt-3">
+            <div class="flex items-center justify-between mb-2">
+              <label class="font-semibold text-slate-300">Inflow From Other Sources</label>
+              <button onclick="addOtherInflowRow('', 0)" class="text-xs font-bold text-emerald-400 hover:underline">+ Add Source</button>
+            </div>
+            <div id="otherInflowsContainer" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar"></div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-cyber-border">
+          <button onclick="closeInflowModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-cyber-card">Cancel</button>
+          <button onclick="saveInflowModal()" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md">Apply Inflow</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expense Modal with Dynamic Cascading 2-Tier Sub-Categories -->
+    <div id="expenseModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-cyber-border">
+        <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
+          <h3 class="font-bold text-white text-base" id="expenseModalTitle">Edit Outflow Item</h3>
+          <button onclick="closeExpenseModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <input type="hidden" id="editItemId">
+        
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Item Description / Name</label>
+            <input type="text" id="editItemName" placeholder="e.g. Housing Loan, Swiggy, Groceries" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-sm font-semibold text-white">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">1. Main Category (50/30/20 Bucket)</label>
+            <select id="editItemCategory" onchange="onMainCategoryChange()" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-xs font-semibold text-slate-200">
+              <option value="loans">Mortgages & Loans (Needs / Debt Clearing)</option>
+              <option value="savings">Savings & Investments (Assets / SIPs)</option>
+              <option value="home">Cost for Home & Living (Essential Needs)</option>
+              <option value="entertainment">Entertainment & Wants (Lifestyle Discretionary)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-emerald-400 mb-1">2. Smart Sub-Category (Maslow Mapping)</label>
+            <select id="editItemSubCategory" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-xs font-semibold text-white">
+              <!-- Dynamically populated via updateSubCategoryDropdown() -->
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Outflow Amount for Period</label>
+            <input type="number" id="editItemAmount" step="any" placeholder="0.00" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-sm font-bold text-white font-mono-code">
+          </div>
+
+          <div id="loanSpecificFields" class="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl space-y-2">
+            <div>
+              <label class="block font-semibold text-rose-300 mb-1">Interest Rate % p.a. (for Debt Avalanche)</label>
+              <input type="number" id="editItemInterest" step="0.1" class="w-full bg-cyber-bg border border-rose-500/30 rounded-lg px-3 py-1.5 text-xs text-white">
+            </div>
+            <div>
+              <label class="block font-semibold text-rose-300 mb-1">Total Principal Outstanding Balance</label>
+              <input type="number" id="editItemLoanBalance" step="any" class="w-full bg-cyber-bg border border-rose-500/30 rounded-lg px-3 py-1.5 text-xs text-white font-mono-code">
+            </div>
+          </div>
+
+          <div id="savingsSpecificFields" class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl space-y-2 hidden">
+            <div>
+              <label class="block font-semibold text-emerald-300 mb-1">Total Accumulated Asset Value</label>
+              <input type="number" id="editItemPortfolioVal" step="any" class="w-full bg-cyber-bg border border-emerald-500/30 rounded-lg px-3 py-1.5 text-xs text-white font-mono-code">
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-cyber-border">
+          <button id="deleteExpenseBtn" onclick="deleteActiveExpenseItem()" class="text-xs font-semibold text-rose-400 hover:text-rose-300">Delete Item</button>
+          <div class="flex gap-2">
+            <button onclick="closeExpenseModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-cyber-card">Cancel</button>
+            <button onclick="saveExpenseModal()" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile & Preferences Modals -->
+    <div id="profileModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 border border-cyber-border">
+        <div class="flex items-center justify-between pb-3 border-b border-cyber-border">
+          <h3 class="font-bold text-white text-base">User Profile & Preferences</h3>
+          <button onclick="closeProfileModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <div class="flex items-center gap-4 bg-cyber-bg p-4 rounded-xl border border-cyber-border">
+          <img id="profileAvatar" src="" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-500 shadow">
+          <div>
+            <h4 id="profileName" class="font-bold text-white text-sm">User</h4>
+            <p id="profileEmail" class="text-xs text-slate-400">user@email.com</p>
+            <span class="inline-block mt-1 text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">Cloud Synchronized</span>
+          </div>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Target Emergency Cushion (Months)</label>
+            <input type="number" id="prefEmergencyMonths" min="3" max="24" value="6" class="w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2 text-white">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-cyber-border">
+          <button onclick="handleSignOut()" class="text-xs font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+          </button>
+          <button onclick="closeProfileModal()" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questionnaire Modal -->
+    <div id="advisorModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card rounded-2xl shadow-2xl max-w-xl w-full p-6 md:p-8 space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar border border-cyber-border">
+        <div class="flex items-center justify-between pb-4 border-b border-cyber-border">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-comments-dollar text-lg"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-lg">Financial Advisor Consultation</h3>
+              <p class="text-xs text-slate-400">Step <span id="currentStepIdx">1</span> of <span id="totalStepCount">5</span></p>
+            </div>
+          </div>
+          <button onclick="closeAdvisorModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <div id="questionContainer"></div>
+        <div class="flex items-center justify-between pt-4 border-t border-cyber-border">
+          <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:bg-cyber-card">Previous</button>
+          <button id="nextBtn" onclick="nextQuestion()" class="px-5 py-2.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md">Save & Next</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- FIREBASE INITIALIZATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyA95USzCZOhGgUOke4ok1tF8Fn-VVaL5QM",
+      authDomain: "wealthpilot-app-2097.firebaseapp.com",
+      projectId: "wealthpilot-app-2097",
+      storageBucket: "wealthpilot-app-2097.firebasestorage.app",
+      messagingSenderId: "955085330496",
+      appId: "1:955085330496:web:115b8d0ae3198f248c27a5",
+      measurementId: "G-B4BE5FL07S"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    let currentUser = null;
+    let unsubscribeFirestore = null;
+    const STORAGE_KEY = "wealthpilot_v7_cyber_emerald";
+    const PREV_STORAGE_KEY = "wealthpilot_v6_isolated_periods";
+    const GROQ_KEY_STORAGE = "wealthpilot_groq_key";
+
+    // DYNAMIC CURRENT DATE INITIALIZATION (Defaults to current calendar month, e.g. "2026-10")
+    const now = new Date();
+    const dynamicCurrentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    let activeMainView = 'dashboard'; // 'dashboard' or 'monthly'
+    let currentPeriodKey = dynamicCurrentMonthKey;
+    let chatConversationHistory = [];
+    let stagedParsedTransactions = [];
+
+    // --- MASLOW SUB-CATEGORY DEFINITIONS ---
+    const SUB_CATEGORY_MAP = {
+      loans: [
+        { id: "home_loan", name: "🏠 Housing / Home Loan", icon: "fa-house" },
+        { id: "personal_loan", name: "💳 Personal Loans", icon: "fa-credit-card" },
+        { id: "education_loan", name: "🎓 Education & Skill Loans", icon: "fa-graduation-cap" },
+        { id: "vehicle_loan", name: "🚗 Vehicle / Auto Loan", icon: "fa-car" },
+        { id: "credit_card", name: "💳 Credit Card Debt", icon: "fa-credit-card" }
+      ],
+      savings: [
+        { id: "equity_sip", name: "📈 Equity Mutual Funds & SIPs", icon: "fa-chart-line" },
+        { id: "retirement", name: "🛡️ Retirement & EPF/PPF/NPS", icon: "fa-shield" },
+        { id: "liquid_fd", name: "🏦 Emergency Cash & FDs", icon: "fa-building-columns" },
+        { id: "gold_sgb", name: "🪙 Gold & Sovereign Bonds", icon: "fa-coins" },
+        { id: "real_estate", name: "🏢 Real Estate Investments", icon: "fa-city" }
+      ],
+      home: [
+        { id: "groceries", name: "🛒 Groceries & Provisions", icon: "fa-cart-shopping" },
+        { id: "utilities", name: "⚡ Utilities, Electricity & Internet", icon: "fa-bolt" },
+        { id: "rent_maint", name: "🏠 Rent & Apartment Maintenance", icon: "fa-house-chimney" },
+        { id: "healthcare", name: "🏥 Healthcare & Insurance", icon: "fa-notes-medical" },
+        { id: "commute", name: "⛽ Daily Commute & Fuel", icon: "fa-gas-pump" }
+      ],
+      entertainment: [
+        { id: "dining", name: "🍕 Dining Out & Food Delivery", icon: "fa-utensils" },
+        { id: "movies", name: "🎬 Movies & OTT Subscriptions", icon: "fa-film" },
+        { id: "travel", name: "✈️ Travel & Vacations", icon: "fa-plane" },
+        { id: "apparel", name: "🛍️ Apparel & Accessories", icon: "fa-bag-shopping" },
+        { id: "hobbies", name: "🎮 Hobbies & Electronics", icon: "fa-gamepad" }
+      ]
+    };
+
+    function createEmptyCategories() {
+      return [
+        { id: "loans", name: "Mortgages & Loans", type: "needs", icon: "fa-building-columns", items: [] },
+        { id: "savings", name: "Savings & Investments", type: "savings", icon: "fa-arrow-trend-up", items: [] },
+        { id: "home", name: "Cost for Home & Living", type: "needs", icon: "fa-house", items: [] },
+        { id: "entertainment", name: "Entertainment & Wants", type: "wants", icon: "fa-ticket", items: [] }
+      ];
+    }
+
+    const DEFAULT_STORE = {
+      currency: "₹",
+      surveyAnswers: {
+        goalPriority: "Minimize Loans",
+        riskAppetite: "Moderate (Index/Flexicap)",
+        prepayPhilosophy: "Avalanche (Highest Interest First)",
+        entertainmentTolerance: "Cut by 20%",
+        otherGoalText: ""
+      },
+      profilePrefs: { emergencyMonths: 6 },
+      assets: [
+        { id: "a1", name: "Index & Active Mutual Funds", assetClass: "equity", valuation: 450000, returnRate: 12.0 },
+        { id: "a2", name: "Emergency Bank Deposit / Liquid Cash", assetClass: "liquid", valuation: 56888, returnRate: 6.5 }
+      ],
+      periods: {
+        monthly: {
+          "2026-09": {
+            periodKey: "2026-09",
+            date: "2026-09-30",
+            primaryIncome: 173000,
+            otherInflows: [],
+            categories: [
+              {
+                id: "loans",
+                name: "Mortgages & Loans",
+                type: "needs",
+                icon: "fa-building-columns",
+                items: [
+                  { id: "l1", name: "Housing Loan", subCategory: "home_loan", amount: 45270, interestRate: 7.6, totalPrincipalOutstanding: 6946554 },
+                  { id: "l2", name: "Personal Loan 1", subCategory: "personal_loan", amount: 12950, interestRate: 23.87, totalPrincipalOutstanding: 393144 },
+                  { id: "l3", name: "Personal Loan 2", subCategory: "personal_loan", amount: 11284, interestRate: 12.0, totalPrincipalOutstanding: 280000 },
+                  { id: "l4", name: "Education Loan", subCategory: "education_loan", amount: 6681, interestRate: 8.5, totalPrincipalOutstanding: 190000 },
+                  { id: "l5", name: "Personal Loan 3", subCategory: "personal_loan", amount: 3246.52, interestRate: 13.0, totalPrincipalOutstanding: 140000 }
+                ]
+              },
+              {
+                id: "savings",
+                name: "Savings & Investments",
+                type: "savings",
+                icon: "fa-arrow-trend-up",
+                items: [
+                  { id: "s1", name: "Index & Mutual Funds SIP", subCategory: "equity_sip", amount: 30000, interestRate: 12.0, totalPortfolioValue: 450000 }
+                ]
+              },
+              {
+                id: "home",
+                name: "Cost for Home & Living",
+                type: "needs",
+                icon: "fa-house",
+                items: [
+                  { id: "h1", name: "Home Maintenance & Provisions", subCategory: "groceries", amount: 4192.04, interestRate: 0 }
+                ]
+              },
+              {
+                id: "entertainment",
+                name: "Entertainment & Wants",
+                type: "wants",
+                icon: "fa-ticket",
+                items: []
+              }
             ]
-        };
+          },
+          "2026-10": {
+            periodKey: "2026-10",
+            date: "2026-10-31",
+            primaryIncome: 173000,
+            otherInflows: [],
+            categories: [
+              {
+                id: "loans",
+                name: "Mortgages & Loans",
+                type: "needs",
+                icon: "fa-building-columns",
+                items: [
+                  { id: "l1_oct", name: "Housing Loan", subCategory: "home_loan", amount: 45270, interestRate: 7.6, totalPrincipalOutstanding: 6946554 },
+                  { id: "l2_oct", name: "Personal Loan 1", subCategory: "personal_loan", amount: 12950, interestRate: 23.87, totalPrincipalOutstanding: 393144 },
+                  { id: "l3_oct", name: "Personal Loan 2", subCategory: "personal_loan", amount: 11284, interestRate: 12.0, totalPrincipalOutstanding: 280000 },
+                  { id: "l4_oct", name: "Education Loan", subCategory: "education_loan", amount: 6681, interestRate: 8.5, totalPrincipalOutstanding: 190000 },
+                  { id: "l5_oct", name: "Personal Loan 3", subCategory: "personal_loan", amount: 3246.52, interestRate: 13.0, totalPrincipalOutstanding: 140000 }
+                ]
+              },
+              {
+                id: "savings",
+                name: "Savings & Investments",
+                type: "savings",
+                icon: "fa-arrow-trend-up",
+                items: [
+                  { id: "s1_oct", name: "Index & Mutual Funds SIP", subCategory: "equity_sip", amount: 30000, interestRate: 12.0, totalPortfolioValue: 450000 }
+                ]
+              },
+              {
+                id: "home",
+                name: "Cost for Home & Living",
+                type: "needs",
+                icon: "fa-house",
+                items: [
+                  { id: "h1_oct", name: "Home Maintenance & Provisions", subCategory: "groceries", amount: 4192.04, interestRate: 0 }
+                ]
+              },
+              {
+                id: "entertainment",
+                name: "Entertainment & Wants",
+                type: "wants",
+                icon: "fa-ticket",
+                items: [
+                  { id: "e1_oct", name: "Paneer Manchurian", subCategory: "dining", amount: 450, interestRate: 0 },
+                  { id: "e2_oct", name: "Dorothy Movie", subCategory: "movies", amount: 350, interestRate: 0 }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    };
 
-        // DEFAULT SEPTEMBER 2026 PRESET DATA
-        const DEFAULT_STORE = {
-            currency: '₹',
-            currentPeriod: '2026-09',
-            periods: {
-                '2026-09': {
-                    inflow: {
-                        primary: 173000,
-                        other: []
-                    },
-                    outflows: [
-                        { id: 'l1', name: 'Housing Loan', mainCat: 'loans', subCat: 'home_loan', amount: 45270, interest: 7.6, principal: 6946554 },
-                        { id: 'l2', name: 'Personal Loan 1', mainCat: 'loans', subCat: 'personal_loan', amount: 12950, interest: 23.87, principal: 393144 },
-                        { id: 'l3', name: 'Personal Loan 2', mainCat: 'loans', subCat: 'personal_loan', amount: 11284, interest: 12.0, principal: 280000 },
-                        { id: 'l4', name: 'Personal Loan 3', mainCat: 'loans', subCat: 'personal_loan', amount: 3246.52, interest: 13.0, principal: 140000 },
-                        { id: 'l5', name: 'Education Loan', mainCat: 'loans', subCat: 'education_loan', amount: 6681, interest: 8.5, principal: 190000 },
-                        { id: 's1', name: 'Mutual Funds SIP', mainCat: 'savings', subCat: 'equity_mf', amount: 30000, portfolioVal: 450000 },
-                        { id: 'v1', name: 'Home Provisions', mainCat: 'living', subCat: 'groceries', amount: 4192.04 },
-                        { id: 'w1', name: 'Paneer Manchurian', mainCat: 'wants', subCat: 'dining', amount: 450 },
-                        { id: 'w2', name: 'Dorothy Movie', mainCat: 'wants', subCat: 'movies_ott', amount: 350 }
-                    ]
-                }
+    function loadStore() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      }
+      const prev = localStorage.getItem(PREV_STORAGE_KEY);
+      if (prev) {
+        try { return JSON.parse(prev); } catch (e) { console.error(e); }
+      }
+      return DEFAULT_STORE;
+    }
+
+    let appStore = loadStore();
+
+    const QUESTIONS = [
+      {
+        key: "goalPriority",
+        title: "What is your primary financial objective right now?",
+        description: "Helps me direct your remaining monthly surplus with precision.",
+        options: [
+          { label: "Aggressively reduce high-interest debt & mortgage", value: "Minimize Loans" },
+          { label: "Maximize long-term compounding in Mutual Funds & Stocks", value: "Maximize Investments" },
+          { label: "Build an emergency fund cushion (6 months expenses)", value: "Emergency Fund" },
+          { label: "Other", value: "Other", isCustom: true }
+        ]
+      },
+      {
+        key: "riskAppetite",
+        title: "How would you describe your investment risk tolerance?",
+        description: "Dictates the balance between fixed returns and equity mutual funds.",
+        options: [
+          { label: "Conservative (FDs, Debt Funds, PPF, Gold)", value: "Conservative" },
+          { label: "Moderate (Balanced Advantage & Large/Flexi-Cap Equity)", value: "Moderate (Index/Flexicap)" },
+          { label: "Aggressive (Small-caps, Sectoral & Global Stocks)", value: "Aggressive" },
+          { label: "Other", value: "Other", isCustom: true }
+        ]
+      },
+      {
+        key: "prepayPhilosophy",
+        title: "When handling multiple debts, which repayment style do you prefer?",
+        description: "Choose mathematical efficiency vs psychological wins.",
+        options: [
+          { label: "Avalanche Method (Pay off highest interest % first to save max cash)", value: "Avalanche (Highest Interest First)" },
+          { label: "Snowball Method (Pay off smallest balance first for quick wins)", value: "Snowball (Smallest First)" },
+          { label: "Keep EMIs running; invest every surplus rupee in equity", value: "Only Minimum EMIs" },
+          { label: "Other", value: "Other", isCustom: true }
+        ]
+      },
+      {
+        key: "entertainmentTolerance",
+        title: "Are you willing to trim dining/entertainment to boost savings?",
+        description: "Identifies your buffer for lifestyle optimization.",
+        options: [
+          { label: "Yes, shave up to 30% from dining & non-essentials", value: "Cut by 30%" },
+          { label: "A minor cut of 10-15% is comfortable", value: "Cut by 20%" },
+          { label: "No, lifestyle comfort is sacred; I'd rather earn more", value: "Zero Cuts" },
+          { label: "Other", value: "Other", isCustom: true }
+        ]
+      },
+      {
+        key: "targetHorizon",
+        title: "What is your target time horizon for major milestones?",
+        description: "Home upgrade, early retirement, or clearing big loans.",
+        options: [
+          { label: "Short-term: 1 to 3 years", value: "1-3 Years" },
+          { label: "Medium-term: 3 to 7 years", value: "3-7 Years" },
+          { label: "Long-term: 10+ years (Retirement / FIRE)", value: "10+ Years" },
+          { label: "Other", value: "Other", isCustom: true }
+        ]
+      }
+    ];
+
+    let currentQuestionIdx = 0;
+    let dashTrajectoryChartInstance = null;
+
+    // --- AUTH FLOW ---
+    auth.onAuthStateChanged((user) => {
+      currentUser = user;
+      const authScreen = document.getElementById("authScreen");
+      const appScreen = document.getElementById("appScreen");
+
+      if (user) {
+        authScreen.classList.add("hidden");
+        appScreen.classList.remove("hidden");
+
+        const photo = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || "User")}`;
+        document.getElementById("navUserAvatar").src = photo;
+        document.getElementById("navUserName").textContent = user.displayName ? user.displayName.split(' ')[0] : "Account";
+        document.getElementById("profileAvatar").src = photo;
+        document.getElementById("profileName").textContent = user.displayName || "WealthPilot Member";
+        document.getElementById("profileEmail").textContent = user.email || "";
+
+        const userDoc = db.collection("users").doc(user.uid);
+        if (unsubscribeFirestore) unsubscribeFirestore();
+
+        unsubscribeFirestore = userDoc.onSnapshot((docSnap) => {
+          if (docSnap.exists) {
+            const cloudData = docSnap.data();
+            if (cloudData.appStore && cloudData.appStore.periods) {
+              appStore = cloudData.appStore;
+              if (!appStore.assets) appStore.assets = DEFAULT_STORE.assets;
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(appStore));
+              render();
+              document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
+              return;
+            }
+          }
+          saveStore();
+        }, (err) => {
+          console.error(err);
+          document.getElementById("syncStatus").textContent = "Sync Offline";
+        });
+      } else {
+        authScreen.classList.remove("hidden");
+        appScreen.classList.add("hidden");
+        if (unsubscribeFirestore) unsubscribeFirestore();
+      }
+    });
+
+    async function handleGoogleSignIn() {
+      try {
+        await auth.signInWithPopup(provider);
+      } catch (err) {
+        if (err.code === 'auth/popup-blocked') await auth.signInWithRedirect(provider);
+        else alert("Login error: " + err.message);
+      }
+    }
+
+    async function handleSignOut() {
+      if (confirm("Sign out of WealthPilot Pro?")) {
+        closeProfileModal();
+        await auth.signOut();
+      }
+    }
+
+    async function saveStore() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appStore));
+      render();
+
+      if (currentUser) {
+        try {
+          await db.collection("users").doc(currentUser.uid).set({
+            appStore: appStore,
+            updatedAt: new Date().toISOString()
+          });
+          document.getElementById("syncStatus").textContent = "Cloud Synced ☁️";
+        } catch (e) {
+          console.error(e);
+          document.getElementById("syncStatus").textContent = "Sync Pending";
+        }
+      }
+    }
+
+    function formatMoney(amount) {
+      return `${appStore.currency} ${Number(amount || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+    }
+
+    // --- VIEW & PERIOD CONTROLLERS ---
+    function switchMainView(view) {
+      activeMainView = view;
+      const vDash = document.getElementById("viewDashboard");
+      const vMonth = document.getElementById("viewMonthly");
+
+      const tabD = document.getElementById("navTabDashboard");
+      const tabM = document.getElementById("navTabMonthly");
+      const mobD = document.getElementById("mobileNavDashboard");
+      const mobM = document.getElementById("mobileNavMonthly");
+
+      if (view === 'dashboard') {
+        vDash.classList.remove("hidden");
+        vMonth.classList.add("hidden");
+
+        tabD.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow-md";
+        tabM.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+        mobD.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950";
+        mobM.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-cyber-card text-slate-400 border border-cyber-border";
+      } else {
+        vDash.classList.add("hidden");
+        vMonth.classList.remove("hidden");
+
+        tabM.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-950 shadow-md";
+        tabD.className = "px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+        mobM.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950";
+        mobD.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-cyber-card text-slate-400 border border-cyber-border";
+      }
+
+      render();
+    }
+
+    function initActivePeriod() {
+      const picker = document.getElementById("logPeriodPickerMonth");
+      if (!picker.value) picker.value = currentPeriodKey;
+      currentPeriodKey = picker.value;
+
+      if (!appStore.periods.monthly) appStore.periods.monthly = {};
+      
+      // Clean slate for unentered future months
+      if (!appStore.periods.monthly[currentPeriodKey]) {
+        appStore.periods.monthly[currentPeriodKey] = {
+          periodKey: currentPeriodKey,
+          date: `${currentPeriodKey}-28`,
+          primaryIncome: 0,
+          otherInflows: [],
+          categories: createEmptyCategories()
+        };
+      }
+    }
+
+    function onLogPeriodChange() {
+      initActivePeriod();
+      render();
+    }
+
+    function getActivePeriod() {
+      if (!appStore.periods.monthly) appStore.periods.monthly = {};
+      if (!appStore.periods.monthly[currentPeriodKey]) initActivePeriod();
+      return appStore.periods.monthly[currentPeriodKey];
+    }
+
+    // --- FINANCIAL CALCULATIONS ENGINE ---
+    function calculatePeriodTotals(period) {
+      const primaryInflow = Number(period.primaryIncome || 0);
+      const otherInflowTotal = (period.otherInflows || []).reduce((acc, it) => acc + Number(it.amount || 0), 0);
+      const totalInflow = primaryInflow + otherInflowTotal;
+
+      let totalOutflow = 0;
+      let totalSavings = 0;
+      let totalNeeds = 0;
+      let totalWants = 0;
+      let totalDebtBalance = 0;
+
+      const subCatTotals = {};
+
+      (period.categories || []).forEach(cat => {
+        (cat.items || []).forEach(it => {
+          const amt = Number(it.amount || 0);
+          totalOutflow += amt;
+          
+          if (cat.type === 'savings') totalSavings += amt;
+          if (cat.type === 'needs') {
+            totalNeeds += amt;
+            if (it.totalPrincipalOutstanding) totalDebtBalance += Number(it.totalPrincipalOutstanding || 0);
+          }
+          if (cat.type === 'wants') totalWants += amt;
+
+          const sub = it.subCategory || 'other';
+          subCatTotals[sub] = (subCatTotals[sub] || 0) + amt;
+        });
+      });
+
+      const totalInvestedAssets = (appStore.assets || []).reduce((acc, a) => acc + Number(a.valuation || 0), 0);
+      const surplus = totalInflow - totalOutflow;
+      const netWorth = totalInvestedAssets - totalDebtBalance;
+
+      return {
+        primaryInflow,
+        otherInflowTotal,
+        totalInflow,
+        totalOutflow,
+        totalSavings,
+        totalNeeds,
+        totalWants,
+        surplus,
+        totalDebtBalance,
+        totalInvestedAssets,
+        netWorth,
+        subCatTotals
+      };
+    }
+
+    // --- MAIN RENDER DISPATCHER ---
+    function render() {
+      initActivePeriod();
+      const period = getActivePeriod();
+      const totals = calculatePeriodTotals(period);
+
+      document.getElementById("currencySelector").value = appStore.currency;
+      document.getElementById("logPeriodPickerMonth").value = currentPeriodKey;
+      document.getElementById("dashActivePeriodTag").textContent = currentPeriodKey;
+
+      if (activeMainView === 'dashboard') {
+        renderDashboardView(totals);
+      } else {
+        renderMonthlyLogView(period, totals);
+      }
+    }
+
+    // --- RENDER DASHBOARD (VIEW A) ---
+    function renderDashboardView(totals) {
+      document.getElementById("dashNetWorthDisplay").textContent = formatMoney(totals.netWorth);
+      document.getElementById("dashTotalSpendTag").textContent = `Total Outflow: ${formatMoney(totals.totalOutflow)}`;
+
+      const savRate = totals.totalInflow > 0 ? ((totals.totalSavings / totals.totalInflow) * 100).toFixed(1) : 0;
+      const needsRate = totals.totalInflow > 0 ? ((totals.totalNeeds / totals.totalInflow) * 100).toFixed(1) : 0;
+      const wantsRate = totals.totalInflow > 0 ? ((totals.totalWants / totals.totalInflow) * 100).toFixed(1) : 0;
+
+      document.getElementById("dashNeedsPct").textContent = `${needsRate}%`;
+      document.getElementById("dashNeedsBar").style.width = `${Math.min(100, needsRate)}%`;
+      document.getElementById("dashWantsPct").textContent = `${wantsRate}%`;
+      document.getElementById("dashWantsBar").style.width = `${Math.min(100, wantsRate)}%`;
+      document.getElementById("dashSavingsPct").textContent = `${savRate}%`;
+      document.getElementById("dashSavingsBar").style.width = `${Math.min(100, savRate)}%`;
+
+      let score = 60;
+      if (savRate >= 20) score += 20;
+      if (needsRate <= 50) score += 15;
+      if (totals.surplus < 0) score -= 25;
+      score = Math.max(10, Math.min(99, Math.round(score)));
+
+      document.getElementById("dashHealthScore").textContent = `${score} / 100`;
+      document.getElementById("dashHealthStatus").textContent = score >= 75 ? "Optimal Position" : "Needs Optimization";
+
+      let headline = totals.surplus < 0 ? "Cash Flow Deficit Warning" : `Active Surplus: ${formatMoney(totals.surplus)}`;
+      let body = totals.totalInflow === 0
+        ? "No income recorded for this active month yet. Switch to 'Monthly Log' to enter salary and expenses."
+        : `Directing ${savRate}% to investments and ${needsRate}% to living commitments.`;
+      
+      document.getElementById("dashAdvisorHeadline").textContent = headline;
+      document.getElementById("dashAdvisorBody").textContent = body;
+
+      renderMaslowSubCategoryCards(totals.subCatTotals, totals.totalOutflow);
+      renderDashboardAssetsSection();
+      renderDashboardTrajectoryChart();
+    }
+
+    function renderMaslowSubCategoryCards(subCatTotals, totalOutflow) {
+      const container = document.getElementById("maslowBreakdownContainer");
+      container.innerHTML = "";
+
+      const tierMeta = [
+        { key: 'loans', title: "Security & Mortgages", color: "text-rose-400", border: "border-rose-500/20", bg: "bg-rose-500/10" },
+        { key: 'savings', title: "Wealth & Compounding", color: "text-emerald-400", border: "border-emerald-500/20", bg: "bg-emerald-500/10" },
+        { key: 'home', title: "Physiological Needs", color: "text-indigo-400", border: "border-indigo-500/20", bg: "bg-indigo-500/10" },
+        { key: 'entertainment', title: "Lifestyle & Esteem", color: "text-amber-400", border: "border-amber-500/20", bg: "bg-amber-500/10" }
+      ];
+
+      tierMeta.forEach(tier => {
+        const list = SUB_CATEGORY_MAP[tier.key] || [];
+        let tierSum = 0;
+        const rowsHtml = list.map(sub => {
+          const val = subCatTotals[sub.id] || 0;
+          tierSum += val;
+          const pct = totalOutflow > 0 ? ((val / totalOutflow) * 100).toFixed(1) : 0;
+          return `
+            <div class="flex items-center justify-between text-xs py-1 border-b border-cyber-border/40 last:border-0">
+              <span class="text-slate-300 font-medium truncate max-w-[140px]">${sub.name}</span>
+              <div class="text-right font-mono-code">
+                <span class="font-bold text-white">${formatMoney(val)}</span>
+                <span class="text-[10px] text-slate-500 ml-1">(${pct}%)</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const card = document.createElement("div");
+        card.className = `glass-card p-4 rounded-xl border ${tier.border} space-y-3`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between pb-2 border-b border-cyber-border">
+            <span class="text-xs font-bold ${tier.color}">${tier.title}</span>
+            <span class="text-xs font-bold text-white font-mono-code">${formatMoney(tierSum)}</span>
+          </div>
+          <div class="space-y-1">${rowsHtml}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderDashboardAssetsSection() {
+      const container = document.getElementById("dashAssetsGrid");
+      container.innerHTML = "";
+
+      const assets = appStore.assets || [];
+      if (assets.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 italic p-3">No investment assets recorded yet.</p>`;
+        return;
+      }
+
+      assets.forEach(a => {
+        const item = document.createElement("div");
+        item.className = "p-3 bg-cyber-bg hover:bg-cyber-card border border-cyber-border rounded-xl cursor-pointer flex items-center justify-between transition-all";
+        item.onclick = () => openAssetModal(a.id);
+        item.innerHTML = `
+          <div>
+            <h4 class="font-bold text-xs text-white">${a.name}</h4>
+            <p class="text-[10px] text-slate-400 capitalize">${a.assetClass} ${a.returnRate ? `• ${a.returnRate}% p.a.` : ''}</p>
+          </div>
+          <span class="font-bold text-xs text-emerald-400 font-mono-code">${formatMoney(a.valuation)}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderDashboardTrajectoryChart() {
+      const ctx = document.getElementById("dashTrajectoryChart").getContext("2d");
+      const periodsObj = appStore.periods.monthly || {};
+      const sortedKeys = Object.keys(periodsObj).sort();
+
+      document.getElementById("dashPeriodCount").textContent = `${sortedKeys.length} Months Logged`;
+
+      const labels = sortedKeys;
+      const netWorthData = [];
+      const inflowData = [];
+      const outflowData = [];
+
+      sortedKeys.forEach(k => {
+        const t = calculatePeriodTotals(periodsObj[k]);
+        netWorthData.push(t.netWorth);
+        inflowData.push(t.totalInflow);
+        outflowData.push(t.totalOutflow);
+      });
+
+      if (dashTrajectoryChartInstance) dashTrajectoryChartInstance.destroy();
+      dashTrajectoryChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Net Worth',
+              data: netWorthData,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.08)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2.5
             },
-            assets: [
-                { name: 'Equity Mutual Funds', type: 'Equity', val: 450000 },
-                { name: 'Bank Fixed Deposit', type: 'Liquid', val: 56888 }
-            ]
-        };
-
-        // STATE OBJECT
-        let appData = JSON.parse(localStorage.getItem('wealthpilot_data')) || DEFAULT_STORE;
-        let trajectoryChartInstance = null;
-
-        // ==========================================
-        // 2. INITIALIZATION & STORAGE
-        // ==========================================
-        window.onload = function() {
-            document.getElementById('period-picker').value = appData.currentPeriod;
-            document.getElementById('currency-select').value = appData.currency || '₹';
-            updateCurrencySymbols();
-            renderAllViews();
-        };
-
-        function saveData() {
-            localStorage.setItem('wealthpilot_data', JSON.stringify(appData));
-            renderAllViews();
-        }
-
-        function updateCurrency(val) {
-            appData.currency = val;
-            saveData();
-            updateCurrencySymbols();
-        }
-
-        function updateCurrencySymbols() {
-            document.querySelectorAll('.currency-symbol').forEach(el => el.textContent = appData.currency);
-        }
-
-        function formatMoney(amount) {
-            const curr = appData.currency || '₹';
-            return curr + Number(amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        // ==========================================
-        // 3. WORKSPACE VIEW SWITCHER
-        // ==========================================
-        function switchView(viewName) {
-            const dashView = document.getElementById('view-dashboard');
-            const monthlyView = document.getElementById('view-monthly');
-
-            const btnDash = document.getElementById('btn-tab-dash');
-            const btnLog = document.getElementById('btn-tab-log');
-            const btnDashMb = document.getElementById('btn-tab-dash-mb');
-            const btnLogMb = document.getElementById('btn-tab-log-mb');
-
-            if (viewName === 'dashboard') {
-                dashView.classList.remove('hidden');
-                monthlyView.classList.add('hidden');
-
-                btnDash.className = "flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold transition-all bg-emeraldNeon text-obsidian shadow-neon-emerald";
-                btnLog.className = "flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all";
-                
-                btnDashMb.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-emeraldNeon text-obsidian shadow-sm";
-                btnLogMb.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
-            } else {
-                dashView.classList.add('hidden');
-                monthlyView.classList.remove('hidden');
-
-                btnLog.className = "flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold transition-all bg-emeraldNeon text-obsidian shadow-neon-emerald";
-                btnDash.className = "flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all";
-
-                btnLogMb.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-emeraldNeon text-obsidian shadow-sm";
-                btnDashMb.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
+            {
+              label: 'Inflow',
+              data: inflowData,
+              borderColor: '#6366f1',
+              tension: 0.3,
+              borderWidth: 2
+            },
+            {
+              label: 'Outflow',
+              data: outflowData,
+              borderColor: '#f43f5e',
+              borderDash: [4, 4],
+              tension: 0.3,
+              borderWidth: 2
             }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 }, color: '#94a3b8' } },
+            tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${appStore.currency} ${Number(c.parsed.y).toLocaleString()}` } }
+          },
+          scales: {
+            y: { grid: { color: '#1f2d47' }, ticks: { font: { size: 10 }, color: '#94a3b8' } },
+            x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8' } }
+          }
         }
+      });
+    }
 
-        // ==========================================
-        // 4. PERIOD ISOLATION LOGIC
-        // ==========================================
-        function changePeriod(newPeriod) {
-            appData.currentPeriod = newPeriod;
-            // Strict Period Isolation: if new month unentered, start clean slate
-            if (!appData.periods[newPeriod]) {
-                appData.periods[newPeriod] = {
-                    inflow: { primary: 0, other: [] },
-                    outflows: []
-                };
-            }
-            saveData();
-        }
+    // --- RENDER MONTHLY LOG (VIEW B) ---
+    function renderMonthlyLogView(period, totals) {
+      document.getElementById("logPrimaryInflowDisplay").textContent = formatMoney(totals.primaryInflow);
+      document.getElementById("logOtherInflowTag").textContent = `+ ${formatMoney(totals.otherInflowTotal)} Other Inflows`;
+      document.getElementById("logTotalOutflowDisplay").textContent = formatMoney(totals.totalOutflow);
+      
+      const outflowPercent = totals.totalInflow > 0 ? ((totals.totalOutflow / totals.totalInflow) * 100).toFixed(0) : 0;
+      document.getElementById("logOutflowRatioTag").textContent = `${outflowPercent}% of inflow`;
 
-        function getActivePeriodData() {
-            const period = appData.currentPeriod;
-            if (!appData.periods[period]) {
-                appData.periods[period] = { inflow: { primary: 0, other: [] }, outflows: [] };
-            }
-            return appData.periods[period];
-        }
+      document.getElementById("logSavingsDisplay").textContent = formatMoney(totals.totalSavings);
 
-        // ==========================================
-        // 5. RENDER ENGINE (DASHBOARD & LOG)
-        // ==========================================
-        function renderAllViews() {
-            const periodData = getActivePeriodData();
-            
-            // Inflow Calculations
-            const primaryInflow = Number(periodData.inflow.primary || 0);
-            const otherInflowTotal = (periodData.inflow.other || []).reduce((sum, item) => sum + Number(item.amount || 0), 0);
-            const totalInflow = primaryInflow + otherInflowTotal;
+      const surplusEl = document.getElementById("logSurplusDisplay");
+      surplusEl.textContent = formatMoney(totals.surplus);
+      surplusEl.className = totals.surplus < 0 ? "text-2xl font-extrabold text-rose-400 font-mono-code" : "text-2xl font-extrabold text-emerald-400 font-mono-code";
 
-            // Outflow Category Totals
-            let totalLoans = 0, totalSavings = 0, totalLiving = 0, totalWants = 0;
-            let totalOutstandingPrincipal = 0;
+      document.getElementById("chatSurplusBadge").textContent = formatMoney(totals.surplus);
 
-            const maslowSubTotals = {};
+      renderCategoriesLedger(period);
+    }
 
-            (periodData.outflows || []).forEach(item => {
-                const amt = Number(item.amount || 0);
-                if (item.mainCat === 'loans') {
-                    totalLoans += amt;
-                    totalOutstandingPrincipal += Number(item.principal || 0);
-                } else if (item.mainCat === 'savings') {
-                    totalSavings += amt;
-                } else if (item.mainCat === 'living') {
-                    totalLiving += amt;
-                } else if (item.mainCat === 'wants') {
-                    totalWants += amt;
-                }
+    function renderCategoriesLedger(period) {
+      const container = document.getElementById("logCategoriesContainer");
+      container.innerHTML = "";
 
-                // Subcategory rollup
-                const subKey = item.subCat || 'other';
-                maslowSubTotals[subKey] = (maslowSubTotals[subKey] || 0) + amt;
-            });
+      const cats = period.categories || [];
+      const totalItems = cats.reduce((acc, c) => acc + (c.items ? c.items.length : 0), 0);
 
-            const committedOutflows = totalLoans + totalLiving + totalWants;
-            const remainingSurplus = totalInflow - committedOutflows - totalSavings;
+      if (totalItems === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-xs text-slate-500 bg-cyber-bg rounded-2xl border border-dashed border-cyber-border space-y-2">
+            <i class="fa-solid fa-receipt text-3xl text-slate-600"></i>
+            <p class="font-bold text-slate-300">Clean slate for ${currentPeriodKey}</p>
+            <p>Click '+ Add Outflow Item' above or 'Import Statement' to populate this month's log.</p>
+          </div>
+        `;
+        return;
+      }
 
-            // Asset holdings calculation
-            let totalAssetVal = 0;
-            (appData.assets || []).forEach(a => totalAssetVal += Number(a.val || 0));
-            const estimatedNetWorth = totalAssetVal - totalOutstandingPrincipal;
+      cats.forEach(cat => {
+        const catTotal = (cat.items || []).reduce((acc, it) => acc + Number(it.amount || 0), 0);
+        const card = document.createElement("div");
+        card.className = "glass-card p-5 rounded-2xl border border-cyber-border space-y-3";
+        card.innerHTML = `
+          <div class="flex items-center justify-between pb-2 border-b border-cyber-border">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-cyber-bg flex items-center justify-center text-emerald-400 border border-cyber-border">
+                <i class="fa-solid ${cat.icon}"></i>
+              </div>
+              <h4 class="font-bold text-white text-sm">${cat.name}</h4>
+            </div>
+            <span class="font-bold text-white text-base font-mono-code">${formatMoney(catTotal)}</span>
+          </div>
 
-            // A. UPDATE DASHBOARD KPIs
-            document.getElementById('dash-net-worth').textContent = formatMoney(estimatedNetWorth);
-            document.getElementById('dash-kpi-inflow').textContent = formatMoney(totalInflow);
-            document.getElementById('dash-kpi-outflow').textContent = formatMoney(committedOutflows);
-            document.getElementById('dash-kpi-outflow-pct').textContent = totalInflow > 0 ? ((committedOutflows / totalInflow) * 100).toFixed(1) + '% of Income' : '0%';
-            document.getElementById('dash-kpi-invest').textContent = formatMoney(totalSavings);
-            document.getElementById('dash-kpi-invest-pct').textContent = totalInflow > 0 ? ((totalSavings / totalInflow) * 100).toFixed(1) + '% Savings Rate' : '0%';
-            document.getElementById('dash-kpi-surplus').textContent = formatMoney(remainingSurplus);
-            document.getElementById('dash-total-assets-val').textContent = formatMoney(totalAssetVal);
-
-            // B. 50/30/20 BUDGET BARS
-            const needsPct = totalInflow > 0 ? (((totalLoans + totalLiving) / totalInflow) * 100).toFixed(1) : 0;
-            const wantsPct = totalInflow > 0 ? ((totalWants / totalInflow) * 100).toFixed(1) : 0;
-            const savingsPct = totalInflow > 0 ? ((totalSavings / totalInflow) * 100).toFixed(1) : 0;
-
-            document.getElementById('bar-needs-val').textContent = `${needsPct}% (Target: ≤50%)`;
-            document.getElementById('bar-needs-fill').style.width = `${Math.min(needsPct, 100)}%`;
-
-            document.getElementById('bar-wants-val').textContent = `${wantsPct}% (Target: ≤30%)`;
-            document.getElementById('bar-wants-fill').style.width = `${Math.min(wantsPct, 100)}%`;
-
-            document.getElementById('bar-savings-val').textContent = `${savingsPct}% (Target: ≥20%)`;
-            document.getElementById('bar-savings-fill').style.width = `${Math.min(savingsPct, 100)}%`;
-
-            // C. MASLOW SUB-CATEGORY BREAKDOWN IN DASHBOARD
-            renderMaslowBreakdown(maslowSubTotals);
-
-            // D. ASSET PORTFOLIO SNAPSHOT
-            renderAssetGrid();
-
-            // E. RENDER TRAJECTORY CHART
-            renderTrajectoryChart();
-
-            // F. AI DIRECTIVE GENERATION
-            generateAIDirective(remainingSurplus, totalLoans, needsPct);
-
-            // G. UPDATE MONTHLY LOG VIEW
-            document.getElementById('log-total-inflow').textContent = formatMoney(totalInflow);
-            document.getElementById('cat-total-loans').textContent = formatMoney(totalLoans);
-            document.getElementById('cat-total-savings').textContent = formatMoney(totalSavings);
-            document.getElementById('cat-total-living').textContent = formatMoney(totalLiving);
-            document.getElementById('cat-total-wants').textContent = formatMoney(totalWants);
-
-            renderInflowSourcesList(periodData.inflow);
-            renderOutflowLedger(periodData.outflows);
-        }
-
-        function renderMaslowBreakdown(subTotals) {
-            const container = document.getElementById('dash-maslow-container');
-            container.innerHTML = '';
-
-            const allSubCategories = [
-                ...SUB_CATEGORY_MAP.loans,
-                ...SUB_CATEGORY_MAP.savings,
-                ...SUB_CATEGORY_MAP.living,
-                ...SUB_CATEGORY_MAP.wants
-            ];
-
-            let hasItems = false;
-            allSubCategories.forEach(sub => {
-                const amount = subTotals[sub.id] || 0;
-                if (amount > 0) {
-                    hasItems = true;
-                    const card = document.createElement('div');
-                    card.className = "p-3 bg-slate-900/80 rounded-2xl border border-slate-800/80 flex items-center justify-between";
-                    card.innerHTML = `
-                        <div class="space-y-0.5">
-                            <div class="text-xs font-semibold text-slate-200">${sub.label}</div>
-                            <div class="text-[10px] text-slate-500 uppercase font-mono">Maslow Tier Item</div>
-                        </div>
-                        <div class="text-xs font-bold font-mono text-emeraldNeon">${formatMoney(amount)}</div>
-                    `;
-                    container.appendChild(card);
-                }
-            });
-
-            if (!hasItems) {
-                container.innerHTML = `<div class="col-span-2 text-center py-6 text-xs text-slate-500">No expenses or investments logged for this active period.</div>`;
-            }
-        }
-
-        function renderAssetGrid() {
-            const grid = document.getElementById('dash-asset-grid');
-            grid.innerHTML = '';
-
-            (appData.assets || []).forEach(asset => {
-                const item = document.createElement('div');
-                item.className = "p-3 bg-slate-900/80 rounded-2xl border border-slate-800 flex items-center justify-between";
-                item.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-xl bg-emeraldNeon/10 border border-emeraldNeon/30 flex items-center justify-center text-emeraldNeon text-xs">
-                            <i class="fa-solid fa-gem"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold text-slate-200">${asset.name}</div>
-                            <div class="text-[10px] text-slate-400 font-mono">${asset.type} Asset</div>
-                        </div>
-                    </div>
-                    <div class="text-xs font-bold font-mono text-white">${formatMoney(asset.val)}</div>
-                `;
-                grid.appendChild(item);
-            });
-        }
-
-        function renderTrajectoryChart() {
-            const ctx = document.getElementById('trajectoryChart').getContext('2d');
-            const periods = Object.keys(appData.periods).sort();
-
-            const netWorthData = [];
-            const inflowData = [];
-            const outflowData = [];
-
-            periods.forEach(p => {
-                const data = appData.periods[p];
-                const inf = Number(data.inflow.primary || 0) + (data.inflow.other || []).reduce((s, i) => s + Number(i.amount || 0), 0);
-                const out = (data.outflows || []).reduce((s, i) => s + (i.mainCat !== 'savings' ? Number(i.amount || 0) : 0), 0);
-                
-                inflowData.push(inf);
-                outflowData.push(out);
-                netWorthData.push(450000 + 56888 + (inf - out)); // Dynamic baseline estimation
-            });
-
-            if (trajectoryChartInstance) {
-                trajectoryChartInstance.destroy();
-            }
-
-            trajectoryChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: periods,
-                    datasets: [
-                        {
-                            label: 'Net Worth',
-                            data: netWorthData,
-                            borderColor: '#10B981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.4
-                        },
-                        {
-                            label: 'Monthly Inflow',
-                            data: inflowData,
-                            borderColor: '#6366F1',
-                            borderDash: [5, 5],
-                            tension: 0.4
-                        },
-                        {
-                            label: 'Monthly Outflow',
-                            data: outflowData,
-                            borderColor: '#F43F5E',
-                            tension: 0.4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#94A3B8', font: { size: 10 } } } },
-                    scales: {
-                        x: { ticks: { color: '#64748B' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                        y: { ticks: { color: '#64748B' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-                    }
-                }
-            });
-        }
-
-        function generateAIDirective(surplus, loans, needsPct) {
-            const el = document.getElementById('dash-ai-directive');
-            if (surplus > 20000 && loans > 0) {
-                el.textContent = `Direct 75% of your ${formatMoney(surplus)} surplus toward high-interest personal loans to reduce debt compound speed while keeping a liquid buffer.`;
-            } else if (needsPct > 50) {
-                el.textContent = `Your essential Needs standard (${needsPct}%) exceeds the 50% threshold. Consider restructuring loan tenure or optimizing fixed home expenses.`;
-            } else {
-                el.textContent = `Cash flow is optimized. Maintain monthly SIP contributions and route extra surplus into high-yield liquid cash or index equity funds.`;
-            }
-        }
-
-        // ==========================================
-        // 6. MONTHLY LOG LEDGER RENDER
-        // ==========================================
-        function renderInflowSourcesList(inflowData) {
-            const container = document.getElementById('log-inflow-sources-grid');
-            container.innerHTML = '';
-
-            // Primary Salary Pill
-            const salaryPill = document.createElement('div');
-            salaryPill.className = "p-3 bg-slate-900/90 rounded-2xl border border-emeraldNeon/30 flex items-center justify-between";
-            salaryPill.innerHTML = `
-                <div>
-                    <div class="text-xs font-bold text-white">Primary Salary Net Income</div>
-                    <div class="text-[10px] text-slate-400">Monthly Core Receipt</div>
+          <div class="space-y-1.5">
+            ${(cat.items || []).map(it => {
+              const subObj = (SUB_CATEGORY_MAP[cat.id] || []).find(s => s.id === it.subCategory);
+              const subTag = subObj ? subObj.name : 'Unassigned';
+              return `
+                <div onclick="openExpenseModal('${it.id}')" class="flex items-center justify-between p-2.5 rounded-xl bg-cyber-bg hover:bg-cyber-card border border-cyber-border hover:border-emerald-500/40 transition-all text-xs cursor-pointer">
+                  <div>
+                    <span class="font-semibold text-white">${it.name}</span>
+                    <span class="ml-2 text-[10px] bg-cyber-card text-emerald-400 border border-cyber-border px-2 py-0.5 rounded font-medium">${subTag}</span>${it.interestRate ? `<span class="ml-1 text-[10px] bg-rose-500/20 text-rose-400 px-1.5 py-0.5 rounded font-semibold border border-rose-500/30">${it.interestRate}% Int.</span>` : ''}
+                  </div>
+                  <div class="flex items-center gap-2 font-mono-code">
+                    <span class="font-bold text-white">${formatMoney(it.amount)}</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                  </div>
                 </div>
-                <div class="text-xs font-bold font-mono text-emeraldNeon">${formatMoney(inflowData.primary)}</div>
-            `;
-            container.appendChild(salaryPill);
+              `;
+            }).join('')}
+          </div>
 
-            // Other sources
-            (inflowData.other || []).forEach(src => {
-                const pill = document.createElement('div');
-                pill.className = "p-3 bg-slate-900/70 rounded-2xl border border-slate-800 flex items-center justify-between";
-                pill.innerHTML = `
-                    <div>
-                        <div class="text-xs font-bold text-slate-200">${src.title}</div>
-                        <div class="text-[10px] text-slate-400">Additional Inflow</div>
-                    </div>
-                    <div class="text-xs font-bold font-mono text-emeraldNeon">${formatMoney(src.amount)}</div>
-                `;
-                container.appendChild(pill);
-            });
+          <button onclick="openExpenseModal(null, '${cat.id}')" class="w-full py-2 border border-dashed border-cyber-border rounded-xl text-xs font-semibold text-slate-400 hover:border-emerald-500/50 hover:text-emerald-400 transition-all flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-plus text-[10px]"></i> Add ${cat.name} Item
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- CSV / EXCEL PARSER & STAGING ENGINE ---
+    function openImportModal() {
+      document.getElementById("importTargetPeriodTag").textContent = currentPeriodKey;
+      document.getElementById("importModal").classList.remove("hidden");
+    }
+
+    function closeImportModal() {
+      document.getElementById("importModal").classList.add("hidden");
+    }
+
+    function handleExcelFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheet];
+          const jsonRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+          parseAndStageRawRows(jsonRows);
+        } catch (err) {
+          alert("Error parsing file: " + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function parseAndStageRawRows(rows) {
+      stagedParsedTransactions = [];
+      if (rows.length < 2) return;
+
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row || row.length === 0) continue;
+
+        let desc = String(row[0] || row[1] || "Expense").trim();
+        let amt = parseFloat(row[1] || row[2] || row[3] || 0);
+
+        if (isNaN(amt) || amt <= 0) continue;
+
+        const autoTag = predictCategoriesFromText(desc);
+
+        stagedParsedTransactions.push({
+          id: "stg_" + Date.now() + "_" + i,
+          name: desc,
+          amount: amt,
+          category: autoTag.category,
+          subCategory: autoTag.subCategory
+        });
+      }
+
+      renderStagingTable();
+    }
+
+    function predictCategoriesFromText(text) {
+      const t = text.toLowerCase();
+
+      if (t.includes("loan") || t.includes("emi") || t.includes("mortgage") || t.includes("housing")) {
+        return { category: "loans", subCategory: "home_loan" };
+      }
+      if (t.includes("card") || t.includes("credit") || t.includes("personal")) {
+        return { category: "loans", subCategory: "personal_loan" };
+      }
+      if (t.includes("sip") || t.includes("mutual") || t.includes("fund") || t.includes("zerodha") || t.includes("groww")) {
+        return { category: "savings", subCategory: "equity_sip" };
+      }
+      if (t.includes("swiggy") || t.includes("zomato") || t.includes("restaurant") || t.includes("cafe") || t.includes("food")) {
+        return { category: "entertainment", subCategory: "dining" };
+      }
+      if (t.includes("movie") || t.includes("netflix") || t.includes("cinema") || t.includes("bookmyshow")) {
+        return { category: "entertainment", subCategory: "movies" };
+      }
+      if (t.includes("grocery") || t.includes("supermarket") || t.includes("mart") || t.includes("provisions")) {
+        return { category: "home", subCategory: "groceries" };
+      }
+
+      return { category: "entertainment", subCategory: "hobbies" };
+    }
+
+    function renderStagingTable() {
+      const container = document.getElementById("stagingTableBody");
+      container.innerHTML = "";
+
+      document.getElementById("stagedCountTag").textContent = `${stagedParsedTransactions.length} Transactions Parsed`;
+      document.getElementById("stagingTableArea").classList.remove("hidden");
+      document.getElementById("commitImportBtn").disabled = stagedParsedTransactions.length === 0;
+
+      stagedParsedTransactions.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-cyber-card/50 transition-colors";
+        tr.innerHTML = `
+          <td class="p-2.5 font-medium text-white">${item.name}</td>
+          <td class="p-2.5 font-bold font-mono-code text-emerald-400">${formatMoney(item.amount)}</td>
+          <td class="p-2.5">
+            <select onchange="updateStagedRowCategory(${index}, 'category', this.value)" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[11px] text-slate-200">
+              <option value="loans" ${item.category === 'loans' ? 'selected' : ''}>Mortgages & Loans</option>
+              <option value="savings" ${item.category === 'savings' ? 'selected' : ''}>Savings & Investments</option>
+              <option value="home" ${item.category === 'home' ? 'selected' : ''}>Cost for Home & Living</option>
+              <option value="entertainment" ${item.category === 'entertainment' ? 'selected' : ''}>Entertainment & Wants</option>
+            </select>
+          </td>
+          <td class="p-2.5">
+            <select onchange="updateStagedRowCategory(${index}, 'subCategory', this.value)" class="bg-cyber-bg border border-cyber-border rounded px-2 py-1 text-[11px] text-white">
+              ${(SUB_CATEGORY_MAP[item.category] || []).map(s => `<option value="${s.id}" ${item.subCategory === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+            </select>
+          </td>
+          <td class="p-2.5 text-center">
+            <button onclick="removeStagedRow(${index})" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        container.appendChild(tr);
+      });
+    }
+
+    function updateStagedRowCategory(index, field, value) {
+      stagedParsedTransactions[index][field] = value;
+      if (field === 'category') {
+        const defaultSub = SUB_CATEGORY_MAP[value]?.[0]?.id || 'other';
+        stagedParsedTransactions[index].subCategory = defaultSub;
+      }
+      renderStagingTable();
+    }
+
+    function removeStagedRow(index) {
+      stagedParsedTransactions.splice(index, 1);
+      renderStagingTable();
+    }
+
+    function autoCategorizeStagedRows() {
+      stagedParsedTransactions.forEach(item => {
+        const autoTag = predictCategoriesFromText(item.name);
+        item.category = autoTag.category;
+        item.subCategory = autoTag.subCategory;
+      });
+      renderStagingTable();
+    }
+
+    function commitStagedTransactions() {
+      const period = getActivePeriod();
+      stagedParsedTransactions.forEach(stg => {
+        let catObj = period.categories.find(c => c.id === stg.category);
+        if (!catObj) {
+          catObj = { id: stg.category, name: stg.category, items: [] };
+          period.categories.push(catObj);
+        }
+        catObj.items.push({
+          id: "it_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+          name: stg.name,
+          subCategory: stg.subCategory,
+          amount: stg.amount,
+          interestRate: 0
+        });
+      });
+
+      closeImportModal();
+      saveStore();
+      alert(`Successfully merged ${stagedParsedTransactions.length} transactions into ${currentPeriodKey}!`);
+    }
+
+    // --- MODAL CONTROLLERS & CASCADING SUB-CATEGORIES ---
+    function openExpenseModal(itemId, targetCatId = 'loans') {
+      const period = getActivePeriod();
+
+      document.getElementById("loanSpecificFields").classList.remove("hidden");
+      document.getElementById("savingsSpecificFields").classList.add("hidden");
+
+      if (itemId) {
+        document.getElementById("expenseModalTitle").textContent = "Edit Outflow Item";
+        document.getElementById("deleteExpenseBtn").classList.remove("hidden");
+
+        let found = null, foundCat = null;
+        period.categories.forEach(cat => {
+          (cat.items || []).forEach(it => {
+            if (it.id === itemId) { found = it; foundCat = cat; }
+          });
+        });
+
+        if (found) {
+          document.getElementById("editItemId").value = found.id;
+          document.getElementById("editItemName").value = found.name;
+          document.getElementById("editItemCategory").value = foundCat.id;
+          
+          updateSubCategoryDropdown(foundCat.id, found.subCategory);
+
+          document.getElementById("editItemAmount").value = found.amount;
+          document.getElementById("editItemInterest").value = found.interestRate || "";
+          document.getElementById("editItemLoanBalance").value = found.totalPrincipalOutstanding || "";
+          document.getElementById("editItemPortfolioVal").value = found.totalPortfolioValue || "";
+        }
+      } else {
+        document.getElementById("expenseModalTitle").textContent = "Add Outflow Item";
+        document.getElementById("deleteExpenseBtn").classList.add("hidden");
+        document.getElementById("editItemId").value = "";
+        document.getElementById("editItemName").value = "";
+        document.getElementById("editItemCategory").value = targetCatId;
+
+        updateSubCategoryDropdown(targetCatId);
+
+        document.getElementById("editItemAmount").value = "";
+        document.getElementById("editItemInterest").value = "";
+        document.getElementById("editItemLoanBalance").value = "";
+        document.getElementById("editItemPortfolioVal").value = "";
+      }
+
+      document.getElementById("expenseModal").classList.remove("hidden");
+    }
+
+    function closeExpenseModal() { document.getElementById("expenseModal").classList.add("hidden"); }
+
+    function onMainCategoryChange() {
+      const cat = document.getElementById("editItemCategory").value;
+      updateSubCategoryDropdown(cat);
+    }
+
+    function updateSubCategoryDropdown(mainCatId, selectedSubId = null) {
+      const subSelect = document.getElementById("editItemSubCategory");
+      subSelect.innerHTML = "";
+
+      const options = SUB_CATEGORY_MAP[mainCatId] || [];
+      options.forEach(opt => {
+        const isSel = selectedSubId ? opt.id === selectedSubId : false;
+        subSelect.innerHTML += `<option value="${opt.id}" ${isSel ? 'selected' : ''}>${opt.name}</option>`;
+      });
+
+      if (mainCatId === 'loans') {
+        document.getElementById("loanSpecificFields").classList.remove("hidden");
+        document.getElementById("savingsSpecificFields").classList.add("hidden");
+      } else if (mainCatId === 'savings') {
+        document.getElementById("loanSpecificFields").classList.add("hidden");
+        document.getElementById("savingsSpecificFields").classList.remove("hidden");
+      } else {
+        document.getElementById("loanSpecificFields").classList.add("hidden");
+        document.getElementById("savingsSpecificFields").classList.add("hidden");
+      }
+    }
+
+    function saveExpenseModal() {
+      const period = getActivePeriod();
+      const itemId = document.getElementById("editItemId").value;
+      const name = document.getElementById("editItemName").value.trim();
+      const catId = document.getElementById("editItemCategory").value;
+      const subCatId = document.getElementById("editItemSubCategory").value;
+      const amount = Number(document.getElementById("editItemAmount").value) || 0;
+      const interestRate = Number(document.getElementById("editItemInterest").value) || 0;
+      const principalBal = Number(document.getElementById("editItemLoanBalance").value) || 0;
+      const portVal = Number(document.getElementById("editItemPortfolioVal").value) || 0;
+
+      if (!name) { alert("Please provide an item description."); return; }
+
+      if (itemId) {
+        period.categories.forEach(c => {
+          c.items = (c.items || []).filter(i => i.id !== itemId);
+        });
+      }
+
+      let targetCat = period.categories.find(c => c.id === catId);
+      if (!targetCat) {
+        targetCat = { id: catId, name: catId, items: [] };
+        period.categories.push(targetCat);
+      }
+
+      targetCat.items.push({
+        id: itemId || "it_" + Date.now(),
+        name: name,
+        subCategory: subCatId,
+        amount: amount,
+        interestRate: catId === 'loans' ? interestRate : 0,
+        totalPrincipalOutstanding: catId === 'loans' ? principalBal : 0,
+        totalPortfolioValue: catId === 'savings' ? portVal : 0
+      });
+
+      closeExpenseModal();
+      saveStore();
+    }
+
+    function deleteActiveExpenseItem() {
+      if (confirm("Delete this expense item?")) {
+        const period = getActivePeriod();
+        const itemId = document.getElementById("editItemId").value;
+        period.categories.forEach(c => {
+          c.items = (c.items || []).filter(i => i.id !== itemId);
+        });
+        closeExpenseModal();
+        saveStore();
+      }
+    }
+
+    // --- INFLOW MODAL LOGIC ---
+    function openInflowModal() {
+      const period = getActivePeriod();
+      document.getElementById("inflowModalPeriodSubtitle").textContent = `Targeting Period: ${currentPeriodKey}`;
+      document.getElementById("inputPrimaryIncome").value = period.primaryIncome || 0;
+
+      const container = document.getElementById("otherInflowsContainer");
+      container.innerHTML = "";
+      (period.otherInflows || []).forEach(it => addOtherInflowRow(it.name, it.amount));
+
+      document.getElementById("inflowModal").classList.remove("hidden");
+    }
+
+    function closeInflowModal() { document.getElementById("inflowModal").classList.add("hidden"); }
+
+    function addOtherInflowRow(name = "", amount = 0) {
+      const container = document.getElementById("otherInflowsContainer");
+      const row = document.createElement("div");
+      row.className = "flex items-center gap-2 other-inflow-row";
+      row.innerHTML = `
+        <input type="text" placeholder="Source (e.g. Bonus, Consulting)" value="${name}" class="w-1/2 bg-cyber-bg border border-cyber-border rounded-lg px-2.5 py-1.5 text-xs text-white other-inflow-name">
+        <input type="number" placeholder="Amount" value="${amount}" step="any" class="w-1/2 bg-cyber-bg border border-cyber-border rounded-lg px-2.5 py-1.5 text-xs text-emerald-400 font-mono-code font-semibold other-inflow-amount">
+        <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-rose-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
+      `;
+      container.appendChild(row);
+    }
+
+    function saveInflowModal() {
+      const period = getActivePeriod();
+      period.primaryIncome = Number(document.getElementById("inputPrimaryIncome").value) || 0;
+
+      const otherRows = document.querySelectorAll(".other-inflow-row");
+      const otherList = [];
+      otherRows.forEach(r => {
+        const name = r.querySelector(".other-inflow-name").value.trim();
+        const amt = Number(r.querySelector(".other-inflow-amount").value) || 0;
+        if (name && amt > 0) otherList.push({ name, amount: amt });
+      });
+      period.otherInflows = otherList;
+
+      closeInflowModal();
+      saveStore();
+    }
+
+    // --- ASSETS MODAL LOGIC ---
+    function openAssetModal(assetId) {
+      if (assetId) {
+        document.getElementById("assetModalTitle").textContent = "Edit Investment Asset";
+        document.getElementById("deleteAssetBtn").classList.remove("hidden");
+        const found = (appStore.assets || []).find(a => a.id === assetId);
+        if (found) {
+          document.getElementById("editAssetId").value = found.id;
+          document.getElementById("editAssetName").value = found.name;
+          document.getElementById("editAssetClass").value = found.assetClass || "equity";
+          document.getElementById("editAssetValuation").value = found.valuation;
+          document.getElementById("editAssetReturnRate").value = found.returnRate || "";
+        }
+      } else {
+        document.getElementById("assetModalTitle").textContent = "Add Investment Asset";
+        document.getElementById("deleteAssetBtn").classList.add("hidden");
+        document.getElementById("editAssetId").value = "";
+        document.getElementById("editAssetName").value = "";
+        document.getElementById("editAssetClass").value = "equity";
+        document.getElementById("editAssetValuation").value = "";
+        document.getElementById("editAssetReturnRate").value = "";
+      }
+      document.getElementById("assetModal").classList.remove("hidden");
+    }
+
+    function closeAssetModal() { document.getElementById("assetModal").classList.add("hidden"); }
+
+    function saveAssetModal() {
+      const assetId = document.getElementById("editAssetId").value;
+      const name = document.getElementById("editAssetName").value.trim();
+      const assetClass = document.getElementById("editAssetClass").value;
+      const valuation = Number(document.getElementById("editAssetValuation").value) || 0;
+      const returnRate = Number(document.getElementById("editAssetReturnRate").value) || 0;
+
+      if (!name) { alert("Please provide an asset description."); return; }
+      if (!appStore.assets) appStore.assets = [];
+
+      if (assetId) {
+        const idx = appStore.assets.findIndex(a => a.id === assetId);
+        if (idx >= 0) appStore.assets[idx] = { id: assetId, name, assetClass, valuation, returnRate };
+      } else {
+        appStore.assets.push({ id: "ast_" + Date.now(), name, assetClass, valuation, returnRate });
+      }
+
+      closeAssetModal();
+      saveStore();
+    }
+
+    function deleteActiveAssetItem() {
+      if (confirm("Delete this asset from your portfolio?")) {
+        const assetId = document.getElementById("editAssetId").value;
+        appStore.assets = (appStore.assets || []).filter(a => a.id !== assetId);
+        closeAssetModal();
+        saveStore();
+      }
+    }
+
+    // --- PROFILE & ADVISOR HELPERS ---
+    function openProfileModal() { document.getElementById("profileModal").classList.remove("hidden"); }
+    function closeProfileModal() { document.getElementById("profileModal").classList.add("hidden"); }
+
+    function exportDataBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appStore, null, 2));
+      const a = document.createElement("a");
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `wealthpilot_backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function openAdvisorModal() {
+      currentQuestionIdx = 0;
+      document.getElementById("totalStepCount").textContent = QUESTIONS.length;
+      document.getElementById("advisorModal").classList.remove("hidden");
+      renderQuestionStep();
+    }
+
+    function closeAdvisorModal() {
+      document.getElementById("advisorModal").classList.add("hidden");
+      saveStore();
+    }
+
+    function renderQuestionStep() {
+      const q = QUESTIONS[currentQuestionIdx];
+      document.getElementById("currentStepIdx").textContent = currentQuestionIdx + 1;
+      const container = document.getElementById("questionContainer");
+      const savedAnswer = appStore.surveyAnswers[q.key] || "";
+      const isOtherChosen = savedAnswer === "Other" || (!q.options.some(o => o.value === savedAnswer && !o.isCustom) && savedAnswer !== "");
+
+      container.innerHTML = `
+        <div class="space-y-4">
+          <div>
+            <h4 class="font-bold text-white text-base">${q.title}</h4>
+            <p class="text-xs text-slate-400 mt-1">${q.description}</p>
+          </div>
+          <div class="space-y-2.5">
+            ${q.options.map(opt => {
+              const isChecked = (opt.isCustom && isOtherChosen) || (!opt.isCustom && savedAnswer === opt.value);
+              return `
+                <label class="flex items-center gap-3 p-3.5 rounded-xl border border-cyber-border cursor-pointer hover:border-emerald-500/50 transition-all ${isChecked ? 'bg-emerald-500/10 border-emerald-500' : 'bg-cyber-bg'}">
+                  <input type="radio" name="advisor_mcq" value="${opt.value}" ${isChecked ? 'checked' : ''} onchange="onOptionSelect('${q.key}', '${opt.value}',${!!opt.isCustom})" class="text-emerald-500 focus:ring-emerald-500 h-4 w-4">
+                  <span class="text-xs font-semibold text-slate-200">${opt.label}</span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+          <div id="otherTextInputContainer" class="${isOtherChosen ? '' : 'hidden'} mt-3">
+            <label class="block text-xs font-semibold text-emerald-400 mb-1">Specify custom target:</label>
+            <input type="text" id="customOtherInput" value="${appStore.surveyAnswers.otherGoalText || ''}" placeholder="e.g. Prepay Housing Loan by December 2028..." class="w-full text-xs px-3 py-2 bg-cyber-bg border border-cyber-border rounded-lg text-white">
+          </div>
+        </div>
+      `;
+
+      document.getElementById("prevBtn").style.visibility = currentQuestionIdx === 0 ? "hidden" : "visible";
+      document.getElementById("nextBtn").textContent = (currentQuestionIdx === QUESTIONS.length - 1) ? "Finish & Optimize" : "Save & Next";
+    }
+
+    function onOptionSelect(key, val, isCustom) {
+      appStore.surveyAnswers[key] = val;
+      const otherContainer = document.getElementById("otherTextInputContainer");
+      if (isCustom) otherContainer.classList.remove("hidden");
+      else otherContainer.classList.add("hidden");
+    }
+
+    function nextQuestion() {
+      const q = QUESTIONS[currentQuestionIdx];
+      const selected = document.querySelector('input[name="advisor_mcq"]:checked');
+      if (selected) {
+        appStore.surveyAnswers[q.key] = selected.value;
+        if (selected.value === "Other") {
+          appStore.surveyAnswers.otherGoalText = document.getElementById("customOtherInput").value;
+        }
+      }
+      if (currentQuestionIdx < QUESTIONS.length - 1) {
+        currentQuestionIdx++;
+        renderQuestionStep();
+      } else {
+        closeAdvisorModal();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        renderQuestionStep();
+      }
+    }
+
+    // ==========================================
+    // GROQ AI CHAT INTEGRATION
+    // ==========================================
+    function toggleGroqChatDrawer() {
+      const drawer = document.getElementById("groqChatDrawer");
+      const isClosed = drawer.classList.contains("translate-x-full");
+      if (isClosed) {
+        drawer.classList.remove("translate-x-full");
+        const key = getGroqApiKey();
+        if (!key) {
+          setTimeout(openGroqKeyModal, 400);
+        }
+      } else {
+        drawer.classList.add("translate-x-full");
+      }
+    }
+
+    function getGroqApiKey() {
+      return localStorage.getItem(GROQ_KEY_STORAGE) || "";
+    }
+
+    function openGroqKeyModal() {
+      document.getElementById("groqApiKeyInput").value = getGroqApiKey();
+      document.getElementById("groqKeyModal").classList.remove("hidden");
+    }
+
+    function closeGroqKeyModal() {
+      document.getElementById("groqKeyModal").classList.add("hidden");
+    }
+
+    function saveGroqApiKey() {
+      const key = document.getElementById("groqApiKeyInput").value.trim();
+      if (!key) {
+        alert("Please enter a valid Groq API key.");
+        return;
+      }
+      localStorage.setItem(GROQ_KEY_STORAGE, key);
+      closeGroqKeyModal();
+      alert("Groq API Key saved successfully!");
+    }
+
+    function clearChatHistory() {
+      chatConversationHistory = [];
+      const container = document.getElementById("chatMessagesContainer");
+      container.innerHTML = `
+        <div class="flex items-start gap-2.5">
+          <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">
+            <i class="fa-solid fa-user-tie text-[10px]"></i>
+          </div>
+          <div class="bg-cyber-card p-3 rounded-2xl rounded-tl-sm text-slate-200 border border-cyber-border leading-relaxed text-xs">
+            <p>Chat memory refreshed. Ask me any question about your investments, loans, or discretionary allocations!</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById("chatUserInput").value = promptText;
+      handleSendUserMessage(new Event('submit'));
+    }
+
+    function buildFinancialSystemPrompt() {
+      const period = getActivePeriod();
+      const totals = calculatePeriodTotals(period);
+      const loans = (period.categories.find(c => c.id === 'loans')?.items || []).map(i => 
+        `- ${i.name}: EMI ${formatMoney(i.amount)}/mo, Interest ${i.interestRate}% p.a., Remaining Principal Balance: ${formatMoney(i.totalPrincipalOutstanding)}`
+      ).join("\n");
+
+      const assets = (appStore.assets || []).map(a => 
+        `- ${a.name} (${a.assetClass}): Valuation ${formatMoney(a.valuation)}`
+      ).join("\n");
+
+      return `You are WealthPilot, an expert fiduciary financial planner and personal debt counselor.
+You give precise, mathematically rigorous, and empathetic financial guidance.
+
+HERE IS THE USER'S REAL-TIME FINANCIAL LEDGER FOR PERIOD: ${currentPeriodKey}:
+• Primary Net Inflow: ${formatMoney(totals.primaryInflow)}
+• Other Inflow Sources: ${formatMoney(totals.otherInflowTotal)}
+• Total Inflow: ${formatMoney(totals.totalInflow)}
+• Total Committed Outflow: ${formatMoney(totals.totalOutflow)}
+• Current Remaining Surplus: ${formatMoney(totals.surplus)}
+• Total Investment Assets as of Today: ${formatMoney(totals.totalInvestedAssets)}
+• Total Outstanding Debt Balance: ${formatMoney(totals.totalDebtBalance)}
+• Current Calculated Net Worth: ${formatMoney(totals.netWorth)}
+
+USER'S DETAILED LOAN PORTFOLIO FOR THIS PERIOD:
+${loans || "No loans recorded for this period."}
+
+USER'S INVESTMENT ASSETS:
+${assets || "No assets recorded."}
+
+INSTRUCTIONS FOR THE ADVISOR:
+1. Always reference the user's EXACT numbers, interest rates, and loan names.
+2. If discussing loan prepayment, strictly apply the Debt Avalanche method (prioritizing the loan with the highest interest % first).
+3. Keep answers structured, actionable, and formatted cleanly with bullet points.`;
+    }
+
+    async function handleSendUserMessage(e) {
+      if (e) e.preventDefault();
+      const inputEl = document.getElementById("chatUserInput");
+      const query = inputEl.value.trim();
+      if (!query) return;
+
+      const apiKey = getGroqApiKey();
+      if (!apiKey) {
+        alert("Please set your free Groq API key first.");
+        openGroqKeyModal();
+        return;
+      }
+
+      inputEl.value = "";
+      appendMessageToChat("user", query);
+
+      const typingId = appendTypingIndicator();
+      const systemPrompt = buildFinancialSystemPrompt();
+      const messagesPayload = [
+        { role: "system", content: systemPrompt },
+        ...chatConversationHistory,
+        { role: "user", content: query }
+      ];
+
+      const primaryModel = "openai/gpt-oss-120b";
+      const fallbackModel = "openai/gpt-oss-20b";
+
+      async function executeGroqRequest(modelName) {
+        return await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: modelName,
+            messages: messagesPayload,
+            temperature: 0.3,
+            max_tokens: 1024
+          })
+        });
+      }
+
+      try {
+        let activeModelUsed = primaryModel;
+        let response = await executeGroqRequest(primaryModel);
+
+        if (!response.ok && (response.status === 404 || response.status === 400 || response.status === 429)) {
+          activeModelUsed = fallbackModel;
+          response = await executeGroqRequest(fallbackModel);
         }
 
-        function renderOutflowLedger(outflows) {
-            const lists = {
-                loans: document.getElementById('ledger-loans-list'),
-                savings: document.getElementById('ledger-savings-list'),
-                living: document.getElementById('ledger-living-list'),
-                wants: document.getElementById('ledger-wants-list')
-            };
+        removeTypingIndicator(typingId);
 
-            Object.values(lists).forEach(el => el.innerHTML = '');
-
-            if (!outflows || outflows.length === 0) {
-                Object.values(lists).forEach(el => {
-                    el.innerHTML = `<div class="text-center py-4 text-xs text-slate-500">No items logged in this category for active period.</div>`;
-                });
-                return;
-            }
-
-            outflows.forEach(item => {
-                const targetList = lists[item.mainCat] || lists.wants;
-                const subObj = (SUB_CATEGORY_MAP[item.mainCat] || []).find(s => s.id === item.subCat);
-                const subBadgeLabel = subObj ? subObj.label : 'Item';
-
-                const row = document.createElement('div');
-                row.onclick = () => openOutflowModal(item);
-                row.className = "p-3.5 bg-slate-900/60 hover:bg-slate-800/80 rounded-2xl border border-slate-800/80 hover:border-slate-700 transition-all flex items-center justify-between cursor-pointer group";
-
-                let metaText = '';
-                if (item.mainCat === 'loans') {
-                    metaText = `${item.interest || 0}% Int. • Bal: ${formatMoney(item.principal || 0)}`;
-                } else if (item.mainCat === 'savings') {
-                    metaText = `Holding Val: ${formatMoney(item.portfolioVal || 0)}`;
-                } else {
-                    metaText = `Logged Outflow`;
-                }
-
-                row.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 group-hover:border-emeraldNeon transition-all">
-                            <i class="fa-solid fa-pen text-xs"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold text-white flex items-center gap-2">
-                                <span>${item.name}</span>
-                                <span class="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] text-slate-300 border border-slate-700 font-mono">${subBadgeLabel}</span>
-                            </div>
-                            <div class="text-[10px] text-slate-400 font-mono">${metaText}</div>
-                        </div>
-                    </div>
-                    <div class="text-xs font-bold font-mono text-white flex items-center gap-2">
-                        <span>${formatMoney(item.amount)}</span>
-                        <i class="fa-solid fa-chevron-right text-slate-600 text-[10px]"></i>
-                    </div>
-                `;
-                targetList.appendChild(row);
-            });
-
-            // Fill empty category warnings
-            Object.keys(lists).forEach(catKey => {
-                if (lists[catKey].children.length === 0) {
-                    lists[catKey].innerHTML = `<div class="text-center py-3 text-xs text-slate-500">No items logged in this category.</div>`;
-                }
-            });
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.error?.message || "Groq API error");
         }
 
-        // ==========================================
-        // 7. CASCADING MODAL INTERACTION
-        // ==========================================
-        function handleMainCatChange(mainCat) {
-            const subSelect = document.getElementById('outflow-sub-cat');
-            subSelect.innerHTML = '';
+        const data = await response.json();
+        const botReply = data.choices[0].message.content;
 
-            const subOptions = SUB_CATEGORY_MAP[mainCat] || [];
-            subOptions.forEach(sub => {
-                const opt = document.createElement('option');
-                opt.value = sub.id;
-                opt.textContent = sub.label;
-                subSelect.appendChild(opt);
-            });
+        document.getElementById("activeModelBadge").textContent = activeModelUsed.includes("120b") ? "GPT-OSS 120B" : "GPT-OSS 20B";
 
-            const loanFields = document.getElementById('loan-specific-fields');
-            const savingsFields = document.getElementById('savings-specific-fields');
+        chatConversationHistory.push({ role: "user", content: query });
+        chatConversationHistory.push({ role: "assistant", content: botReply });
 
-            if (mainCat === 'loans') {
-                loanFields.classList.remove('hidden');
-                savingsFields.classList.add('hidden');
-            } else if (mainCat === 'savings') {
-                loanFields.classList.add('hidden');
-                savingsFields.classList.remove('hidden');
-            } else {
-                loanFields.classList.add('hidden');
-                savingsFields.classList.add('hidden');
-            }
-        }
+        appendMessageToChat("assistant", botReply);
 
-        function openOutflowModal(itemToEdit = null) {
-            const modal = document.getElementById('modal-outflow');
-            const form = document.getElementById('outflow-form');
-            const delBtn = document.getElementById('btn-delete-outflow');
+      } catch (err) {
+        removeTypingIndicator(typingId);
+        appendMessageToChat("assistant", `⚠ Error from Groq: ${err.message}. Please verify your API key.`);
+      }
+    }
 
-            form.reset();
+    function appendMessageToChat(role, text) {
+      const container = document.getElementById("chatMessagesContainer");
+      const msgDiv = document.createElement("div");
 
-            if (itemToEdit) {
-                document.getElementById('outflow-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-emeraldNeon"></i> <span>Edit Outflow Item</span>`;
-                document.getElementById('outflow-id').value = itemToEdit.id;
-                document.getElementById('outflow-name').value = itemToEdit.name;
-                document.getElementById('outflow-main-cat').value = itemToEdit.mainCat;
-                handleMainCatChange(itemToEdit.mainCat);
-                document.getElementById('outflow-sub-cat').value = itemToEdit.subCat;
-                document.getElementById('outflow-amount').value = itemToEdit.amount;
-                document.getElementById('outflow-interest').value = itemToEdit.interest || '';
-                document.getElementById('outflow-principal').value = itemToEdit.principal || '';
-                document.getElementById('outflow-portfolio-val').value = itemToEdit.portfolioVal || '';
-                delBtn.classList.remove('hidden');
-            } else {
-                document.getElementById('outflow-modal-title').innerHTML = `<i class="fa-solid fa-plus text-emeraldNeon"></i> <span>Add Outflow Item</span>`;
-                document.getElementById('outflow-id').value = '';
-                handleMainCatChange('loans');
-                delBtn.classList.add('hidden');
-            }
+      if (role === "user") {
+        msgDiv.className = "flex justify-end";
+        msgDiv.innerHTML = `
+          <div class="bg-emerald-500 text-slate-950 p-3 rounded-2xl rounded-tr-sm text-xs font-medium leading-relaxed max-w-[85%] shadow-sm">
+            ${escapeHtml(text)}
+          </div>
+        `;
+      } else {
+        msgDiv.className = "flex items-start gap-2.5";
+        const formatted = formatSimpleMarkdown(text);
+        msgDiv.innerHTML = `
+          <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">
+            <i class="fa-solid fa-user-tie text-[10px]"></i>
+          </div>
+          <div class="bg-cyber-card p-3 rounded-2xl rounded-tl-sm text-slate-200 border border-cyber-border leading-relaxed text-xs max-w-[88%] space-y-1.5">
+            ${formatted}
+          </div>
+        `;
+      }
 
-            modal.classList.remove('hidden');
-        }
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
 
-        function closeOutflowModal() {
-            document.getElementById('modal-outflow').classList.add('hidden');
-        }
+    function appendTypingIndicator() {
+      const container = document.getElementById("chatMessagesContainer");
+      const id = "typing_" + Date.now();
+      const div = document.createElement("div");
+      div.id = id;
+      div.className = "flex items-center gap-2 text-slate-400 text-xs italic py-1";
+      div.innerHTML = `
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-bounce"></div>
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-bounce [animation-delay:-.3s]"></div>
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-bounce [animation-delay:-.5s]"></div>
+        <span class="ml-1 text-[11px]">Advisor analyzing ledger via Groq GPT-OSS...</span>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+      return id;
+    }
 
-        function saveOutflowItem(e) {
-            e.preventDefault();
-            const periodData = getActivePeriodData();
-            const id = document.getElementById('outflow-id').value || 'item_' + Date.now();
-            const name = document.getElementById('outflow-name').value;
-            const mainCat = document.getElementById('outflow-main-cat').value;
-            const subCat = document.getElementById('outflow-sub-cat').value;
-            const amount = parseFloat(document.getElementById('outflow-amount').value) || 0;
+    function removeTypingIndicator(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
 
-            const item = { id, name, mainCat, subCat, amount };
+    function formatSimpleMarkdown(txt) {
+      return txt
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n• /g, '<br>• ')
+        .replace(/\n- /g, '<br>• ')
+        .replace(/\n(\d+)\. /g, '<br>$1. ');
+    }
 
-            if (mainCat === 'loans') {
-                item.interest = parseFloat(document.getElementById('outflow-interest').value) || 0;
-                item.principal = parseFloat(document.getElementById('outflow-principal').value) || 0;
-            } else if (mainCat === 'savings') {
-                item.portfolioVal = parseFloat(document.getElementById('outflow-portfolio-val').value) || 0;
-            }
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
 
-            const existingIdx = periodData.outflows.findIndex(i => i.id === id);
-            if (existingIdx >= 0) {
-                periodData.outflows[existingIdx] = item;
-            } else {
-                periodData.outflows.push(item);
-            }
+    document.getElementById("currencySelector").addEventListener("change", (e) => {
+      appStore.currency = e.target.value;
+      saveStore();
+    });
 
-            closeOutflowModal();
-            saveData();
-        }
-
-        function deleteOutflowItem() {
-            const periodData = getActivePeriodData();
-            const id = document.getElementById('outflow-id').value;
-            if (!id) return;
-
-            periodData.outflows = periodData.outflows.filter(i => i.id !== id);
-            closeOutflowModal();
-            saveData();
-        }
-
-        // ==========================================
-        // 8. INFLOW MODAL LOGIC
-        // ==========================================
-        function openInflowModal() {
-            const modal = document.getElementById('modal-inflow');
-            const periodData = getActivePeriodData();
-            document.getElementById('inflow-primary-val').value = periodData.inflow.primary || '';
-
-            const container = document.getElementById('inflow-sources-container');
-            container.innerHTML = '';
-
-            (periodData.inflow.other || []).forEach(src => {
-                addInflowSourceRow(src.title, src.amount);
-            });
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeInflowModal() {
-            document.getElementById('modal-inflow').classList.add('hidden');
-        }
-
-        function addInflowSourceRow(title = '', amount = '') {
-            const container = document.getElementById('inflow-sources-container');
-            const row = document.createElement('div');
-            row.className = "flex items-center space-x-2";
-            row.innerHTML = `
-                <input type="text" placeholder="Source name" value="${title}" class="inflow-src-title flex-1 glass-input rounded-xl px-3 py-1.5 text-xs">
-                <input type="number" step="0.01" placeholder="Amount" value="${amount}" class="inflow-src-amt w-28 glass-input rounded-xl px-3 py-1.5 text-xs font-mono">
-                <button type="button" onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-300 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
-            `;
-            container.appendChild(row);
-        }
-
-        function saveInflowData() {
-            const periodData = getActivePeriodData();
-            periodData.inflow.primary = parseFloat(document.getElementById('inflow-primary-val').value) || 0;
-
-            const otherSources = [];
-            const titles = document.querySelectorAll('.inflow-src-title');
-            const amounts = document.querySelectorAll('.inflow-src-amt');
-
-            titles.forEach((tInput, idx) => {
-                const title = tInput.value.trim();
-                const amount = parseFloat(amounts[idx].value) || 0;
-                if (title && amount > 0) {
-                    otherSources.push({ title, amount });
-                }
-            });
-
-            periodData.inflow.other = otherSources;
-            closeInflowModal();
-            saveData();
-        }
-
-        // ==========================================
-        // 9. BACKUP & RESTORE JSON
-        // ==========================================
-        function exportDataJSON() {
-            const jsonStr = JSON.stringify(appData, null, 2);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `WealthPilot_Backup_${appData.currentPeriod}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importDataJSON(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const parsed = JSON.parse(evt.target.result);
-                    if (parsed && parsed.periods) {
-                        appData = parsed;
-                        saveData();
-                        alert('Data successfully imported!');
-                    } else {
-                        alert('Invalid JSON structure.');
-                    }
-                } catch(err) {
-                    alert('Error parsing JSON file.');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // ==========================================
-        // 10. GROQ AI ADVISOR DRAWER & CHAT
-        // ==========================================
-        function toggleGroqDrawer() {
-            const drawer = document.getElementById('drawer-groq');
-            drawer.classList.toggle('translate-x-full');
-        }
-
-        function openGroqKeyModal() {
-            document.getElementById('groq-key-input').value = localStorage.getItem('wealthpilot_groq_key') || '';
-            document.getElementById('modal-groq-key').classList.remove('hidden');
-        }
-
-        function closeGroqKeyModal() {
-            document.getElementById('modal-groq-key').classList.add('hidden');
-        }
-
-        function saveGroqKey() {
-            const key = document.getElementById('groq-key-input').value.trim();
-            localStorage.setItem('wealthpilot_groq_key', key);
-            closeGroqKeyModal();
-            alert('Groq API Key Saved!');
-        }
-
-        function sendQuickPrompt(promptText) {
-            document.getElementById('chat-input').value = promptText;
-            handleChatSubmit(new Event('submit'));
-        }
-
-        async function handleChatSubmit(e) {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-            if (!message) return;
-
-            const chatMessages = document.getElementById('chat-messages');
-
-            // User Message Pill
-            const userMsg = document.createElement('div');
-            userMsg.className = "flex items-start space-x-2 justify-end";
-            userMsg.innerHTML = `
-                <div class="p-3 rounded-2xl bg-emeraldNeon/10 border border-emeraldNeon/30 text-xs leading-relaxed text-emeraldNeon">
-                    ${message}
-                </div>
-            `;
-            chatMessages.appendChild(userMsg);
-            input.value = '';
-
-            // AI Loading Pill
-            const aiMsg = document.createElement('div');
-            aiMsg.className = "flex items-start space-x-2";
-            aiMsg.innerHTML = `
-                <div class="w-7 h-7 rounded-lg bg-indigoNeon/20 flex items-center justify-center shrink-0 text-indigoNeon text-xs">AI</div>
-                <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs leading-relaxed text-slate-400 italic">
-                    Analyzing balance sheet & computing financial directive...
-                </div>
-            `;
-            chatMessages.appendChild(aiMsg);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            const apiKey = localStorage.getItem('wealthpilot_groq_key');
-            if (!apiKey) {
-                setTimeout(() => {
-                    aiMsg.querySelector('div:last-child').textContent = "Groq API key not found. Please click 'Configure API Key' to enter your gsk_... key.";
-                    aiMsg.querySelector('div:last-child').classList.remove('italic');
-                }, 800);
-                return;
-            }
-
-            // Inject Live Balance Sheet System Context
-            const activeData = getActivePeriodData();
-            const systemPrompt = `You are WealthPilot AI, an elite fiduciary financial planner. Context: Active Period ${appData.currentPeriod}. Balance Sheet: ${JSON.stringify(activeData)}. Assets: ${JSON.stringify(appData.assets)}. Provide crisp, highly actionable advice.`;
-
-            try {
-                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: 'llama3-70b-8192',
-                        messages: [
-                            { role: 'system', content: systemPrompt },
-                            { role: 'user', content: message }
-                        ],
-                        temperature: 0.2
-                    })
-                });
-
-                const json = await response.json();
-                if (json.choices && json.choices[0]) {
-                    aiMsg.querySelector('div:last-child').textContent = json.choices[0].message.content;
-                    aiMsg.querySelector('div:last-child').classList.remove('italic');
-                } else {
-                    aiMsg.querySelector('div:last-child').textContent = "Error parsing Groq response. Please verify key validity.";
-                }
-            } catch (err) {
-                aiMsg.querySelector('div:last-child').textContent = "Network error communicating with Groq API.";
-            }
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // ==========================================
-        // 11. FIREBASE AUTH MODAL STUBS
-        // ==========================================
-        function openFirebaseModal() {
-            document.getElementById('modal-firebase').classList.remove('hidden');
-        }
-
-        function closeFirebaseModal() {
-            document.getElementById('modal-firebase').classList.add('hidden');
-        }
-
-        function loginWithGoogle() {
-            alert('Firebase Auth configured. Connect your Google Cloud Client ID for direct Google OAuth.');
-        }
-
-        function logoutFirebase() {
-            document.getElementById('firebase-logged-in').classList.add('hidden');
-            document.getElementById('firebase-logged-out').classList.remove('hidden');
-            document.getElementById('auth-user-label').textContent = 'Guest';
-        }
-    </script>
+    // Start in Executive Dashboard view
+    switchMainView('dashboard');
+  </script>
 </body>
 </html>
